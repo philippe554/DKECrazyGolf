@@ -23,11 +23,10 @@ public class FrameGolf extends JFrame
         panel.add(button,BorderLayout.NORTH);
 
         World world = new World();
-
         Golf3D w3d = new Golf3D(world,0.05f);   // panel holding the 3D canvas
+
         c.add(w3d, BorderLayout.WEST);
         c2.add(panel, BorderLayout.EAST);
-
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         pack();
         setResizable(true);
@@ -36,7 +35,7 @@ public class FrameGolf extends JFrame
         for(int i=0;i<1000;i++)
         {
             world.step();
-            w3d.moveBall();
+            w3d.updateBall();
             try {
                 Thread.sleep(30);
             } catch (InterruptedException e) {

@@ -19,9 +19,9 @@ public class World {
         sides = new LinkedList<>();
         balls = new LinkedList<>();
 
-        points.add(new Point3D(500,500,0));//0
+        points.add(new Point3D(500,200,0));//0
         points.add(new Point3D(500,-500,0));//1
-        points.add(new Point3D(-500,500,0));//2
+        points.add(new Point3D(-500,200,0));//2
         points.add(new Point3D(-500,-500,0));//3
 
         sides.add(new Side(points.get(0),points.get(1),points.get(2),new Color3f(0.0f,1.0f,0.0f)));
@@ -33,35 +33,76 @@ public class World {
 
         sides.add(new Side(points.get(4),points.get(5),points.get(6),new Color3f(0.5f,0.5f,0.5f)));
 
-        //points.add(new Point3D(50,-200,2));//7
-        //points.add(new Point3D(50,200,2));//8
+        //hole
+        points.add(new Point3D(30,200,0));//7
+        points.add(new Point3D(-30,200,0));//8
+        points.add(new Point3D(30,260,0));//9
+        points.add(new Point3D(-30,260,0));//10
 
-        //edges.add(new Edge(points.get(7),points.get(8)));
-        /*
-        points.add(new Point3D(30,-200,0));//9
-        points.add(new Point3D(30,200,0));//10
-        points.add(new Point3D(70,-200,0));//11
-        points.add(new Point3D(70,200,0));//12
-        sides.add(new Side(points.get(9),points.get(7),points.get(8)));
-        sides.add(new Side(points.get(9),points.get(10),points.get(8)));
-        sides.add(new Side(points.get(11),points.get(7),points.get(8)));
-        sides.add(new Side(points.get(11),points.get(12),points.get(8)));*/
+        points.add(new Point3D(30,200,-40));//11
+        points.add(new Point3D(-30,200,-40));//12
+        points.add(new Point3D(30,260,-40));//13
+        points.add(new Point3D(-30,260,-40));//14
+        sides.add(new Side(points.get(7),points.get(8),points.get(12),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(7),points.get(11),points.get(12),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(11),points.get(12),points.get(14),new Color3f(0.7f,0.7f,0.7f)));
+        sides.add(new Side(points.get(11),points.get(13),points.get(14),new Color3f(0.7f,0.7f,0.7f)));
+        sides.add(new Side(points.get(7),points.get(9),points.get(13),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(7),points.get(11),points.get(13),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(8),points.get(10),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(8),points.get(12),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(9),points.get(10),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(9),points.get(13),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
+        edges.add(new Edge(points.get(7),points.get(8)));
+        edges.add(new Edge(points.get(8),points.get(10)));
+        edges.add(new Edge(points.get(10),points.get(9)));
+        edges.add(new Edge(points.get(9),points.get(10)));
 
-        /*points.add(new Point3D(-500,-200,0));//13
-        points.add(new Point3D(-500,200,0));//14
-        sides.add(new Side(points.get(13),points.get(9),points.get(10)));
-        sides.add(new Side(points.get(13),points.get(14),points.get(10)));
+        points.add(new Point3D(500,260,0));//15
+        points.add(new Point3D(-500,260,0));//16
+        sides.add(new Side(points.get(7),points.get(0),points.get(15),new Color3f(0.0f,1.0f,0.0f)));
+        sides.add(new Side(points.get(7),points.get(9),points.get(15),new Color3f(0.0f,1.0f,0.0f)));
+        sides.add(new Side(points.get(8),points.get(2),points.get(16),new Color3f(0.0f,1.0f,0.0f)));
+        sides.add(new Side(points.get(8),points.get(10),points.get(16),new Color3f(0.0f,1.0f,0.0f)));
 
-        points.add(new Point3D(500,-200,0));//15
-        points.add(new Point3D(500,200,0));//16
-        sides.add(new Side(points.get(11),points.get(15),points.get(16)));
-        sides.add(new Side(points.get(11),points.get(12),points.get(16)));*/
+        points.add(new Point3D(500,500,0));//17
+        points.add(new Point3D(-500,500,0));//18
+        sides.add(new Side(points.get(15),points.get(16),points.get(18),new Color3f(0.0f,1.0f,0.0f)));
+        sides.add(new Side(points.get(15),points.get(17),points.get(18),new Color3f(0.0f,1.0f,0.0f)));
+
+        //slope
+        points.add(new Point3D(50,-100,0));//19
+        points.add(new Point3D(-50,-100,0));//20
+        points.add(new Point3D(50,-200,20));//21
+        points.add(new Point3D(-50,-200,20));//22
+        points.add(new Point3D(50,-300,20));//23
+        points.add(new Point3D(-50,-300,20));//24
+        points.add(new Point3D(50,-400,0));//25
+        points.add(new Point3D(-50,-400,0));//26
+        sides.add(new Side(points.get(19),points.get(20),points.get(22),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(19),points.get(21),points.get(22),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(21),points.get(22),points.get(24),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(21),points.get(23),points.get(24),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(23),points.get(24),points.get(26),new Color3f(0.5f,0.5f,0.5f)));
+        sides.add(new Side(points.get(23),points.get(25),points.get(26),new Color3f(0.5f,0.5f,0.5f)));
+
+        points.add(new Point3D(50,-200,00));//27
+        points.add(new Point3D(-50,-200,00));//28
+        points.add(new Point3D(50,-300,00));//29
+        points.add(new Point3D(-50,-300,00));//30
+        sides.add(new Side(points.get(19),points.get(21),points.get(27),new Color3f(0.8f,0.8f,0.8f)));
+        sides.add(new Side(points.get(25),points.get(23),points.get(29),new Color3f(0.8f,0.8f,0.8f)));
+        sides.add(new Side(points.get(20),points.get(22),points.get(28),new Color3f(0.8f,0.8f,0.8f)));
+        sides.add(new Side(points.get(26),points.get(24),points.get(30),new Color3f(0.8f,0.8f,0.8f)));
+
+        sides.add(new Side(points.get(21),points.get(27),points.get(29),new Color3f(0.8f,0.8f,0.8f)));
+        sides.add(new Side(points.get(21),points.get(23),points.get(29),new Color3f(0.8f,0.8f,0.8f)));
+        sides.add(new Side(points.get(22),points.get(28),points.get(30),new Color3f(0.8f,0.8f,0.8f)));
+        sides.add(new Side(points.get(22),points.get(24),points.get(30),new Color3f(0.8f,0.8f,0.8f)));
 
         balls.add(new Ball(20,new Point3D(0,0,20)));
-        balls.get(0).velocity=new Point3D(3,0,0);
-
-        //balls.add(new Ball(20,new Point3D(100,100,20)));
-        //balls.get(1).velocity=new Point3D(-1,0,0);
+        //balls.get(0).velocity=new Point3D(5,-2.5,0);
+        balls.get(0).velocity=new Point3D(0,5,0);
     }
 
     public void step(){
@@ -78,33 +119,8 @@ public class World {
         //check collsion
         for(int i=0;i<balls.size();i++)
         {
-            for(int j=0;j<edges.size();j++)
-            {
-                Point3D ballP1=balls.get(i).place.subtract(edges.get(j).points[0]);
-                Point3D ballP2=balls.get(i).place.subtract(edges.get(j).points[1]);
-
-                double t = edges.get(j).unit.dotProduct(ballP1);
-                if(t>0 && t < edges.get(j).lenght)
-                {
-                    Point3D clossest = edges.get(j).points[0].add(edges.get(j).unit.multiply(t));
-                    Point3D unit = balls.get(i).place.subtract(clossest);
-                    double distance = unit.magnitude();
-                    unit = unit.normalize();
-                    if(distance<balls.get(i).size)
-                    {
-                        //balls.get(i).place=clossest.add(unit.multiply(balls.get(i).size));
-                        //balls.get(i).acceleration=balls.get(i).acceleration.add(unit);
-                    }
-                }
-                else if(ballP1.magnitude()<balls.get(i).size)
-                {
-                    //test
-                }
-                else if(ballP2.magnitude()<balls.get(i).size)
-                {
-                    //test
-                }
-            }
+            //ball-plane
+            Point3D v = balls.get(i).velocity.multiply(1);
             for(int j=0;j<sides.size();j++)
             {
                 double Nr0 = sides.get(j).abc.dotProduct(balls.get(i).place);
@@ -121,7 +137,44 @@ public class World {
                     {
                         double dir = -(t/Math.abs(t));
                         balls.get(i).place=intersection.add(sides.get(j).normal.multiply(dir*balls.get(i).size));
-                        balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
+                        //balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
+                        balls.get(i).velocity= v.subtract(sides.get(j).normal.multiply(v.dotProduct(sides.get(j).normal)*1.8));
+                    }
+                }
+            }
+            //ball-edge
+            for(int j=0;j<edges.size();j++)
+            {
+
+                Point3D ballEndPoint[]=new Point3D[2];
+                for(int k=0;k<2;k++) {
+                    ballEndPoint[k] = balls.get(i).place.subtract(edges.get(j).points[k]);
+                }
+
+                double t = edges.get(j).unit.dotProduct(ballEndPoint[0]);
+                if(t>0 && t < edges.get(j).lenght)
+                {
+                    Point3D clossest = edges.get(j).points[0].add(edges.get(j).unit.multiply(t));
+                    Point3D unit = balls.get(i).place.subtract(clossest);
+                    double distance = unit.magnitude();
+                    unit = unit.normalize();
+                    if(distance<balls.get(i).size)
+                    {
+                        System.out.println(edges.get(j).unit);
+                        balls.get(i).place=clossest.add(unit.multiply(balls.get(i).size));
+                        balls.get(i).velocity= v.subtract(unit.multiply(v.dotProduct(unit)*1.8));
+                    }
+                }
+                else//ball-point
+                {
+                    for(int k=0;k<2;k++) {
+                        if(ballEndPoint[k].magnitude()<balls.get(i).size)
+                        {
+                            Point3D unit=ballEndPoint[k].normalize();
+                            balls.get(i).place=edges.get(j).points[k].add(unit.multiply(balls.get(i).size));
+                            balls.get(i).velocity= v.subtract(unit.multiply(v.dotProduct(unit)*1.8));
+                            k=2;
+                        }
                     }
                 }
             }

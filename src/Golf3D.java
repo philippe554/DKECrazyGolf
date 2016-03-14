@@ -37,6 +37,7 @@ public class Golf3D extends JPanel{
     {
         world=w;
         scale=s;
+
         setLayout( new BorderLayout() );
         setOpaque( false );
         setPreferredSize( new Dimension(PWIDTH, PHEIGHT));
@@ -52,7 +53,6 @@ public class Golf3D extends JPanel{
         su = new SimpleUniverse(canvas3D);
 
         su.getViewer().getView().setBackClipDistance(50);
-
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
@@ -142,8 +142,7 @@ public class Golf3D extends JPanel{
         steerTG.getTransform(t3d);
 
         // args are: viewer posn, where looking, up direction
-        //t3d.lookAt( new Point3d(0,15,40), new Point3d(0,0,0), new Vector3d(0,0,1));
-        t3d.lookAt(new Point3d(0,15,40),
+        t3d.lookAt(new Point3d(-20,20,40),
                 new Point3d((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale)
                 , new Vector3d(0,0,1));
         t3d.invert();
@@ -192,11 +191,11 @@ public class Golf3D extends JPanel{
         scene.compile();
         su.addBranchGraph( scene );
     }
-    public void moveBall()
+    public void updateBall()
     {
         t3d.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
         tg.setTransform(t3d);
-        initUserPosition();
+        //initUserPosition();
     }
     public void createScene()
     {
