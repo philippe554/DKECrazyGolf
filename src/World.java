@@ -102,7 +102,7 @@ public class World {
                 }
                 else if(ballP2.magnitude()<balls.get(i).size)
                 {
-
+                    //test
                 }
             }
             for(int j=0;j<sides.size();j++)
