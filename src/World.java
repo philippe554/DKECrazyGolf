@@ -101,8 +101,8 @@ public class World {
         sides.add(new Side(points.get(22),points.get(24),points.get(30),new Color3f(0.8f,0.8f,0.8f)));
 
         balls.add(new Ball(20,new Point3D(0,0,20)));
-        //balls.get(0).velocity=new Point3D(5,-2.5,0);
-        balls.get(0).velocity=new Point3D(0,5,0);
+        balls.get(0).velocity=new Point3D(5,-2.5,0);
+        //balls.get(0).velocity=new Point3D(0,5,0);
     }
 
     public void step(){
