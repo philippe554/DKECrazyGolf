@@ -1,5 +1,6 @@
 import javafx.geometry.Point3D;
 
+import javax.vecmath.Color3f;
 import java.util.LinkedList;
 
 /**
@@ -18,19 +19,19 @@ public class World {
         sides = new LinkedList<>();
         balls = new LinkedList<>();
 
-        points.add(new Point3D(1000,1000,0));//0
-        points.add(new Point3D(1000,-1000,0));//1
-        points.add(new Point3D(-1000,1000,0));//2
-        points.add(new Point3D(-1000,-1000,0));//3
+        points.add(new Point3D(500,500,0));//0
+        points.add(new Point3D(500,-500,0));//1
+        points.add(new Point3D(-500,500,0));//2
+        points.add(new Point3D(-500,-500,0));//3
 
-        sides.add(new Side(points.get(0),points.get(1),points.get(2)));
-        sides.add(new Side(points.get(3),points.get(1),points.get(2)));
+        sides.add(new Side(points.get(0),points.get(1),points.get(2),new Color3f(0.0f,1.0f,0.0f)));
+        sides.add(new Side(points.get(3),points.get(1),points.get(2),new Color3f(0.0f,1.0f,0.0f)));
 
         points.add(new Point3D(100,-100,0));//4
         points.add(new Point3D(300,100,0));//5
         points.add(new Point3D(100,-100,100));//6
 
-        sides.add(new Side(points.get(4),points.get(5),points.get(6)));
+        sides.add(new Side(points.get(4),points.get(5),points.get(6),new Color3f(0.5f,0.5f,0.5f)));
 
         //points.add(new Point3D(50,-200,2));//7
         //points.add(new Point3D(50,200,2));//8
@@ -64,7 +65,6 @@ public class World {
     }
 
     public void step(){
-        System.out.println(balls.get(0).velocity.getX()+" "+balls.get(0).velocity.magnitude()+" "+balls.get(0).place.getZ());
         //move everything
         for(int i=0;i<balls.size();i++)
         {

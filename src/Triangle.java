@@ -1,29 +1,31 @@
-
-
 import javax.media.j3d.*;
-import javax.vecmath.*;
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3f;
 import java.util.ArrayList;
 
+/**
+ * Created by pmmde on 3/14/2016.
+ */
+public class Triangle extends Shape3D {
 
-public class ColouredTiles extends Shape3D
-{
-    private QuadArray plane;
+    private TriangleArray plane;
 
 
-    public ColouredTiles(ArrayList coords, Color3f col)
+    public Triangle(ArrayList coords, Color3f col)
     {
-        plane = new QuadArray(coords.size(),GeometryArray.COORDINATES | GeometryArray.COLOR_3 );
+        plane = new TriangleArray (coords.size(), GeometryArray.COORDINATES | GeometryArray.COLOR_3 );
         createGeometry(coords, col);
         createAppearance();
     }
 
 
-    private void createGeometry(ArrayList coords, Color3f col)
+    private void createGeometry(ArrayList<Point3f> coords, Color3f col)
     {
         int numPoints = coords.size();
 
         Point3f[] points = new Point3f[numPoints];
-        coords.toArray( points );
+        for(int i=0; i < numPoints; i++)
+            points[i] = coords.get(i);
         plane.setCoordinates(0, points);
 
         Color3f cols[] = new Color3f[numPoints];
@@ -46,6 +48,4 @@ public class ColouredTiles extends Shape3D
 
         setAppearance(app);
     }  // end of createAppearance()
-
-
-} // end of ColouredTiles class
+}

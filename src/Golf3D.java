@@ -1,7 +1,9 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
+import com.sun.j3d.utils.scenegraph.io.state.javax.media.j3d.BranchGroupState;
 import com.sun.j3d.utils.universe.*;
 import com.sun.j3d.utils.geometry.*;
 import javax.media.j3d.*;
@@ -16,26 +18,25 @@ import com.sun.j3d.utils.behaviors.vp.*;
 
 public class Golf3D extends JPanel{
     // size of panel
-    private static final int PWIDTH = 800;
+    private static final int PWIDTH = 1200;
     private static final int PHEIGHT = 800;
-
-    private static final double BOUNDSIZE = 1000000 ;
-
-    private static final float BALLSIZE = 0.30f ;
-
-    private static final Point3d USERPOSN = new Point3d(0,15,40);
-    private static final Vector3f START = new Vector3f(0,BALLSIZE,Floor.FLOOR_LEN-3);
 
     private SimpleUniverse su;
     private BranchGroup sceneBG;
+    private BranchGroup scene=null;
+    private Transform3D t3d;
+    private TransformGroup tg;
     private BoundingSphere bounds;
 
+    private World world;
+    private float scale;
 
 
-
-    public Golf3D()
+    public Golf3D(World w,float s)
     // A panel holding a 3D canvas
     {
+        world=w;
+        scale=s;
         setLayout( new BorderLayout() );
         setOpaque( false );
         setPreferredSize( new Dimension(PWIDTH, PHEIGHT));
@@ -59,7 +60,7 @@ public class Golf3D extends JPanel{
 
         su.addBranchGraph( sceneBG );
 
-
+        createBall();
     }
 
 
@@ -68,14 +69,13 @@ public class Golf3D extends JPanel{
     // initilise the scene
     {
         sceneBG = new BranchGroup();
-        bounds = new BoundingSphere(new Point3d(Floor.FLOOR_WIDTH,0,Floor.FLOOR_LEN), BOUNDSIZE);
+        bounds = new BoundingSphere(new Point3d(0,0,0), 1000000);
 
         lightScene();         // add the lights
         addBackground();      // add the sky
-        sceneBG.addChild( new Floor().getBG() );  // add the floor
-
+        createScene();
         // j3dTree.recursiveApplyCapability( sceneBG );   // set capabilities for tree display
-        Ball();
+        //Ball(START);
         sceneBG.compile();   // fix the scene
     } // end of createSceneGraph()
 
@@ -142,13 +142,16 @@ public class Golf3D extends JPanel{
         steerTG.getTransform(t3d);
 
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt( USERPOSN, new Point3d(0,0,0), new Vector3d(0,1,0));
+        //t3d.lookAt( new Point3d(0,15,40), new Point3d(0,0,0), new Vector3d(0,0,1));
+        t3d.lookAt(new Point3d(0,15,40),
+                new Point3d((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale)
+                , new Vector3d(0,0,1));
         t3d.invert();
 
         steerTG.setTransform(t3d);
     }
 
-    private void Ball(){
+    public void createBall(){
         // located at start
         // Create the blue appearance node
         Color3f black = new Color3f(0.0f, 0.0f, 0.0f);
@@ -164,10 +167,10 @@ public class Golf3D extends JPanel{
         blueApp.setMaterial(blueMat);
 
         // position the sphere
-        Transform3D t3d = new Transform3D();
-        t3d.set(START);
-        TransformGroup tg = new TransformGroup(t3d);
-        Sphere ball = new Sphere(BALLSIZE, blueApp);// set its radius and appearance
+        t3d = new Transform3D();
+        t3d.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
+        tg = new TransformGroup(t3d);
+        Sphere ball = new Sphere((float) world.balls.get(0).size*scale, blueApp);// set its radius and appearance
         ball.setPickable(true);
 
 
@@ -184,8 +187,31 @@ public class Golf3D extends JPanel{
         tg.addChild(behavior);
         behavior.setSchedulingBounds(bounds);
 
+        scene = new BranchGroup();
+        scene.addChild(tg);
+        scene.compile();
+        su.addBranchGraph( scene );
+    }
+    public void moveBall()
+    {
+        t3d.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
+        tg.setTransform(t3d);
+        initUserPosition();
+    }
+    public void createScene()
+    {
+        BranchGroup scene = new BranchGroup();
 
-        sceneBG.addChild(tg);
+        for(int i=0;i<world.sides.size();i++)
+        {
+            ArrayList<Point3f> coords = new ArrayList();
+            for(int j=0;j<3;j++) {
+                coords.add(new Point3f((float) world.sides.get(i).points[j].getX()*scale, (float) world.sides.get(i).points[j].getY()*scale, (float) world.sides.get(i).points[j].getZ()*scale));
+            }
+            scene.addChild(new Triangle(coords,world.sides.get(i).color));
+        }
+
+        sceneBG.addChild(scene);
     }
 
 } 

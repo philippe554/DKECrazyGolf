@@ -1,21 +1,25 @@
 import javafx.geometry.Point3D;
 
+import javax.vecmath.Color3f;
+
 /**
  * Created by pmmde on 3/12/2016.
  */
 public class Side {
     public Point3D[] points;
     public Point3D normal;
+    public Color3f color;
 
     public Point3D abc;
     public double d;
     public double Nv;
 
-    public Side(Point3D p1,Point3D p2,Point3D p3){
+    public Side(Point3D p1,Point3D p2,Point3D p3,Color3f c){
         points=new Point3D[3];
         points[0]=p1;
         points[1]=p2;
         points[2]=p3;
+        color=c;
 
         //pre calculations for collision detection
 

@@ -1,5 +1,6 @@
 
 import javax.swing.*;
+import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -21,7 +22,9 @@ public class FrameGolf extends JFrame
         JButton button = new JButton("Play?");
         panel.add(button,BorderLayout.NORTH);
 
-        Golf3D w3d = new Golf3D();   // panel holding the 3D canvas
+        World world = new World();
+
+        Golf3D w3d = new Golf3D(world,0.05f);   // panel holding the 3D canvas
         c.add(w3d, BorderLayout.WEST);
         c2.add(panel, BorderLayout.EAST);
 
@@ -29,10 +32,18 @@ public class FrameGolf extends JFrame
         pack();
         setResizable(true);
         setVisible(true);
+
+        for(int i=0;i<1000;i++)
+        {
+            world.step();
+            w3d.moveBall();
+            try {
+                Thread.sleep(30);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-
-
-// -----------------------------------------
 
     public static void main(String[] args)
     { new FrameGolf(); }
