@@ -23,6 +23,8 @@ public class FrameGolf extends JFrame
         panel.add(button,BorderLayout.NORTH);
 
         World world = new World();
+        //world.loadWorld("C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt");
+        world.addLoop(0,0,0);
         Golf3D w3d = new Golf3D(world,0.05f);   // panel holding the 3D canvas
 
         c.add(w3d, BorderLayout.WEST);
@@ -32,7 +34,13 @@ public class FrameGolf extends JFrame
         setResizable(true);
         setVisible(true);
 
-        for(int i=0;i<1000;i++)
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for(int i=0;i<10000;i++)
         {
             world.step();
             w3d.updateBall();

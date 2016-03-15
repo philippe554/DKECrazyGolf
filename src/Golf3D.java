@@ -31,7 +31,6 @@ public class Golf3D extends JPanel{
     private World world;
     private float scale;
 
-
     public Golf3D(World w,float s)
     // A panel holding a 3D canvas
     {
@@ -74,6 +73,7 @@ public class Golf3D extends JPanel{
         lightScene();         // add the lights
         addBackground();      // add the sky
         createScene();
+        //sceneBG.addChild(new FieldModeliser(file).getField());
         // j3dTree.recursiveApplyCapability( sceneBG );   // set capabilities for tree display
         //Ball(START);
         sceneBG.compile();   // fix the scene
