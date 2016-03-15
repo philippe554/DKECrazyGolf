@@ -174,7 +174,7 @@ public class World {
 
     public void pushBall(int i,Point3D dir)
     {
-        balls.get(i).velocity.add(dir);
+        balls.get(i).velocity=dir;
     }
 
     public boolean checkBallInHole(int i) {
@@ -185,9 +185,47 @@ public class World {
         return false;
     }
 
-    public void addLoop(int x,int y,int z)
+    public void addLoop(double x,double y,double z,double size,double width,int parts,double wallSize)
     {
-
+        double angleGrowSize=Math.PI/(parts/2);
+        double widthCounter=0;
+        double widthIncrrement=width/parts;
+        for(double angle = 0;angle<Math.PI*1.99;angle+=angleGrowSize)
+        {
+            Point3D p1=new Point3D(x+Math.sin(angle)*size,y-width/2+widthCounter,z-Math.cos(angle)*size);
+            Point3D p2=new Point3D(x+Math.sin(angle+angleGrowSize)*size,y-width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*size);
+            Point3D p3=new Point3D(x+Math.sin(angle)*size,y+width/2+widthCounter,z-Math.cos(angle)*size);
+            Point3D p4=new Point3D(x+Math.sin(angle+angleGrowSize)*size,y+width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*size);
+            addSquare(p1,p2,p4,p3,true,new Color3f(0.8f,0.8f,0.8f));
+            Point3D p1in=new Point3D(x+Math.sin(angle)*(size-wallSize),y-width/2+widthCounter,z-Math.cos(angle)*(size-wallSize));
+            Point3D p2in=new Point3D(x+Math.sin(angle+angleGrowSize)*(size-wallSize),y-width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*(size-wallSize));
+            Point3D p3in=new Point3D(x+Math.sin(angle)*(size-wallSize),y+width/2+widthCounter,z-Math.cos(angle)*(size-wallSize));
+            Point3D p4in=new Point3D(x+Math.sin(angle+angleGrowSize)*(size-wallSize),y+width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*(size-wallSize));
+            addSquare(p1,p2,p2in,p1in,true,new Color3f(0.5f,0.5f,0.5f));
+            addSquare(p3,p4,p4in,p3in,true,new Color3f(0.5f,0.5f,0.5f));
+            widthCounter+=widthIncrrement;
+        }
+    }
+    public void addHole(double x,double y, double z,double radius,double depth,int parts)
+    {
+        Point3D center = new Point3D(x,y,z-depth);
+        Point3D cornerPoints[]=new Point3D[4];
+        cornerPoints[0]=new Point3D(x+radius,y+radius,z);
+        cornerPoints[1]=new Point3D(x-radius,y+radius,z);
+        cornerPoints[2]=new Point3D(x-radius,y-radius,z);
+        cornerPoints[3]=new Point3D(x+radius,y-radius,z);
+        double angleGrowSize=Math.PI/(parts/2);
+        for(int i=0;i<4;i++) {
+            for (double angle = i*Math.PI/2; angle < (i+1)*Math.PI*1.99/4; angle += angleGrowSize) {
+                Point3D p1 = new Point3D(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius, z);
+                Point3D p2 = new Point3D(x + Math.cos(angle + angleGrowSize) * radius, y + Math.sin(angle + angleGrowSize) * radius, z);
+                Point3D p3 = new Point3D(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius, z - depth);
+                Point3D p4 = new Point3D(x + Math.cos(angle + angleGrowSize) * radius, y + Math.sin(angle + angleGrowSize) * radius, z - depth);
+                addSquare(p1, p2, p4, p3, true, new Color3f(0.8f, 0.8f, 0.8f));
+                sides.add(new Side(p3, p4, center, new Color3f(0.5f, 0.5f, 0.5f)));
+                sides.add(new Side(p1, p2, cornerPoints[i], new Color3f(0, 1, 0)));
+            }
+        }
     }
 
     public void addSquare(Point3D p1,Point3D p2,Point3D p3,Point3D p4,boolean addToPoints,Color3f c)

@@ -1,4 +1,6 @@
 
+import javafx.geometry.Point3D;
+
 import javax.swing.*;
 import javax.vecmath.Vector3f;
 import java.awt.*;
@@ -23,8 +25,10 @@ public class FrameGolf extends JFrame
         panel.add(button,BorderLayout.NORTH);
 
         World world = new World();
-        //world.loadWorld("C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt");
-        world.addLoop(0,0,0);
+        world.loadWorld("C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt");
+        //world.addLoop(0,0,100,100,100,50,25);
+        world.addHole(0,0,0,30,70,30);
+        world.pushBall(0,new Point3D(40,0,0));
         Golf3D w3d = new Golf3D(world,0.05f);   // panel holding the 3D canvas
 
         c.add(w3d, BorderLayout.WEST);
@@ -35,7 +39,7 @@ public class FrameGolf extends JFrame
         setVisible(true);
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

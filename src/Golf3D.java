@@ -51,7 +51,7 @@ public class Golf3D extends JPanel{
 
         su = new SimpleUniverse(canvas3D);
 
-        su.getViewer().getView().setBackClipDistance(50);
+        su.getViewer().getView().setBackClipDistance(100000000);
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
