@@ -1,6 +1,8 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import com.sun.j3d.utils.scenegraph.io.state.javax.media.j3d.BranchGroupState;
@@ -16,7 +18,7 @@ import com.sun.j3d.utils.behaviors.vp.*;
 
 
 
-public class Golf3D extends JPanel{
+public class Golf3D extends JComponent{
     // size of panel
     private static final int PWIDTH = 1200;
     private static final int PHEIGHT = 800;
@@ -28,8 +30,8 @@ public class Golf3D extends JPanel{
     private TransformGroup tg;
     private BoundingSphere bounds;
 
-    private World world;
-    private float scale;
+    public World world;
+    public float scale;
 
     public Golf3D(World w,float s)
     // A panel holding a 3D canvas
@@ -191,9 +193,10 @@ public class Golf3D extends JPanel{
         scene.compile();
         su.addBranchGraph( scene );
     }
-    public void updateBall()
-    {
+    public void updateBall(){
+        t3d = new Transform3D();
         t3d.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
+        tg = new TransformGroup();
         tg.setTransform(t3d);
         //initUserPosition();
     }
@@ -211,6 +214,24 @@ public class Golf3D extends JPanel{
         }
 
         sceneBG.addChild(scene);
+    }
+    public void updateArrow(Point3f ballCoor, Point3f aimVector){
+        ArrayList<Point3f> arrowCoor = new ArrayList<Point3f>();
+        arrowCoor.add(ballCoor);
+        arrowCoor.add(aimVector);
+        Arrow arrow = new Arrow(arrowCoor, new Color3f(1.0f,0.0f,0.0f));
+        t3d = new Transform3D();
+        t3d.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
+        tg = new TransformGroup(t3d);
+        tg.addChild(arrow);
+        /*MouseRotate behavior = new MouseRotate();
+        behavior.setTransformGroup(tg);
+        tg.addChild(behavior);
+        behavior.setSchedulingBounds(bounds);*/
+        scene = new BranchGroup();
+        scene.addChild(tg);
+        scene.compile();
+        su.addBranchGraph( scene );
     }
 
 } 

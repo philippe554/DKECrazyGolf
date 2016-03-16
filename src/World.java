@@ -54,28 +54,26 @@ public class World {
                 }
             }
             //ball-edge
-            /*for(int j=0;j<edges.size();j++)
+            for(int j=0;j<sides.size();j++)
             {
-                Point3D ballEndPoint[]=new Point3D[2];
-                for(int k=0;k<2;k++) {
-                    ballEndPoint[k] = balls.get(i).place.subtract(edges.get(j).points[k]);
-                }
-
-                double t = edges.get(j).unit.dotProduct(ballEndPoint[0]);
-                if(t>0 && t < edges.get(j).lenght)
+                for(int k=0;k<sides.get(j).edges.length;k++)
                 {
-                    Point3D clossest = edges.get(j).points[0].add(edges.get(j).unit.multiply(t));
-                    Point3D unit = balls.get(i).place.subtract(clossest);
-                    double distance = unit.magnitude();
-                    unit = unit.normalize();
-                    if(distance<balls.get(i).size)
+                    double t = sides.get(j).edges[k].unit.dotProduct(balls.get(i).place.subtract(sides.get(j).edges[k].points[0]));
+
+                    if (t > 0 && t < sides.get(j).edges[k].lenght)
                     {
-                        System.out.println(edges.get(j).unit);
-                        balls.get(i).place=clossest.add(unit.multiply(balls.get(i).size));
-                        balls.get(i).velocity= v.subtract(unit.multiply(v.dotProduct(unit)*1.8));
+                        Point3D clossest = sides.get(j).edges[k].points[0].add(sides.get(j).edges[k].unit.multiply(t));
+                        Point3D unit = balls.get(i).place.subtract(clossest);
+                        double distance = unit.magnitude();
+                        unit = unit.normalize();
+                        if (distance < balls.get(i).size)
+                        {
+                            balls.get(i).place = clossest.add(unit.multiply(balls.get(i).size));
+                            balls.get(i).velocity = v.subtract(unit.multiply(v.dotProduct(unit) * 1.8));
+                        }
                     }
                 }
-            }*/
+            }
             //ball-point
             for(int j=0;j<points.size();j++)
             {
@@ -185,8 +183,7 @@ public class World {
         return false;
     }
 
-    public void addLoop(double x,double y,double z,double size,double width,int parts,double wallSize)
-    {
+    public void addLoop(double x,double y,double z,double size,double width,int parts,double wallSize) {
         double angleGrowSize=Math.PI/(parts/2);
         double widthCounter=0;
         double widthIncrrement=width/parts;
@@ -206,8 +203,7 @@ public class World {
             widthCounter+=widthIncrrement;
         }
     }
-    public void addHole(double x,double y, double z,double radius,double depth,int parts)
-    {
+    public void addHole(double x,double y, double z,double radius,double depth,int parts) {
         Point3D center = new Point3D(x,y,z-depth);
         Point3D cornerPoints[]=new Point3D[4];
         cornerPoints[0]=new Point3D(x+radius,y+radius,z);
@@ -227,9 +223,34 @@ public class World {
             }
         }
     }
-
-    public void addSquare(Point3D p1,Point3D p2,Point3D p3,Point3D p4,boolean addToPoints,Color3f c)
-    {
+    public void addWhirepool(double x,double y, double z, double radiusTop,double radiusBottom, double height,int parts) {
+        double angleGrowSize=Math.PI/(parts/2.0);
+        double verticalGrowSize=height/parts;
+        double horizntalGrowSize=(radiusTop-radiusBottom)/parts;
+        for(double i=0;i<parts;i++) {
+            double minRadius = radiusBottom+i*horizntalGrowSize;
+            double maxRadius = radiusBottom+(i+1)*horizntalGrowSize;
+            double minHeight = z+(0.2*Math.pow(i,2)+2)*2;
+            double maxHeight = z+(0.2*Math.pow(i+1,2)+2)*2;
+            boolean color=true;
+            for (double angle = 0; angle < Math.PI * 1.99; angle += angleGrowSize) {
+                Point3D p1 = new Point3D(x + Math.cos(angle) * minRadius, y + Math.sin(angle) * minRadius, minHeight);
+                Point3D p2 = new Point3D(x + Math.cos(angle + angleGrowSize) * minRadius, y + Math.sin(angle + angleGrowSize) * minRadius, minHeight);
+                Point3D p3 = new Point3D(x + Math.cos(angle) * maxRadius, y + Math.sin(angle) * maxRadius, maxHeight);
+                Point3D p4 = new Point3D(x + Math.cos(angle + angleGrowSize) * maxRadius, y + Math.sin(angle + angleGrowSize) * maxRadius, maxHeight);
+                if(color){
+                    addSquare(p1, p2, p4, p3, true, new Color3f(0.8f, 0.8f, 0.8f));
+                    color=false;
+                }
+                else
+                {
+                    addSquare(p1, p2, p4, p3, true, new Color3f(0.5f, 0.5f, 0.5f));
+                    color=true;
+                }
+            }
+        }
+    }
+    public void addSquare(Point3D p1,Point3D p2,Point3D p3,Point3D p4,boolean addToPoints,Color3f c) {
         if(addToPoints)
         {
             points.add(p1);

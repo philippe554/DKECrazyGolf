@@ -7,6 +7,7 @@ import javax.vecmath.Color3f;
  */
 public class Side {
     public Point3D[] points;
+    public Edge[] edges;
     public Point3D normal;
     public Color3f color;
 
@@ -32,5 +33,10 @@ public class Side {
         normal=abc.normalize();
 
         Nv = abc.dotProduct(normal);
+
+        edges=new Edge[3];
+        edges[0]=new Edge(p1,p2);
+        edges[1]=new Edge(p2,p3);
+        edges[2]=new Edge(p3,p1);
     }
 }
