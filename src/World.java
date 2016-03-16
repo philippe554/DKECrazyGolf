@@ -30,6 +30,7 @@ public class World {
         //check collsion
         for(int i=0;i<balls.size();i++)
         {
+            boolean collisionWithWalls=false;
             //ball-plane
             Point3D v = balls.get(i).velocity.multiply(1);
             for(int j=0;j<sides.size();j++)
@@ -50,6 +51,7 @@ public class World {
                         balls.get(i).place=intersection.add(sides.get(j).normal.multiply(dir*balls.get(i).size));
                         //balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
                         balls.get(i).velocity= v.subtract(sides.get(j).normal.multiply(v.dotProduct(sides.get(j).normal)*1.8));
+                        collisionWithWalls=true;
                     }
                 }
             }
@@ -70,6 +72,7 @@ public class World {
                         {
                             balls.get(i).place = clossest.add(unit.multiply(balls.get(i).size));
                             balls.get(i).velocity = v.subtract(unit.multiply(v.dotProduct(unit) * 1.8));
+                            collisionWithWalls=true;
                         }
                     }
                 }
@@ -83,7 +86,16 @@ public class World {
                     Point3D unit=ballEndPoint.normalize();
                     balls.get(i).place=points.get(j).add(unit.multiply(balls.get(i).size));
                     balls.get(i).velocity= v.subtract(unit.multiply(v.dotProduct(unit)*1.8));
+                    collisionWithWalls=true;
                 }
+            }
+            if(collisionWithWalls)
+            {
+                balls.get(i).velocity=balls.get(i).velocity.multiply(0.99);
+            }
+            else
+            {
+                balls.get(i).velocity=balls.get(i).velocity.multiply(0.999);
             }
         }
     }
@@ -181,6 +193,10 @@ public class World {
             return true;
         }
         return false;
+    }
+    public double getBallVelocity(int i)
+    {
+        return balls.get(i).velocity.magnitude();
     }
 
     public void addLoop(double x,double y,double z,double size,double width,int parts,double wallSize) {
