@@ -6,26 +6,31 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.LinkedList;
 
 
 public class FrameGolf extends JFrame
 {
-    World world;
-    Golf3D w3d;
-
-    boolean leftPressed=false;
-    boolean rightPressed=false;
-    boolean upPressed=false;
-    boolean downPressed=false;
-    boolean powerUpPressed=false;
-    boolean powerDownPressed=false;
+    private Golf3D golf3D;
+    private LinkedList<Player> players;
+    private int currentPlayer;
 
     public FrameGolf()
     {
         setLayout( new BorderLayout() );
 
-        w3d = new Golf3D(world,0.05f);   // panel holding the 3D canvas
-        add(w3d);
+        golf3D = new Golf3D(0.05f);   // panel holding the 3D canvas
+
+        World world= new World();
+        world.loadWorld("C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt");
+        world.addHole(0,0,0,30,70,30);
+        golf3D.loadWorld(world);
+
+        add(golf3D);
+
+        players=new LinkedList<>();
+        players.add(new Player(golf3D,world,0));
+        currentPlayer=0;
 
         JComponent EastPanel = new JPanel();
         EastPanel.setPreferredSize( new Dimension(300, 800));
@@ -39,7 +44,7 @@ public class FrameGolf extends JFrame
         setVisible(true);
         pack();
 
-        w3d.addKeyListener(new KeyListener() {
+        golf3D.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
 
@@ -47,72 +52,36 @@ public class FrameGolf extends JFrame
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_LEFT)leftPressed=true;
-                if(e.getKeyCode() == KeyEvent.VK_RIGHT)rightPressed=true;
-                if(e.getKeyCode() == KeyEvent.VK_UP)upPressed=true;
-                if(e.getKeyCode() == KeyEvent.VK_DOWN)downPressed=true;
-                if(e.getKeyCode() == KeyEvent.VK_CONTROL)powerDownPressed=true;
-                if(e.getKeyCode() == KeyEvent.VK_SHIFT)powerUpPressed=true;
+                if(e.getKeyCode() == KeyEvent.VK_LEFT)Player.leftPressed=true;
+                if(e.getKeyCode() == KeyEvent.VK_RIGHT)Player.rightPressed=true;
+                if(e.getKeyCode() == KeyEvent.VK_UP)Player.upPressed=true;
+                if(e.getKeyCode() == KeyEvent.VK_DOWN)Player.downPressed=true;
+                if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=true;
+                if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=true;
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_LEFT)leftPressed=false;
-                if(e.getKeyCode() == KeyEvent.VK_RIGHT)rightPressed=false;
-                if(e.getKeyCode() == KeyEvent.VK_UP)upPressed=false;
-                if(e.getKeyCode() == KeyEvent.VK_DOWN)downPressed=false;
-                if(e.getKeyCode() == KeyEvent.VK_CONTROL)powerDownPressed=false;
-                if(e.getKeyCode() == KeyEvent.VK_SHIFT)powerUpPressed=false;
-                if(e.getKeyChar() == KeyEvent.VK_ENTER && inputFlag){
-                    world.pushBall(0,pushVector);
-                    w3d.removeArrow();
-                    inputFlag=false;
-                }
+                if(e.getKeyCode() == KeyEvent.VK_LEFT)Player.leftPressed=false;
+                if(e.getKeyCode() == KeyEvent.VK_RIGHT)Player.rightPressed=false;
+                if(e.getKeyCode() == KeyEvent.VK_UP)Player.upPressed=false;
+                if(e.getKeyCode() == KeyEvent.VK_DOWN)Player.downPressed=false;
+                if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=false;
+                if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=false;
+                if(e.getKeyChar() == KeyEvent.VK_ENTER )players.get(currentPlayer).launch();
             }
         });
-        w3d.setFocusable(true);
+        golf3D.setFocusable(true);
 
         for(int i=0;i<100000;i++)
         {
-            world.step();
-            if(inputFlag) {
-                updatePushParameters();
-            }
-            w3d.requestFocus();
-            w3d.updateBall();
-            if(!inputFlag&&world.getBallVelocity(0)<0.5)
-            {
-                velocityZeroCounter++;
-            }
-            if(velocityZeroCounter==30)
-            {
-                velocityZeroCounter=0;
-                inputFlag=true;
-            }
-
+            players.get(currentPlayer).step();
             try {
                 Thread.sleep(30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void updatePushParameters()
-    {
-        if(leftPressed)angle-=2;
-        if(rightPressed)angle+=2;
-        if(upPressed && angleUp<45)angleUp++;
-        if(downPressed && angleUp>0)angleUp--;
-        if(powerUpPressed && power<30)power++;
-        if(powerDownPressed && power>1)power--;
-        pushVector= new Point3D(Math.cos(angle*Math.PI/180.0),Math.sin(angle*Math.PI/180.0),Math.tan(angleUp*Math.PI/180.0)).normalize().multiply(power);
-        w3d.createArrow(new Point3f((float)world.balls.get(0).place.getX()*w3d.scale
-                        ,(float)world.balls.get(0).place.getY()*w3d.scale
-                        ,(float)world.balls.get(0).place.getZ()*w3d.scale),
-                new Point3f((float) ((float)pushVector.getX()*w3d.scale*10+world.balls.get(0).place.getX()*w3d.scale)
-                        ,(float)(pushVector.getY()*w3d.scale*10+world.balls.get(0).place.getY()*w3d.scale)
-                        ,(float)(pushVector.getZ()*w3d.scale*10+world.balls.get(0).place.getZ()*w3d.scale)));
     }
 
     public static void main(String[] args)

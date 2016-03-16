@@ -8,9 +8,7 @@ import javax.media.j3d.*;
 import javax.vecmath.*;
 
 import com.sun.j3d.utils.behaviors.vp.*;
-
-
-
+import javafx.geometry.Point3D;
 
 
 public class Golf3D extends JComponent{
@@ -18,7 +16,7 @@ public class Golf3D extends JComponent{
     private static final int PWIDTH = 1200;
     private static final int PHEIGHT = 800;
 
-    private SimpleUniverse su;
+    private SimpleUniverse su=null;
     private BranchGroup sceneBG;
     private BranchGroup sceneBall=null;
     private BranchGroup sceneArrow=null;
@@ -28,18 +26,35 @@ public class Golf3D extends JComponent{
     private TransformGroup tgArrow;
     private BoundingSphere bounds;
 
-    public World world;
-    public float scale;
+    private World world;
+    private float scale;
 
-    public Golf3D(World w,float s)
+    public Golf3D(float s)
     // A panel holding a 3D canvas
     {
-        world=w;
         scale=s;
 
         setLayout( new BorderLayout() );
         setOpaque( false );
         setPreferredSize( new Dimension(PWIDTH, PHEIGHT));
+    }
+
+    public void loadWorld(World tworld)
+    {
+        world=tworld;
+
+        if(su!=null)
+        {
+            su.cleanup();
+        }
+        sceneBG=null;
+        sceneBall=null;
+        sceneArrow=null;
+        t3dBall=null;
+        tgBall=null;
+        t3dArrow=null;
+        tgArrow=null;
+        bounds=null;
 
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 
@@ -221,10 +236,11 @@ public class Golf3D extends JComponent{
         sceneBG.addChild(scene);
     }
 
-    public void createArrow(Point3f ballCoor, Point3f aimVector){
+    public void createArrow(Point3D ballCoor, Point3D aimVector){
+
         ArrayList<Point3f> arrowCoor = new ArrayList<Point3f>();
-        arrowCoor.add(ballCoor);
-        arrowCoor.add(aimVector);
+        arrowCoor.add(new Point3f((float)ballCoor.getX()*scale,(float)ballCoor.getY()*scale,(float)ballCoor.getZ()*scale));
+        arrowCoor.add(new Point3f((float)aimVector.getX()*scale*10,(float)aimVector.getY()*scale*10,(float)aimVector.getZ()*scale*10));
         Arrow arrow = new Arrow(arrowCoor, new Color3f(1.0f,0.0f,0.0f));
         t3dArrow = new Transform3D();
         tgArrow = new TransformGroup(t3dArrow);
