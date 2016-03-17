@@ -47,11 +47,17 @@ public class World {
                 {
                     if(PointInTriangle(intersection,sides.get(j).points[0],sides.get(j).points[1],sides.get(j).points[2]))
                     {
-                        double dir = -(t/Math.abs(t));
-                        balls.get(i).place=intersection.add(sides.get(j).normal.multiply(dir*balls.get(i).size));
-                        //balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
-                        balls.get(i).velocity= v.subtract(sides.get(j).normal.multiply(v.dotProduct(sides.get(j).normal)*1.8));
-                        collisionWithWalls=true;
+                        if(t!=0) {
+                            double dir = -(t / Math.abs(t));
+                            balls.get(i).place = intersection.add(sides.get(j).normal.multiply(dir * balls.get(i).size));
+                            //balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
+                            balls.get(i).velocity = v.subtract(sides.get(j).normal.multiply(v.dotProduct(sides.get(j).normal) * 1.8));
+                            collisionWithWalls = true;
+                        }
+                        else
+                        {
+                            System.out.println("Physics engine stopped step, devided by 0");
+                        }
                     }
                 }
             }

@@ -92,7 +92,7 @@ public class Player {
         if(rightPressed)angle-=2;
         if(upPressed && angleUp<45)angleUp++;
         if(downPressed && angleUp>0)angleUp--;
-        if(powerUpPressed && power<30)power++;
+        if(powerUpPressed && power<19)power++;
         if(powerDownPressed && power>1)power--;
         pushVector= new Point3D(Math.cos(angle*Math.PI/180.0),Math.sin(angle*Math.PI/180.0),Math.tan(angleUp*Math.PI/180.0)).normalize().multiply(power);
         golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector.multiply(10)));

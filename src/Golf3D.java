@@ -207,6 +207,7 @@ public class Golf3D extends JComponent{
         su.addBranchGraph( sceneBall );
     }
     public void updateBall(){
+
         //t3dBall = new Transform3D();
         t3dBall.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
         //tgBall = new TransformGroup();
@@ -251,8 +252,10 @@ public class Golf3D extends JComponent{
 
     public void removeArrow()
     {
-        sceneArrow.detach();
-        sceneArrow=null;
+        if(sceneArrow!=null) {
+            sceneArrow.detach();
+            sceneArrow = null;
+        }
     }
 
 } 

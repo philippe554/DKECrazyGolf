@@ -11,8 +11,8 @@ import java.util.LinkedList;
 
 public class FrameGolf extends JFrame
 {
-    private String level="C:\\Users\\pmmde\\Desktop\\field.txt";
-    //private String level="C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt";
+    //private String level="C:\\Users\\pmmde\\Desktop\\field.txt";
+    private String level="C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt";
 
     private Golf3D golf3D;
     private Player[] players;
@@ -35,6 +35,7 @@ public class FrameGolf extends JFrame
         for(int i=0;i<amountOfPlayers;i++) {
             World world = new World();
             world.loadWorld(level);
+            world.addLoop(100,130,75,75,70,24,15);
             world.addHole(0, 0, 0, 30, 70, 30);
 
             players[i] = new Player(golf3D, world, 0);
@@ -97,8 +98,8 @@ public class FrameGolf extends JFrame
                     golf3D.loadWorld(players[currentPlayer].world);
                     players[currentPlayer].resumeGame();
                 }
+                updateLabels();
             }
-            updateLabels();
             try {
                 Thread.sleep(30);
             } catch (InterruptedException e) {
