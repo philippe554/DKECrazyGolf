@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 public class FrameGolf extends JFrame
 {
-    //private String level="C:\\Users\\pmmde\\Desktop\\field.txt";
+    private String level="C:\\Users\\pmmde\\Desktop\\field.txt";
     private String level="C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt";
 
     private Golf3D golf3D;

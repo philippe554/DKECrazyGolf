@@ -48,7 +48,9 @@ public class Player {
 
     public boolean step()
     {
-        world.step();
+        long startTime=System.currentTimeMillis();
+        world.step(2);
+        System.out.println(System.currentTimeMillis()-startTime);
         if(inputFlag) {
             updatePushParameters();
         }
@@ -90,9 +92,9 @@ public class Player {
     {
         if(leftPressed)angle+=2;
         if(rightPressed)angle-=2;
-        if(upPressed && angleUp<45)angleUp++;
+        if(upPressed && angleUp<35)angleUp++;
         if(downPressed && angleUp>0)angleUp--;
-        if(powerUpPressed && power<19)power++;
+        if(powerUpPressed && power<35)power++;
         if(powerDownPressed && power>1)power--;
         pushVector= new Point3D(Math.cos(angle*Math.PI/180.0),Math.sin(angle*Math.PI/180.0),Math.tan(angleUp*Math.PI/180.0)).normalize().multiply(power);
         golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector.multiply(10)));

@@ -15,93 +15,135 @@ public class World {
     public LinkedList<Side> sides;
     public LinkedList<Ball> balls;
     public Point3D hole;
+    public int amountOfThreads=2;
+    public int mode;
 
-    public void step(){
-        //move everything
-        for(int i=0;i<balls.size();i++)
+    class WorkThread extends Thread {
+        int i;
+        int jstart;
+        int jstop;
+        Point3D v;
+        public boolean collisionWithWalls;
+        public WorkThread(int ti,int tjstart,int tjstop,Point3D tv,int tmode)
         {
-            balls.get(i).acceleration=balls.get(i).acceleration.add(0,0,-1); //gravity
-
-            balls.get(i).velocity=balls.get(i).velocity.add(balls.get(i).acceleration);
-            balls.get(i).place= balls.get(i).place.add(balls.get(i).velocity);
-
-            balls.get(i).acceleration=new Point3D(0,0,0);
+            i=ti;
+            jstart=tjstart;
+            jstop=tjstop;
+            v=tv;
+            collisionWithWalls=false;
+            mode=tmode;
         }
-        //check collsion
-        for(int i=0;i<balls.size();i++)
-        {
-            boolean collisionWithWalls=false;
-            //ball-plane
-            Point3D v = balls.get(i).velocity.multiply(1);
-            for(int j=0;j<sides.size();j++)
-            {
-                double Nr0 = sides.get(j).abc.dotProduct(balls.get(i).place);
+        @Override
+        public void run() {
+            if (mode == 0){
+                //ball-plane
+                for (int j = jstart; j < jstop; j++) {
+                    double Nr0 = sides.get(j).abc.dotProduct(balls.get(i).place);
 
-                double t = (sides.get(j).d - Nr0) / sides.get(j).Nv;
+                    double t = (sides.get(j).d - Nr0) / sides.get(j).Nv;
 
-                Point3D intersection = balls.get(i).place.add(sides.get(j).normal.multiply(t));
+                    Point3D intersection = balls.get(i).place.add(sides.get(j).normal.multiply(t));
 
-                double distance = intersection.distance(balls.get(i).place);
+                    double distance = intersection.distance(balls.get(i).place);
 
-                if(distance<balls.get(i).size)
-                {
-                    if(PointInTriangle(intersection,sides.get(j).points[0],sides.get(j).points[1],sides.get(j).points[2]))
-                    {
-                        if(t!=0) {
-                            double dir = -(t / Math.abs(t));
-                            balls.get(i).place = intersection.add(sides.get(j).normal.multiply(dir * balls.get(i).size));
-                            //balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
-                            balls.get(i).velocity = v.subtract(sides.get(j).normal.multiply(v.dotProduct(sides.get(j).normal) * 1.8));
-                            collisionWithWalls = true;
-                        }
-                        else
-                        {
-                            System.out.println("Physics engine stopped step, devided by 0");
+                    if (distance < balls.get(i).size) {
+                        if (PointInTriangle(intersection, sides.get(j).points[0], sides.get(j).points[1], sides.get(j).points[2])) {
+                            if (t != 0) {
+                                double dir = -(t / Math.abs(t));
+                                balls.get(i).place = intersection.add(sides.get(j).normal.multiply(dir * balls.get(i).size));
+                                //balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
+                                balls.get(i).velocity = v.subtract(sides.get(j).normal.multiply(v.dotProduct(sides.get(j).normal) * 1.8));
+                                collisionWithWalls = true;
+                            } else {
+                                System.out.println("Physics engine stopped step, devided by 0");
+                            }
                         }
                     }
                 }
-            }
-            //ball-edge
-            for(int j=0;j<sides.size();j++)
+            }else if(mode ==1)
             {
-                for(int k=0;k<sides.get(j).edges.length;k++)
+                //ball-edge
+                for(int j=0;j<sides.size();j++)
                 {
-                    double t = sides.get(j).edges[k].unit.dotProduct(balls.get(i).place.subtract(sides.get(j).edges[k].points[0]));
-
-                    if (t > 0 && t < sides.get(j).edges[k].lenght)
+                    for(int k=0;k<sides.get(j).edges.length;k++)
                     {
-                        Point3D clossest = sides.get(j).edges[k].points[0].add(sides.get(j).edges[k].unit.multiply(t));
-                        Point3D unit = balls.get(i).place.subtract(clossest);
-                        double distance = unit.magnitude();
-                        unit = unit.normalize();
-                        if (distance < balls.get(i).size)
+                        double t = sides.get(j).edges[k].unit.dotProduct(balls.get(i).place.subtract(sides.get(j).edges[k].points[0]));
+
+                        if (t > 0 && t < sides.get(j).edges[k].lenght)
                         {
-                            balls.get(i).place = clossest.add(unit.multiply(balls.get(i).size));
-                            balls.get(i).velocity = v.subtract(unit.multiply(v.dotProduct(unit) * 1.8));
-                            collisionWithWalls=true;
+                            Point3D clossest = sides.get(j).edges[k].points[0].add(sides.get(j).edges[k].unit.multiply(t));
+                            Point3D unit = balls.get(i).place.subtract(clossest);
+                            double distance = unit.magnitude();
+                            unit = unit.normalize();
+                            if (distance < balls.get(i).size)
+                            {
+                                balls.get(i).place = clossest.add(unit.multiply(balls.get(i).size));
+                                balls.get(i).velocity = v.subtract(unit.multiply(v.dotProduct(unit) * 1.8));
+                                collisionWithWalls=true;
+                            }
                         }
                     }
                 }
-            }
-            //ball-point
-            for(int j=0;j<points.size();j++)
+            }else if(mode==2)
             {
-                Point3D ballEndPoint = balls.get(i).place.subtract(points.get(j));
-                if(ballEndPoint.magnitude()<balls.get(i).size)
+                //ball-point
+                for(int j=0;j<points.size();j++)
                 {
-                    Point3D unit=ballEndPoint.normalize();
-                    balls.get(i).place=points.get(j).add(unit.multiply(balls.get(i).size));
-                    balls.get(i).velocity= v.subtract(unit.multiply(v.dotProduct(unit)*1.8));
-                    collisionWithWalls=true;
+                    Point3D ballEndPoint = balls.get(i).place.subtract(points.get(j));
+                    if(ballEndPoint.magnitude()<balls.get(i).size)
+                    {
+                        Point3D unit=ballEndPoint.normalize();
+                        balls.get(i).place=points.get(j).add(unit.multiply(balls.get(i).size));
+                        balls.get(i).velocity= v.subtract(unit.multiply(v.dotProduct(unit)*1.8));
+                        collisionWithWalls=true;
+                    }
                 }
             }
-            if(collisionWithWalls)
-            {
-                balls.get(i).velocity=balls.get(i).velocity.multiply(0.99);
+        }
+    }
+
+    public void step(int subframes){
+        double subframeInv=1.0/subframes;
+        //move everything
+        for(int l=0;l<subframes;l++) {
+            for (int i = 0; i < balls.size(); i++) {
+                balls.get(i).acceleration = balls.get(i).acceleration.add(0, 0, -1); //gravity
+
+                balls.get(i).velocity = balls.get(i).velocity.add(balls.get(i).acceleration.multiply(subframeInv));
+                balls.get(i).place = balls.get(i).place.add(balls.get(i).velocity.multiply(subframeInv));
+
+                balls.get(i).acceleration = new Point3D(0, 0, 0);
             }
-            else
-            {
-                balls.get(i).velocity=balls.get(i).velocity.multiply(0.999);
+
+            //check collsion
+            for (int i = 0; i < balls.size(); i++) {
+                boolean collisionWithWalls = false;
+
+                Point3D v = balls.get(i).velocity.multiply(1);
+
+                for (int k = 0; k < 3; k++) {
+                    WorkThread workThread[] = new WorkThread[amountOfThreads];
+                    for (int j = 0; j < amountOfThreads; j++) {
+                        workThread[j] = new WorkThread(i, (int) (sides.size() * j / amountOfThreads), (int) (sides.size() * (j + 1) / amountOfThreads), v, k);
+                        workThread[j].start();
+                    }
+                    for (int j = 0; j < amountOfThreads; j++) {
+                        try {
+                            workThread[j].join();
+                            if (workThread[j].collisionWithWalls == true) {
+                                collisionWithWalls = true;
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                if (collisionWithWalls) {
+                    balls.get(i).velocity = balls.get(i).velocity.multiply(Math.pow(0.99,subframeInv));
+                } else {
+                    balls.get(i).velocity = balls.get(i).velocity.multiply(Math.pow(0.999,subframeInv));
+                    System.out.println(Math.pow(0.99,subframeInv));
+                }
             }
         }
     }
