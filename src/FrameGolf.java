@@ -1,12 +1,8 @@
 
-import javafx.geometry.Point3D;
 
 import javax.swing.*;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.LinkedList;
 
 
 public class FrameGolf extends JFrame
@@ -17,15 +13,16 @@ public class FrameGolf extends JFrame
     private Golf3D golf3D;
     private Player[] players;
     private int currentPlayer;
-    private int amountOfPlayers=3;
+    private int amountOfPlayers=1;
 
     private JLabel labelTitle;
     private JLabel labelCurrentPlayer;
     private JLabel[] labelPlayer;
     private JLabel labelWin;
 
-    public FrameGolf()
-    {
+    public FrameGolf() {
+        amountOfPlayers = Integer.parseInt(JOptionPane.showInputDialog("How many players?"));
+
         setLayout( new BorderLayout() );
 
         golf3D = new Golf3D(0.05f);
@@ -35,8 +32,11 @@ public class FrameGolf extends JFrame
         for(int i=0;i<amountOfPlayers;i++) {
             World world = new World();
             world.loadWorld(level);
-            world.addLoop(100,130,75,75,70,24,15);
+            world.addCastle(0,200,0,20,40,180);
+            world.addBridge(100,-300,0,200,50,20,80,20);
+            world.addLoop(400,130,140,140,60,24,15);
             world.addHole(0, 0, 0, 30, 70, 30);
+            System.out.println(world.sides.size()+" sides loaded");
 
             players[i] = new Player(golf3D, world, 0);
         }
@@ -80,37 +80,32 @@ public class FrameGolf extends JFrame
         golf3D.setFocusable(true);
 
         boolean keepPlaying=true;
+        long lastTime=System.currentTimeMillis();
         while(keepPlaying)
         {
-            if(players[currentPlayer].step())
-            {
-                if(players[currentPlayer].endFlag)
-                {
-                    keepPlaying=false;
-                }
-                else
-                {
-                    currentPlayer++;
-                    if (currentPlayer == amountOfPlayers) {
-                        currentPlayer = 0;
-                    }
+            long currentTime=System.currentTimeMillis();
+            if(lastTime+1000.0/30.0<currentTime) {
+                lastTime=currentTime;
+                if (players[currentPlayer].step()) {
+                    if (players[currentPlayer].endFlag) {
+                        keepPlaying = false;
+                    } else {
+                        currentPlayer++;
+                        if (currentPlayer == amountOfPlayers) {
+                            currentPlayer = 0;
+                        }
 
-                    golf3D.loadWorld(players[currentPlayer].world);
-                    players[currentPlayer].resumeGame();
+                        golf3D.loadWorld(players[currentPlayer].world);
+                        players[currentPlayer].resumeGame();
+                    }
+                    updateLabels();
                 }
-                updateLabels();
-            }
-            try {
-                Thread.sleep(30);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         labelWin.setText("Player "+(currentPlayer+1)+" wins!");
     }
 
-    private void setupLabels()
-    {
+    private void setupLabels() {
         JComponent EastPanel = new JPanel();
         EastPanel.setPreferredSize( new Dimension(300, 800));
         EastPanel.setLayout( new GridLayout(0,1));
@@ -138,15 +133,13 @@ public class FrameGolf extends JFrame
         add(EastPanel, BorderLayout.EAST);
     }
 
-    private void updateLabels()
-    {
+    private void updateLabels() {
         labelCurrentPlayer.setText("Current Player: "+(currentPlayer+1));
         for(int i=0;i<amountOfPlayers;i++) {
             labelPlayer[i].setText("p" + (i + 1) + ": " + players[i].turns);
         }
     }
 
-    public static void main(String[] args)
-    { new FrameGolf(); }
+    public static void main(String[] args) { new FrameGolf(); }
 
 }

@@ -12,7 +12,7 @@ import javafx.geometry.Point3D;
 
 
 public class Golf3D extends JComponent{
-    // size of panel
+
     private static final int PWIDTH = 1200;
     private static final int PHEIGHT = 800;
 
@@ -30,9 +30,7 @@ public class Golf3D extends JComponent{
     private float scale;
     Canvas3D canvas3D;
 
-    public Golf3D(float s)
-    // A panel holding a 3D canvas
-    {
+    public Golf3D(float s)    {
         scale=s;
 
         setLayout( new BorderLayout() );
@@ -52,8 +50,7 @@ public class Golf3D extends JComponent{
         su.getViewer().getView().setBackClipDistance(100000000);
     }
 
-    public void loadWorld(World tworld)
-    {
+    public void loadWorld(World tworld) {
         if(sceneBG!=null)sceneBG.detach();
         if(sceneBall!=null)sceneBall.detach();
         if(sceneArrow!=null)sceneArrow.detach();
@@ -68,11 +65,7 @@ public class Golf3D extends JComponent{
         createBall();
     }
 
-
-
-    private void createSceneGraph()
-    // initilise the scene
-    {
+    private void createSceneGraph() {
         sceneBG = new BranchGroup();
         sceneBG.setCapability(BranchGroup.ALLOW_DETACH);
         bounds = new BoundingSphere(new Point3d(0,0,0), 1000000);
@@ -83,12 +76,9 @@ public class Golf3D extends JComponent{
         // j3dTree.recursiveApplyCapability( sceneBG );   // set capabilities for tree display
         //Ball(START);
         sceneBG.compile();   // fix the scene
-    } // end of createSceneGraph()
+    }
 
-
-    private void lightScene()
-  /* One ambient light, 2 directional lights */
-    {
+    private void lightScene() {
         Color3f white = new Color3f(1.0f, 1.0f, 1.0f);
 
         // Set up the ambient light
@@ -111,36 +101,22 @@ public class Golf3D extends JComponent{
                 new DirectionalLight(white, light2Direction);
         light2.setInfluencingBounds(bounds);
         sceneBG.addChild(light2);
-    }  // end of lightScene()
+    }
 
-
-
-    private void addBackground()
-    // A blue sky
-    { Background back = new Background();
+    private void addBackground() { Background back = new Background();
         back.setApplicationBounds( bounds );
         back.setColor(0.17f, 0.65f, 0.92f);    // sky colour
         sceneBG.addChild( back );
     }
 
-
-
-    private void orbitControls(Canvas3D c)
-  /* OrbitBehaviour allows the user to rotate around the scene, and to
-     zoom in and out.  */
-    {
+    private void orbitControls(Canvas3D c)    {
         OrbitBehavior orbit =new OrbitBehavior(c, OrbitBehavior.REVERSE_ROTATE|OrbitBehavior.REVERSE_TRANSLATE);
         orbit.setSchedulingBounds(bounds);
-
         ViewingPlatform vp = su.getViewingPlatform();
         vp.setViewPlatformBehavior(orbit);
     }
 
-
-
-    private void initUserPosition()
-    // Set the user's initial viewpoint using lookAt()
-    {
+    private void initUserPosition() {
         ViewingPlatform vp = su.getViewingPlatform();
         TransformGroup steerTG = vp.getViewPlatformTransform();
 
@@ -152,21 +128,6 @@ public class Golf3D extends JComponent{
                 new Point3d((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale)
                 , new Vector3d(0,0,1));
 
-        t3d.invert();
-
-        steerTG.setTransform(t3d);
-    }
-    public void setUserPosition(int i,int angle)
-    {
-        ViewingPlatform vp = su.getViewingPlatform();
-        TransformGroup steerTG = vp.getViewPlatformTransform();
-
-        Transform3D t3d = new Transform3D();
-
-        // args are: viewer posn, where looking, up direction
-        t3d.lookAt(new Point3d((float)world.balls.get(0).place.getX()*scale-Math.cos(angle*Math.PI/180.0),(float)world.balls.get(0).place.getY()*scale-Math.sin(angle*Math.PI/180.0),(float)world.balls.get(0).place.getZ()*scale+40),
-                new Point3d((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale),
-                new Vector3d(0,0,1));
         t3d.invert();
 
         steerTG.setTransform(t3d);
@@ -205,16 +166,13 @@ public class Golf3D extends JComponent{
         sceneBall.compile();
         su.addBranchGraph( sceneBall );
     }
-    public void updateBall(){
 
-        //t3dBall = new Transform3D();
+    public void updateBall(){
         t3dBall.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
-        //tgBall = new TransformGroup();
         tgBall.setTransform(t3dBall);
-        //initUserPosition();
     }
-    public void createScene()
-    {
+
+    public void createScene() {
         BranchGroup scene = new BranchGroup();
 
         for(int i=0;i<world.sides.size();i++)
@@ -234,7 +192,7 @@ public class Golf3D extends JComponent{
         ArrayList<Point3f> arrowCoor = new ArrayList<Point3f>();
         arrowCoor.add(new Point3f((float)ballCoor.getX()*scale,(float)ballCoor.getY()*scale,(float)ballCoor.getZ()*scale));
         arrowCoor.add(new Point3f((float)aimVector.getX()*scale,(float)aimVector.getY()*scale,(float)aimVector.getZ()*scale));
-        Arrow arrow = new Arrow(arrowCoor, new Color3f(1.0f,0.0f,0.0f));
+        Arrow arrow = new Arrow(arrowCoor, new Color3f(0.0f,0.0f,1.0f));
         t3dArrow = new Transform3D();
         tgArrow = new TransformGroup(t3dArrow);
         tgArrow.addChild(arrow);
@@ -249,8 +207,7 @@ public class Golf3D extends JComponent{
         su.addBranchGraph( sceneArrow );
     }
 
-    public void removeArrow()
-    {
+    public void removeArrow() {
         if(sceneArrow!=null) {
             sceneArrow.detach();
             sceneArrow = null;

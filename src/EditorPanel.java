@@ -25,25 +25,31 @@ public class EditorPanel extends JPanel{
     private Color green= Color.green;
     private Color gray= Color.gray;
     private Color black= Color.black;
+    private Color yellow= Color.yellow;
+    private Color pink = Color.PINK;
 
     private Rectangle[][] rectangleGrid;
     private String[][] stringGrid;
-    private final int SIZE = 20;
+
     private String chosenOption;
 
     private final double pixelSIZE = 20;
+    private final int SIZE = (int)pixelSIZE;
     private RadioButtons buttons;
+    // private int cntrB;
+    // private int cntrH;
 
     public EditorPanel(RadioButtons someButtons){
-
+        //cntrB =0;
+        //cntrH =0;
         setLayout(new BorderLayout());
         buttons = someButtons;
-        stringGrid = new String[40][48];
-        rectangleGrid = new Rectangle[40][48];
+        stringGrid = new String[83][50];
+        rectangleGrid = new Rectangle[83][50];
 
         for(int i=0; i<rectangleGrid.length; i++) {
             for (int j=0; j<rectangleGrid[0].length; j++) {
-                rectangleGrid[i][j] = new Rectangle(20+SIZE*i,20+ SIZE*j, (int)pixelSIZE,(int) pixelSIZE);
+                rectangleGrid[i][j] = new Rectangle(SIZE*i,SIZE*j, (int)pixelSIZE,(int) pixelSIZE);
                 //if there are certain panels not used, what should the array store then?
                 stringGrid[i][j] = "E";
             }
@@ -53,10 +59,11 @@ public class EditorPanel extends JPanel{
             Point startDrag;
 
             public void mouseClicked(MouseEvent e) {
-                if(buttons.ballButton.isSelected() || buttons.wallButton.isSelected() || buttons.floorButton.isSelected()|| buttons.holeButton.isSelected()){
+                if(buttons.ballButton.isEnabled() || buttons.wallButton.isEnabled() || buttons.floorButton.isEnabled()|| buttons.holeButton.isEnabled()){
                     chosenOption = buttons.getChosenOption();
                     int x = e.getX();
                     int y =e.getY();
+
 
                     for(int i=0; i<rectangleGrid.length; i++) {
                         for (int j=0; j<rectangleGrid[0].length; j++) {
@@ -69,20 +76,122 @@ public class EditorPanel extends JPanel{
                                     stringGrid[i][j] = "F";
                                 }
                                 if (chosenOption.equals("B")){
-                                    if(i<stringGrid.length-1 && j<stringGrid.length-1) {
+                                   /* if(cntrB!=0){
+                                        JOptionPane.showMessageDialog(null, "You can only place one ball, duh!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                    else {*/
+                                    if(i<stringGrid.length-1 && j<stringGrid[0].length-1) {
+                                        //cntrB++;
                                         stringGrid[i][j] = "B";
+                                        stringGrid[i][j + 1] = "B";
+                                        stringGrid[i + 1][j]= "B";
+                                        stringGrid[i + 1][j + 1]="B";
                                     }
-                                    else {JOptionPane.showMessageDialog(null, "Position not allowed", "Thank You, come again", JOptionPane.PLAIN_MESSAGE);}
+                                    else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                    //}
                                 }
-                                if (chosenOption.equals("H")){
-                                    if(i>0 && i<stringGrid.length-1 && j>0 && j<stringGrid.length-1) {
+                                if (chosenOption.equals("H")) {
+                                    /*if (cntrH != 0) {
+                                        JOptionPane.showMessageDialog(null, "You can only place one hole, duh!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    } else {*/
+                                    if (i > 0 && i < stringGrid.length - 1 && j > 0 && j < stringGrid[0].length - 1) {
+                                        //cntrH++;
                                         stringGrid[i][j] = "H";
-                                    }else {
-                                        JOptionPane.showMessageDialog(null, "Position not allowed", "Thank You, come again", JOptionPane.PLAIN_MESSAGE);
+                                        stringGrid[i - 1][j - 1] = "H";
+                                        stringGrid[i - 1][j] = "H";
+                                        stringGrid[i - 1][j + 1] = "H";
+                                        stringGrid[i][j - 1] = "H";
+                                        stringGrid[i][j + 1] = "H";
+                                        stringGrid[i + 1][j - 1] = "H";
+                                        stringGrid[i + 1][j] = "H";
+                                        stringGrid[i + 1][j + 1] = "H";
+                                    } else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                    // }
+                                }
+                                if (chosenOption.equals("L")){
+                                    if ( i < stringGrid.length - 13 && j < stringGrid[0].length - 5) {
+                                        stringGrid[i][j] = "L";
+                                        for (int m=0;m<=14;m++){
+                                            for(int k=0;k<=6;k++){
+                                                stringGrid[i+m][j+k] = "L";
+                                            }
+                                        }
+                                    }  else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
-                                repaint();
+                                if (chosenOption.equals("C")){
+                                    if ( i < stringGrid.length - 12 && j < stringGrid[0].length - 3) {
+                                        stringGrid[i][j] = "C";
+                                        for (int m=0;m<=12;m++){
+                                            for(int k=0;k<=3;k++){
+                                                stringGrid[i+m][j+k] = "C";
+                                            }
+                                        }
+                                    }  else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                }
+                                if (chosenOption.equals("P")){
+                                    if ( i < stringGrid.length - 3 && j < stringGrid[0].length - 23) {
+                                        stringGrid[i][j] = "P";
+                                        for (int m=0;m<=3;m++){
+                                            for(int k=0;k<=23;k++){
+                                                stringGrid[i+m][j+k] = "P";
+                                            }
+                                        }
+                                    }  else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                }
+
+                          /*      if (chosenOption.equals("R")) {
+                                    if (stringGrid[i][j] == "W" || stringGrid[i][j] == "F")
+                                        stringGrid[i][j] = "E";
+
+                                    else if (stringGrid[i][j] == "B") {
+                                        cntrB--;
+                                        stringGrid[i][j] = "E";
+                                        stringGrid[i][j + 1] = "E";
+                                        stringGrid[i + 1][j] = "E";
+                                        stringGrid[i + 1][j + 1] = "E";
+
+                                    } else if (stringGrid[i][j] == "H") {
+                                        cntrH--;
+                                        stringGrid[i][j] = "E";
+                                        stringGrid[i - 1][j - 1] = "E";
+                                        stringGrid[i - 1][j] = "E";
+                                        stringGrid[i - 1][j + 1] = "E";
+                                        stringGrid[i][j - 1] = "E";
+                                        stringGrid[i][j + 1] = "E";
+                                        stringGrid[i + 1][j - 1] = "E";
+                                        stringGrid[i + 1][j] = "E";
+                                        stringGrid[i + 1][j + 1] = "E";
+
+                                    } else if (stringGrid[i][j] == "L") {
+                                        int k=i;
+                                        int l=j;
+                                        while(stringGrid[k][l]=="L") {
+                                            k--;
+                                            while (stringGrid[k][l] == "L") {
+                                                j--;
+                                            }
+                                        }
+                                        for(int o = 0; o<14;o++) {
+                                            for (int p = 0; p < 6; p++) {
+                                                stringGrid[k+1+o][j+1+p]="E";
+                                            }
+                                        }
+                                    }
+
+                                } */
+
                             }
+                            repaint();
                         }
                     }
                 }
@@ -93,12 +202,12 @@ public class EditorPanel extends JPanel{
             }
 
             public void mouseReleased(MouseEvent e) {
-                if(buttons.ballButton.isSelected() || buttons.wallButton.isSelected() || buttons.floorButton.isSelected()|| buttons.holeButton.isSelected()){
+                if(buttons.ballButton.isSelected() || buttons.wallButton.isSelected() || buttons.floorButton.isEnabled()|| buttons.holeButton.isEnabled()){
                     chosenOption = buttons.getChosenOption();
 
                     Rectangle dragQueen = new Rectangle(startDrag.x, startDrag.y,e.getX()-startDrag.x,e.getY()-startDrag.y);
                     Rectangle dragQueen2 = new Rectangle(e.getX(), e.getY(), startDrag.x-e.getX(), startDrag.y-e.getY());
-                    dragQueen.setSize((int)(dragQueen.getWidth()+3.5),(int)(dragQueen.getHeight()+3.5));
+                    dragQueen.setSize((int)dragQueen.getWidth(),(int)dragQueen.getHeight());
 
                     for(int i=0; i<rectangleGrid.length; i++) {
                         for (int j=0; j<rectangleGrid[0].length; j++) {
@@ -110,19 +219,6 @@ public class EditorPanel extends JPanel{
                                 }
                                 if (chosenOption.equals("F")){
                                     stringGrid[i][j] = "F";
-                                }
-                                if (chosenOption.equals("B")){
-                                    if(i<stringGrid.length-1 && j<stringGrid.length-1) {
-                                        stringGrid[i][j] = "B";
-                                    }
-                                    else {JOptionPane.showMessageDialog(null, "Position not allowed", "Thank You, come again", JOptionPane.PLAIN_MESSAGE);}
-                                }
-                                if (chosenOption.equals("H")){
-                                    if(i>0 && i<stringGrid.length-1 && j>0 && j<stringGrid.length-1) {
-                                        stringGrid[i][j] = "H";
-                                    }else {
-                                        JOptionPane.showMessageDialog(null, "Position not allowed", "Thank You, come again", JOptionPane.PLAIN_MESSAGE);
-                                    }
                                 }
                                 repaint();
                             }
@@ -166,9 +262,11 @@ public class EditorPanel extends JPanel{
 
 
     public void writeItDown(LinkedList<String> list){
-        File field= new File("C:\\Users\\pmmde\\Desktop\\field.txt");
+        File field= new File("C:\\Users\\Carla\\Desktop\\KE\\CrazyGolf\\DKECrazyGolf\\src\\field.txt");
         FileWriter writeFile = null;
+
         // allows us to write the file
+
         PrintWriter writer = null;
         Scanner inWriteDown = null;
         try {
@@ -211,7 +309,7 @@ public class EditorPanel extends JPanel{
         output.add("balls");
         for(int i=0;i<data.length;i++) {
             for (int j = 0; j < data[i].length; j++) {
-                if (data[i][j].equals("B")){
+                if (data[i][j].equals("Ball")){
                     output.add(i*20+";"+j*20+";20");
                 }
             }
@@ -220,13 +318,13 @@ public class EditorPanel extends JPanel{
         for(int i=0;i<data.length;i++) {
             for (int j = 0; j < data[i].length; j++) {
                 if(!alreadyConverted[i][j]) {
-                    if (data[i][j].equals("W")) {
+                    if (data[i][j].equals("Wall")) {
                         addSquare(output,new Point3D(i*gs,j*gs,30),
                                 new Point3D(i*gs+gs,j*gs,30),
                                 new Point3D(i*gs+gs,j*gs+gs,30),
                                 new Point3D(i*gs,j*gs+gs,30),
                                 new Color3f(0.8f,0.8f,0.8f));
-                        if(i-1>=0 && !data[i-1][j].equals("W"))
+                        if(i-1>=0 && !data[i-1][j].equals("Wall"))
                         {
                             addSquare(output,new Point3D(i*gs,j*gs,30),
                                     new Point3D(i*gs,j*gs+gs,30),
@@ -234,7 +332,7 @@ public class EditorPanel extends JPanel{
                                     new Point3D(i*gs,j*gs,0),
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
-                        if(j-1>=0 && !data[i][j-1].equals("W"))
+                        if(j-1>=0 && !data[i][j-1].equals("Wall"))
                         {
                             addSquare(output,new Point3D(i*gs,j*gs,30),
                                     new Point3D(i*gs+gs,j*gs,30),
@@ -242,7 +340,7 @@ public class EditorPanel extends JPanel{
                                     new Point3D(i*gs,j*gs,0),
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
-                        if(i+1<data.length && !data[i+1][j].equals("W"))
+                        if(i+1<data.length && !data[i+1][j].equals("Wall"))
                         {
                             addSquare(output,new Point3D(i*gs+gs,j*gs,30),
                                     new Point3D(i*gs+gs,j*gs+gs,30),
@@ -250,7 +348,7 @@ public class EditorPanel extends JPanel{
                                     new Point3D(i*gs+gs,j*gs,0),
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
-                        if(j+1<data[i].length && !data[i][j+1].equals("W"))
+                        if(j+1<data[i].length && !data[i][j+1].equals("Wall"))
                         {
                             addSquare(output,new Point3D(i*gs,j*gs+gs,30),
                                     new Point3D(i*gs+gs,j*gs+gs,30),
@@ -259,14 +357,14 @@ public class EditorPanel extends JPanel{
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
                         alreadyConverted[i][j]=true;
-                    } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
-                        addSquare(output,new Point3D(i*gs,j*gs,0),
-                                new Point3D(i*gs+gs,j*gs,0),
-                                new Point3D(i*gs+gs,j*gs+gs,0),
-                                new Point3D(i*gs,j*gs+gs,0),
+                    } else if (data[i][j].equals("Floor") || data[i][j].equals("Ball")) {
+                        addSquare(output,new Point3D(i*gs,j*gs,30),
+                                new Point3D(i*gs+gs,j*gs,30),
+                                new Point3D(i*gs+gs,j*gs+gs,30),
+                                new Point3D(i*gs,j*gs+gs,30),
                                 new Color3f(0,1,0));
                         alreadyConverted[i][j]=true;
-                    } else if (data[i][j].equals("H")) {
+                    } else if (data[i][j].equals("Hole")) {
                         addHole(output,i*gs+1.5*gs,j*gs+1.5*gs,0,30,80,14);
                         for(int k=0;k<3;k++)
                         {
@@ -315,8 +413,6 @@ public class EditorPanel extends JPanel{
                 c.getX()+";"+c.getY()+";"+c.getZ());
     }
 
-
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -324,8 +420,7 @@ public class EditorPanel extends JPanel{
 
         for(int i=0; i<rectangleGrid.length; i++){
             for (int j=0; j<rectangleGrid[0].length; j++){
-                g2.setPaint(black);
-                g2.draw(rectangleGrid[i][j]);
+
                 if (stringGrid[i][j].equals("W")) {
                     g2.setPaint(Color.RED);
                     g2.fill(rectangleGrid[i][j]);
@@ -337,22 +432,25 @@ public class EditorPanel extends JPanel{
                 if (stringGrid[i][j].equals("B")) {
                     g2.setPaint(gray);
                     g2.fill(rectangleGrid[i][j]);
-                    g2.fill(rectangleGrid[i][j + 1]);
-                    g2.fill(rectangleGrid[i + 1][j]);
-                    g2.fill(rectangleGrid[i + 1][j + 1]);
                 }
                 if (stringGrid[i][j].equals("H")) {
                     g2.setPaint(black);
                     g2.fill(rectangleGrid[i][j]);
-                    g2.fill(rectangleGrid[i - 1][j - 1]);
-                    g2.fill(rectangleGrid[i - 1][j]);
-                    g2.fill(rectangleGrid[i - 1][j + 1]);
-                    g2.fill(rectangleGrid[i][j - 1]);
-                    g2.fill(rectangleGrid[i][j + 1]);
-                    g2.fill(rectangleGrid[i + 1][j - 1]);
-                    g2.fill(rectangleGrid[i + 1][j]);
-                    g2.fill(rectangleGrid[i + 1][j + 1]);
                 }
+                if (stringGrid[i][j].equals("L")) {
+                    g2.setPaint(yellow);
+                    g2.fill(rectangleGrid[i][j]);
+                }
+                if (stringGrid[i][j].equals("C")) {
+                    g2.setPaint(pink);
+                    g2.fill(rectangleGrid[i][j]);
+                }
+                if (stringGrid[i][j].equals("P")) {
+                    g2.setPaint(Color.BLUE);
+                    g2.fill(rectangleGrid[i][j]);
+                }
+                g2.setPaint(white);
+                g2.draw(rectangleGrid[i][j]);
             }
         }
 

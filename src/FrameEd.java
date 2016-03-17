@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 
+/**
+ * Created by Carla on 15/03/2016.
+ */
 public class FrameEd {
 
     public static void main(String[] args)
@@ -10,7 +13,7 @@ public class FrameEd {
         JFrame frame = new JFrame();
 
 
-        frame.setLayout(new GridLayout(1,2));
+        frame.setLayout(new BorderLayout());
 
         Toolkit tk = Toolkit.getDefaultToolkit();
         int xSize = ((int) tk.getScreenSize().getWidth());
@@ -22,13 +25,11 @@ public class FrameEd {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         RadioButtons radio = new RadioButtons();
-        radio.setSize(new Dimension(500,500));
 
         EditorPanel editor = new EditorPanel(radio);
-        editor.setSize(new Dimension(700,600));
         editor.setBackground(Color.WHITE);
         frame.add(editor);
-        frame.add(radio);
+        frame.add(radio, BorderLayout.EAST);
 
         frame.setVisible(true);
 

@@ -13,6 +13,7 @@ public class Player {
 
     boolean inputFlag = true;
     boolean endFlag=false;
+    boolean deadFlag=false;
     int velocityZeroCounter = 0;
 
     int angle = 0;
@@ -48,9 +49,7 @@ public class Player {
 
     public boolean step()
     {
-        long startTime=System.currentTimeMillis();
-        world.step(2);
-        System.out.println(System.currentTimeMillis()-startTime);
+        world.step((int) (world.balls.get(ballId).velocity.magnitude()/world.balls.get(ballId).size*1.1)+1);
         if(inputFlag) {
             updatePushParameters();
         }
@@ -77,6 +76,7 @@ public class Player {
         }
         if(world.balls.get(ballId).place.getZ()<-1000)
         {
+            deadFlag=true;
             return true;
         }
         return false;
