@@ -17,6 +17,8 @@ import java.util.Scanner;
 
 public class EditorPanel extends JPanel{
 
+    private String fileName = "C:\\Users\\pmmde\\Desktop\\field.txt";
+
     private JButton saveButton;
     private MouseListener listener1;
     private ActionListener listener2;
@@ -115,8 +117,8 @@ public class EditorPanel extends JPanel{
                                 if (chosenOption.equals("L")){
                                     if ( i < stringGrid.length - 13 && j < stringGrid[0].length - 5) {
                                         stringGrid[i][j] = "L";
-                                        for (int m=0;m<=14;m++){
-                                            for(int k=0;k<=6;k++){
+                                        for (int m=0;m<14;m++){
+                                            for(int k=0;k<6;k++){
                                                 stringGrid[i+m][j+k] = "L";
                                             }
                                         }
@@ -127,8 +129,8 @@ public class EditorPanel extends JPanel{
                                 if (chosenOption.equals("C")){
                                     if ( i < stringGrid.length - 12 && j < stringGrid[0].length - 3) {
                                         stringGrid[i][j] = "C";
-                                        for (int m=0;m<=12;m++){
-                                            for(int k=0;k<=3;k++){
+                                        for (int m=0;m<13;m++){
+                                            for(int k=0;k<4;k++){
                                                 stringGrid[i+m][j+k] = "C";
                                             }
                                         }
@@ -139,8 +141,8 @@ public class EditorPanel extends JPanel{
                                 if (chosenOption.equals("P")){
                                     if ( i < stringGrid.length - 3 && j < stringGrid[0].length - 23) {
                                         stringGrid[i][j] = "P";
-                                        for (int m=0;m<=3;m++){
-                                            for(int k=0;k<=23;k++){
+                                        for (int m=0;m<4;m++){
+                                            for(int k=0;k<24;k++){
                                                 stringGrid[i+m][j+k] = "P";
                                             }
                                         }
@@ -262,7 +264,7 @@ public class EditorPanel extends JPanel{
 
 
     public void writeItDown(LinkedList<String> list){
-        File field= new File("C:\\Users\\Carla\\Desktop\\KE\\CrazyGolf\\DKECrazyGolf\\src\\field.txt");
+        File field= new File(fileName);
         FileWriter writeFile = null;
 
         // allows us to write the file
@@ -295,8 +297,7 @@ public class EditorPanel extends JPanel{
         return outputWorld(stringGrid, pixelSIZE);
     }
 
-    public LinkedList<String> outputWorld(String[][]data, double gs)
-    {
+    public LinkedList<String> outputWorld(String[][]data, double gs) {
         LinkedList<String> output = new LinkedList<>();
         boolean[][]alreadyConverted=new boolean[data.length][data[0].length];
         for(int i=0;i<alreadyConverted.length;i++)
@@ -309,8 +310,8 @@ public class EditorPanel extends JPanel{
         output.add("balls");
         for(int i=0;i<data.length;i++) {
             for (int j = 0; j < data[i].length; j++) {
-                if (data[i][j].equals("Ball")){
-                    output.add(i*20+";"+j*20+";20");
+                if (data[i][j].equals("B")){
+                    output.add((i*gs+gs)+";"+(j*gs+gs)+";20");
                 }
             }
         }
@@ -318,13 +319,13 @@ public class EditorPanel extends JPanel{
         for(int i=0;i<data.length;i++) {
             for (int j = 0; j < data[i].length; j++) {
                 if(!alreadyConverted[i][j]) {
-                    if (data[i][j].equals("Wall")) {
+                    if (data[i][j].equals("W")) {
                         addSquare(output,new Point3D(i*gs,j*gs,30),
                                 new Point3D(i*gs+gs,j*gs,30),
                                 new Point3D(i*gs+gs,j*gs+gs,30),
                                 new Point3D(i*gs,j*gs+gs,30),
                                 new Color3f(0.8f,0.8f,0.8f));
-                        if(i-1>=0 && !data[i-1][j].equals("Wall"))
+                        if(i-1>=0 && !data[i-1][j].equals("W"))
                         {
                             addSquare(output,new Point3D(i*gs,j*gs,30),
                                     new Point3D(i*gs,j*gs+gs,30),
@@ -332,7 +333,7 @@ public class EditorPanel extends JPanel{
                                     new Point3D(i*gs,j*gs,0),
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
-                        if(j-1>=0 && !data[i][j-1].equals("Wall"))
+                        if(j-1>=0 && !data[i][j-1].equals("W"))
                         {
                             addSquare(output,new Point3D(i*gs,j*gs,30),
                                     new Point3D(i*gs+gs,j*gs,30),
@@ -340,7 +341,7 @@ public class EditorPanel extends JPanel{
                                     new Point3D(i*gs,j*gs,0),
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
-                        if(i+1<data.length && !data[i+1][j].equals("Wall"))
+                        if(i+1<data.length && !data[i+1][j].equals("W"))
                         {
                             addSquare(output,new Point3D(i*gs+gs,j*gs,30),
                                     new Point3D(i*gs+gs,j*gs+gs,30),
@@ -348,7 +349,7 @@ public class EditorPanel extends JPanel{
                                     new Point3D(i*gs+gs,j*gs,0),
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
-                        if(j+1<data[i].length && !data[i][j+1].equals("Wall"))
+                        if(j+1<data[i].length && !data[i][j+1].equals("W"))
                         {
                             addSquare(output,new Point3D(i*gs,j*gs+gs,30),
                                     new Point3D(i*gs+gs,j*gs+gs,30),
@@ -357,20 +358,71 @@ public class EditorPanel extends JPanel{
                                     new Color3f(0.5f,0.5f,0.5f));
                         }
                         alreadyConverted[i][j]=true;
-                    } else if (data[i][j].equals("Floor") || data[i][j].equals("Ball")) {
-                        addSquare(output,new Point3D(i*gs,j*gs,30),
-                                new Point3D(i*gs+gs,j*gs,30),
-                                new Point3D(i*gs+gs,j*gs+gs,30),
-                                new Point3D(i*gs,j*gs+gs,30),
+                    } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
+                        addSquare(output,new Point3D(i*gs,j*gs,0),
+                                new Point3D(i*gs+gs,j*gs,0),
+                                new Point3D(i*gs+gs,j*gs+gs,0),
+                                new Point3D(i*gs,j*gs+gs,0),
                                 new Color3f(0,1,0));
                         alreadyConverted[i][j]=true;
-                    } else if (data[i][j].equals("Hole")) {
-                        addHole(output,i*gs+1.5*gs,j*gs+1.5*gs,0,30,80,14);
+                    } else if (data[i][j].equals("H")) {
+                        addHole(output,i*gs+1.5*gs,j*gs+1.5*gs,0,30,80,30);
                         for(int k=0;k<3;k++)
                         {
                             for(int l=0;l<3;l++)
                             {
                                 if(i+k<data.length && i+l<data[i+k].length) {
+                                    alreadyConverted[i + k][j + l] = true;
+                                }
+                            }
+                        }
+                    }else if(data[i][j].equals("L"))
+                    {
+                        addSquare(output,new Point3D(i*gs,j*gs,0),
+                                new Point3D(i*gs+gs*14,j*gs,0),
+                                new Point3D(i*gs+gs*14,j*gs+gs*6,0),
+                                new Point3D(i*gs,j*gs+gs*6,0),
+                                new Color3f(0,1,0));
+                        addLoop(output,i*gs+140,j*gs+30,140,140,60,24,15);
+                        for(int k=0;k<14;k++)
+                        {
+                            for(int l=0;l<6;l++)
+                            {
+                                if((i+k)<data.length && (j+l)<data[i+k].length) {
+                                    alreadyConverted[i + k][j + l] = true;
+                                }
+                            }
+                        }
+                    }else if(data[i][j].equals("C"))
+                    {
+                        addSquare(output,new Point3D(i*gs,j*gs,0),
+                                new Point3D(i*gs+gs*13,j*gs,0),
+                                new Point3D(i*gs+gs*13,j*gs+gs*4,0),
+                                new Point3D(i*gs,j*gs+gs*4,0),
+                                new Color3f(0,1,0));
+                        addCastle(output,i*gs+40,j*gs+40,0,20,40,180);
+                        for(int k=0;k<13;k++)
+                        {
+                            for(int l=0;l<4;l++)
+                            {
+                                if((i+k)<data.length && (j+l)<data[i+k].length) {
+                                    alreadyConverted[i + k][j + l] = true;
+                                }
+                            }
+                        }
+                    } else if(data[i][j].equals("P"))
+                    {
+                        addSquare(output,new Point3D(i*gs,j*gs,0),
+                                new Point3D(i*gs+gs*4,j*gs,0),
+                                new Point3D(i*gs+gs*4,j*gs+gs*24,0),
+                                new Point3D(i*gs,j*gs+gs*24,0),
+                                new Color3f(0,1,0));
+                        addBridge(output,i*gs+40,j*gs+140,0,200,50,20,80,20);
+                        for(int k=0;k<4;k++)
+                        {
+                            for(int l=0;l<24;l++)
+                            {
+                                if((i+k)<data.length && (j+l)<data[i+k].length) {
                                     alreadyConverted[i + k][j + l] = true;
                                 }
                             }
@@ -382,6 +434,9 @@ public class EditorPanel extends JPanel{
         return output;
     }
     public void addHole(LinkedList<String> output,double x,double y, double z,double radius,double depth,int parts) {
+        output.add("hole");
+        output.add(x+";"+y+";"+(z-60));
+        output.add("triangels");
         Point3D center = new Point3D(x,y,z-depth);
         Point3D cornerPoints[]=new Point3D[4];
         cornerPoints[0]=new Point3D(x+radius,y+radius,z);
@@ -401,12 +456,91 @@ public class EditorPanel extends JPanel{
             }
         }
     }
+    public void addLoop(LinkedList<String> output,double x,double y,double z,double size,double width,int parts,double wallSize) {
+        double angleGrowSize=Math.PI/(parts/2);
+        double widthCounter=0;
+        double widthIncrrement=width/parts;
+        for(double angle = 0;angle<Math.PI*1.99;angle+=angleGrowSize)
+        {
+            Point3D p1=new Point3D(x+Math.sin(angle)*size,y-width/2+widthCounter,z-Math.cos(angle)*size);
+            Point3D p2=new Point3D(x+Math.sin(angle+angleGrowSize)*size,y-width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*size);
+            Point3D p3=new Point3D(x+Math.sin(angle)*size,y+width/2+widthCounter,z-Math.cos(angle)*size);
+            Point3D p4=new Point3D(x+Math.sin(angle+angleGrowSize)*size,y+width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*size);
+            addSquare(output,p1,p2,p4,p3,new Color3f(0.8f,0.8f,0.8f));
+            Point3D p1in=new Point3D(x+Math.sin(angle)*(size-wallSize),y-width/2+widthCounter,z-Math.cos(angle)*(size-wallSize));
+            Point3D p2in=new Point3D(x+Math.sin(angle+angleGrowSize)*(size-wallSize),y-width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*(size-wallSize));
+            Point3D p3in=new Point3D(x+Math.sin(angle)*(size-wallSize),y+width/2+widthCounter,z-Math.cos(angle)*(size-wallSize));
+            Point3D p4in=new Point3D(x+Math.sin(angle+angleGrowSize)*(size-wallSize),y+width/2+widthCounter+widthIncrrement,z-Math.cos(angle+angleGrowSize)*(size-wallSize));
+            addSquare(output,p1,p2,p2in,p1in,new Color3f(0.5f,0.5f,0.5f));
+            addSquare(output,p3,p4,p4in,p3in,new Color3f(0.5f,0.5f,0.5f));
+            widthCounter+=widthIncrrement;
+        }
+    }
+    public void addCastle(LinkedList<String> output,double x,double y,double z,double parts,double towerSize,double towerHeight) {
+        for(int j=0;j<2;j++) {
+            double angleGrowSize = Math.PI / (parts / 2);
+            for (double angle = 0; angle < Math.PI * 1.99; angle += angleGrowSize) {
+                Point3D p1 = new Point3D(j*towerHeight+x + Math.cos(angle) * towerSize, y + Math.sin(angle) * towerSize, z);
+                Point3D p2 = new Point3D(j*towerHeight+x + Math.cos(angle) * towerSize, y + Math.sin(angle) * towerSize, z + towerHeight);
+                Point3D p3 = new Point3D(j*towerHeight+x + Math.cos(angle + angleGrowSize) * towerSize, y + Math.sin(angle + angleGrowSize) * towerSize, z + towerHeight);
+                Point3D p4 = new Point3D(j*towerHeight+x + Math.cos(angle + angleGrowSize) * towerSize, y + Math.sin(angle + angleGrowSize) * towerSize, z);
+                addSquare(output,p1, p2, p3, p4, new Color3f(1f, 0f, 0.5f));
+                Point3D top = new Point3D(j*towerHeight+x, y, z + towerHeight * 1.5);
+                Point3D tp1 = new Point3D(j*towerHeight+x + Math.cos(angle) * towerSize * 1.2, y + Math.sin(angle) * towerSize * 1.2, z + towerHeight);
+                Point3D tp2 = new Point3D(j*towerHeight+x + Math.cos(angle + angleGrowSize) * towerSize * 1.2, y + Math.sin(angle + angleGrowSize) * towerSize * 1.2, z + towerHeight);
+                addTriangle(output,tp1, tp2, top, new Color3f(0.2f, 0.2f, 0.2f));
+            }
+        }
+        Point3D b1 = new Point3D(x,y+20,z+towerHeight*0.5);
+        Point3D b2 = new Point3D(x,y-20,z+towerHeight*0.5);
+        Point3D b3 = new Point3D(x+towerHeight,y-20,z+towerHeight*0.5);
+        Point3D b4 = new Point3D(x+towerHeight,y+20,z+towerHeight*0.5);
+        addSquare(output,b1, b2, b3, b4, new Color3f(0.4f, 0.4f, 0.4f));
+        Point3D t1 = new Point3D(x,y+20,z+towerHeight*0.7);
+        Point3D t2 = new Point3D(x,y-20,z+towerHeight*0.7);
+        Point3D t3 = new Point3D(x+towerHeight,y-20,z+towerHeight*0.7);
+        Point3D t4 = new Point3D(x+towerHeight,y+20,z+towerHeight*0.7);
+        addSquare(output,t1, t2, t3, t4, new Color3f(0.4f, 0.4f, 0.4f));
+        addSquare(output,b1, t1, t4, b4, new Color3f(0.4f, 0.4f, 0.4f));
+        addSquare(output,b2, t2, t3, b3, new Color3f(0.4f, 0.4f, 0.4f));
+    }
+    public void addBridge(LinkedList<String> output,double x,double y,double z,double length,double height,double borderHeight,double width,int parts) {
+        for(int j=0;j<2;j++) {
+            double angleGrowSize = Math.PI / (parts / 2);
+            for (double angle = 0; angle < Math.PI * 1.99; angle += angleGrowSize) {
+                Point3D p1 = new Point3D(x + Math.cos(angle) * (width*0.25),j*length + y + Math.sin(angle) * (width*0.25), z);
+                Point3D p2 = new Point3D(x + Math.cos(angle) * (width*0.25), j*length + y + Math.sin(angle) * (width*0.25), z + height);
+                Point3D p3 = new Point3D(x + Math.cos(angle + angleGrowSize) * (width*0.25), j*length+y + Math.sin(angle + angleGrowSize) * (width*0.25), z + height);
+                Point3D p4 = new Point3D(x + Math.cos(angle + angleGrowSize) * (width*0.25), j*length+y + Math.sin(angle + angleGrowSize) * (width*0.25), z);
+                addSquare(output,p1, p2, p3, p4, new Color3f(0.2f, 0.2f, 0.2f));
+            }
+        }
+        Point3D p1 = new Point3D(x-width*0.5,y-width*0.5,z+height);
+        Point3D p2 = new Point3D(x+width*0.5,y-width*0.5,z+height);
+        Point3D p3 = new Point3D(x+width*0.5,y+width*0.5+length,z+height);
+        Point3D p4 = new Point3D(x-width*0.5,y+width*0.5+length,z+height);
+        addSquare(output,p1, p2, p3, p4, new Color3f(0.8f, 0.8f, 0.8f));
+        Point3D p1d = new Point3D(x-width*0.5,y-width*0.5-length/2,z);
+        Point3D p2d = new Point3D(x+width*0.5,y-width*0.5-length/2,z);
+        Point3D p3d = new Point3D(x+width*0.5,y+width*0.5+1.5*length,z);
+        Point3D p4d = new Point3D(x-width*0.5,y+width*0.5+1.5*length,z);
+        addSquare(output,p1, p2, p2d, p1d, new Color3f(0.8f, 0.8f, 0.8f));
+        addSquare(output,p3, p4, p4d, p3d, new Color3f(0.8f, 0.8f, 0.8f));
+        addSquare(output,p1, p4, p4.add(0,0,borderHeight), p1.add(0,0,borderHeight), new Color3f(0.5f, 0.5f, 0.5f));
+        addSquare(output,p2, p3, p3.add(0,0,borderHeight), p2.add(0,0,borderHeight), new Color3f(0.5f, 0.5f, 0.5f));
+
+        addSquare(output,p1, p1d, p1d.add(0,0,borderHeight), p1.add(0,0,borderHeight), new Color3f(0.5f, 0.5f, 0.5f));
+        addSquare(output,p2, p2d, p2d.add(0,0,borderHeight), p2.add(0,0,borderHeight), new Color3f(0.5f, 0.5f, 0.5f));
+        addSquare(output,p3, p3d, p3d.add(0,0,borderHeight), p3.add(0,0,borderHeight), new Color3f(0.5f, 0.5f, 0.5f));
+        addSquare(output,p4, p4d, p4d.add(0,0,borderHeight), p4.add(0,0,borderHeight), new Color3f(0.5f, 0.5f, 0.5f));
+        System.out.println(p1d.getY());
+        System.out.println(p3d.getY());
+    }
     public void addSquare(LinkedList<String> output,Point3D p1,Point3D p2,Point3D p3,Point3D p4,Color3f c) {
         addTriangle(output,p1,p2,p3,c);
         addTriangle(output,p1,p4,p3,c);
     }
-    public void addTriangle(LinkedList<String> output, Point3D p1, Point3D p2, Point3D p3, Color3f c)
-    {
+    public void addTriangle(LinkedList<String> output, Point3D p1, Point3D p2, Point3D p3, Color3f c) {
         output.add(p1.getX()+";"+p1.getY()+";"+p1.getZ()+";"+
                 p2.getX()+";"+p2.getY()+";"+p2.getZ()+";"+
                 p3.getX()+";"+p3.getY()+";"+p3.getZ()+";"+

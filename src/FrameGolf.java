@@ -7,8 +7,8 @@ import java.awt.event.*;
 
 public class FrameGolf extends JFrame
 {
-    //private String level="C:\\Users\\pmmde\\Desktop\\field.txt";
-    private String level="C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt";
+    private String level="C:\\Users\\pmmde\\Desktop\\field.txt";
+    //private String level="C:\\Users\\pmmde\\GD\\Projects\\Java\\Philippe\\Github storage\\Surface2\\CrazyGolf\\src\\Field1.txt";
 
     private Golf3D golf3D;
     private Player[] players;
@@ -32,10 +32,10 @@ public class FrameGolf extends JFrame
         for(int i=0;i<amountOfPlayers;i++) {
             World world = new World();
             world.loadWorld(level);
-            world.addCastle(0,200,0,20,40,180);
-            world.addBridge(100,-300,0,200,50,20,80,20);
-            world.addLoop(400,130,140,140,60,24,15);
-            world.addHole(0, 0, 0, 30, 70, 30);
+            //world.addCastle(0,200,0,20,40,180);
+            //world.addBridge(100,-300,0,200,50,20,80,20);
+            //world.addLoop(400,130,140,140,60,24,15);
+            //world.addHole(0, 0, 0, 30, 70, 30);
             System.out.println(world.sides.size()+" sides loaded");
 
             players[i] = new Player(golf3D, world, 0);
