@@ -2,17 +2,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Scanner;
 
-/**
- * Created by Carla on 15/03/2016.
- */
 public class RadioButtons extends JPanel {
 
-    private JLabel sampleField;
-    private JRadioButton wallButton;
-    private JRadioButton floorButton;
-    private JRadioButton ballButton;
-    private JRadioButton holeButton;
+    private JButton saveButton;
+    JRadioButton wallButton;
+    JRadioButton floorButton;
+    JRadioButton ballButton;
+    JRadioButton holeButton;
     private ActionListener listener;
     private String chosenOption;
 
@@ -43,36 +47,46 @@ public class RadioButtons extends JPanel {
         listener = new ChoiceListener();
         createControlPanel();
     }
+
+
+
     public void createControlPanel() {
         JPanel choicePanel = createRadioButtons();
         JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new GridLayout(2,1));
-        //controlPanel.add(ePanel);
+        controlPanel.setLayout(new GridLayout(3,1));
+        choicePanel.setBackground(Color.WHITE);
         controlPanel.add(choicePanel);
+        controlPanel.setBackground(Color.WHITE);
         this.setLayout(new GridLayout(1,1));
         add(controlPanel);
     }
 
     public JPanel createRadioButtons(){
-        wallButton = new JRadioButton("Wall");
-        wallButton.addActionListener(listener);
         floorButton = new JRadioButton("Floor");
         floorButton.addActionListener(listener);
+
+        wallButton = new JRadioButton("Wall");
+        wallButton.addActionListener(listener);
+
         ballButton = new JRadioButton("Ball");
         ballButton.addActionListener(listener);
+
         holeButton = new JRadioButton("Hole");
         holeButton.addActionListener(listener);
-        holeButton.setSelected(true);
+
         ButtonGroup group = new ButtonGroup();
-        group.add(wallButton); group.add(floorButton);
+
+        group.add(floorButton); group.add(wallButton);
         group.add(ballButton); group.add(holeButton);
+
         JPanel panel = new JPanel();
-        panel.add(wallButton); panel.add(floorButton);
+        panel.add(floorButton); panel.add(wallButton);
         panel.add(ballButton); panel.add(holeButton);
         return panel;
     }
 
     public String getChosenOption(){
+
         return chosenOption;
     }
 

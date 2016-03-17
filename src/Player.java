@@ -9,13 +9,15 @@ public class Player {
     World world;
     Golf3D golf3D;
     int ballId;
+    int turns=0;
 
     boolean inputFlag = true;
+    boolean endFlag=false;
     int velocityZeroCounter = 0;
 
     int angle = 0;
     int angleUp = 0;
-    int power = 10;
+    int power = 5;
 
     Point3D pushVector;
 
@@ -40,6 +42,7 @@ public class Player {
             world.pushBall(0,pushVector);
             golf3D.removeArrow();
             inputFlag=false;
+            turns++;
         }
     }
 
@@ -55,25 +58,44 @@ public class Player {
         {
             velocityZeroCounter++;
         }
-        if(velocityZeroCounter==30)
+        else
+        {
+            velocityZeroCounter=0;
+        }
+        if(velocityZeroCounter==10)
         {
             velocityZeroCounter=0;
             inputFlag=true;
+            if(world.checkBallInHole(ballId))
+            {
+                inputFlag=false;
+                endFlag=true;
+            }
+            return true;
+        }
+        if(world.balls.get(ballId).place.getZ()<-1000)
+        {
             return true;
         }
         return false;
     }
 
+    public void resumeGame()
+    {
+        inputFlag=true;
+        endFlag=false;
+    }
+
     public void updatePushParameters()
     {
-        if(leftPressed)angle-=2;
-        if(rightPressed)angle+=2;
+        if(leftPressed)angle+=2;
+        if(rightPressed)angle-=2;
         if(upPressed && angleUp<45)angleUp++;
         if(downPressed && angleUp>0)angleUp--;
         if(powerUpPressed && power<30)power++;
         if(powerDownPressed && power>1)power--;
         pushVector= new Point3D(Math.cos(angle*Math.PI/180.0),Math.sin(angle*Math.PI/180.0),Math.tan(angleUp*Math.PI/180.0)).normalize().multiply(power);
-        golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector));
+        golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector.multiply(10)));
     }
 
 }

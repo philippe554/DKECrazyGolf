@@ -4,9 +4,10 @@ import java.awt.*;
 /**
  * Created by Carla on 15/03/2016.
  */
-public class ChoiceFrame extends JFrame {
+public class ChoiceFrame //extends JFrame
+{
 
-    private EditorPanel ePanel;
+    /* EditorPanel ePanel;
     private RadioButtons buttonPanel;
 
     public ChoiceFrame(){
@@ -16,5 +17,5 @@ public class ChoiceFrame extends JFrame {
         add(ePanel, BorderLayout.WEST);
         add(buttonPanel, BorderLayout.EAST);
         pack();
-    }
+    }*/
 }

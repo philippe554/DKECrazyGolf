@@ -28,6 +28,7 @@ public class Golf3D extends JComponent{
 
     private World world;
     private float scale;
+    Canvas3D canvas3D;
 
     public Golf3D(float s)
     // A panel holding a 3D canvas
@@ -37,28 +38,10 @@ public class Golf3D extends JComponent{
         setLayout( new BorderLayout() );
         setOpaque( false );
         setPreferredSize( new Dimension(PWIDTH, PHEIGHT));
-    }
-
-    public void loadWorld(World tworld)
-    {
-        world=tworld;
-
-        if(su!=null)
-        {
-            su.cleanup();
-        }
-        sceneBG=null;
-        sceneBall=null;
-        sceneArrow=null;
-        t3dBall=null;
-        tgBall=null;
-        t3dArrow=null;
-        tgArrow=null;
-        bounds=null;
 
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 
-        Canvas3D canvas3D = new Canvas3D(config);
+        canvas3D = new Canvas3D(config);
         canvas3D.setSize(3*PWIDTH/4,PHEIGHT);
         add(canvas3D);
         canvas3D.setFocusable(true);     // give focus to the canvas
@@ -67,11 +50,19 @@ public class Golf3D extends JComponent{
         su = new SimpleUniverse(canvas3D);
 
         su.getViewer().getView().setBackClipDistance(100000000);
+    }
+
+    public void loadWorld(World tworld)
+    {
+        if(sceneBG!=null)sceneBG.detach();
+        if(sceneBall!=null)sceneBall.detach();
+        if(sceneArrow!=null)sceneArrow.detach();
+
+        world=tworld;
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
         orbitControls(canvas3D);   // controls for moving the viewpoint
-
         su.addBranchGraph( sceneBG );
 
         createBall();
@@ -83,6 +74,7 @@ public class Golf3D extends JComponent{
     // initilise the scene
     {
         sceneBG = new BranchGroup();
+        sceneBG.setCapability(BranchGroup.ALLOW_DETACH);
         bounds = new BoundingSphere(new Point3d(0,0,0), 1000000);
 
         lightScene();         // add the lights
@@ -210,6 +202,7 @@ public class Golf3D extends JComponent{
 
         sceneBall = new BranchGroup();
         sceneBall.addChild(tgBall);
+        sceneBall.setCapability(BranchGroup.ALLOW_DETACH);
         sceneBall.compile();
         su.addBranchGraph( sceneBall );
     }
@@ -240,7 +233,7 @@ public class Golf3D extends JComponent{
 
         ArrayList<Point3f> arrowCoor = new ArrayList<Point3f>();
         arrowCoor.add(new Point3f((float)ballCoor.getX()*scale,(float)ballCoor.getY()*scale,(float)ballCoor.getZ()*scale));
-        arrowCoor.add(new Point3f((float)aimVector.getX()*scale*10,(float)aimVector.getY()*scale*10,(float)aimVector.getZ()*scale*10));
+        arrowCoor.add(new Point3f((float)aimVector.getX()*scale,(float)aimVector.getY()*scale,(float)aimVector.getZ()*scale));
         Arrow arrow = new Arrow(arrowCoor, new Color3f(1.0f,0.0f,0.0f));
         t3dArrow = new Transform3D();
         tgArrow = new TransformGroup(t3dArrow);

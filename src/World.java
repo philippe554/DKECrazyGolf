@@ -188,7 +188,7 @@ public class World {
     }
 
     public boolean checkBallInHole(int i) {
-        if(hole.distance(balls.get(i).place)<balls.get(i).size)
+        if(hole.distance(balls.get(i).place)<(balls.get(i).size))
         {
             return true;
         }
@@ -277,97 +277,5 @@ public class World {
         sides.add(new Side(p1,p2,p3,c));
         sides.add(new Side(p1,p4,p3,c));
     }
-
-    /*
-
-        //balls.add(new Ball(20,new Point3D(0,0,20)));
-        //balls.get(0).velocity=new Point3D(5,-2.5,0);
-        //balls.get(0).velocity=new Point3D(0,10,0);
-
-        points = new LinkedList<>();
-        edges = new LinkedList<>();
-        sides = new LinkedList<>();
-        balls = new LinkedList<>();
-
-        points.add(new Point3D(500,200,0));//0
-        points.add(new Point3D(500,-500,0));//1
-        points.add(new Point3D(-500,200,0));//2
-        points.add(new Point3D(-500,-500,0));//3
-
-        sides.add(new Side(points.get(0),points.get(1),points.get(2),new Color3f(0.0f,1.0f,0.0f)));
-        sides.add(new Side(points.get(3),points.get(1),points.get(2),new Color3f(0.0f,1.0f,0.0f)));
-
-        points.add(new Point3D(100,-100,0));//4
-        points.add(new Point3D(300,100,0));//5
-        points.add(new Point3D(100,-100,100));//6
-
-        sides.add(new Side(points.get(4),points.get(5),points.get(6),new Color3f(0.5f,0.5f,0.5f)));
-
-        //hole
-        points.add(new Point3D(30,200,0));//7
-        points.add(new Point3D(-30,200,0));//8
-        points.add(new Point3D(30,260,0));//9
-        points.add(new Point3D(-30,260,0));//10
-
-        points.add(new Point3D(30,200,-40));//11
-        points.add(new Point3D(-30,200,-40));//12
-        points.add(new Point3D(30,260,-40));//13
-        points.add(new Point3D(-30,260,-40));//14
-        sides.add(new Side(points.get(7),points.get(8),points.get(12),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(7),points.get(11),points.get(12),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(11),points.get(12),points.get(14),new Color3f(0.7f,0.7f,0.7f)));
-        sides.add(new Side(points.get(11),points.get(13),points.get(14),new Color3f(0.7f,0.7f,0.7f)));
-        sides.add(new Side(points.get(7),points.get(9),points.get(13),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(7),points.get(11),points.get(13),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(8),points.get(10),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(8),points.get(12),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(9),points.get(10),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(9),points.get(13),points.get(14),new Color3f(0.5f,0.5f,0.5f)));
-        edges.add(new Edge(points.get(7),points.get(8)));
-        edges.add(new Edge(points.get(8),points.get(10)));
-        edges.add(new Edge(points.get(10),points.get(9)));
-        edges.add(new Edge(points.get(9),points.get(10)));
-
-        points.add(new Point3D(500,260,0));//15
-        points.add(new Point3D(-500,260,0));//16
-        sides.add(new Side(points.get(7),points.get(0),points.get(15),new Color3f(0.0f,1.0f,0.0f)));
-        sides.add(new Side(points.get(7),points.get(9),points.get(15),new Color3f(0.0f,1.0f,0.0f)));
-        sides.add(new Side(points.get(8),points.get(2),points.get(16),new Color3f(0.0f,1.0f,0.0f)));
-        sides.add(new Side(points.get(8),points.get(10),points.get(16),new Color3f(0.0f,1.0f,0.0f)));
-
-        points.add(new Point3D(500,500,0));//17
-        points.add(new Point3D(-500,500,0));//18
-        sides.add(new Side(points.get(15),points.get(16),points.get(18),new Color3f(0.0f,1.0f,0.0f)));
-        sides.add(new Side(points.get(15),points.get(17),points.get(18),new Color3f(0.0f,1.0f,0.0f)));
-
-        //slope
-        points.add(new Point3D(50,-100,0));//19
-        points.add(new Point3D(-50,-100,0));//20
-        points.add(new Point3D(50,-200,20));//21
-        points.add(new Point3D(-50,-200,20));//22
-        points.add(new Point3D(50,-300,20));//23
-        points.add(new Point3D(-50,-300,20));//24
-        points.add(new Point3D(50,-400,0));//25
-        points.add(new Point3D(-50,-400,0));//26
-        sides.add(new Side(points.get(19),points.get(20),points.get(22),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(19),points.get(21),points.get(22),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(21),points.get(22),points.get(24),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(21),points.get(23),points.get(24),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(23),points.get(24),points.get(26),new Color3f(0.5f,0.5f,0.5f)));
-        sides.add(new Side(points.get(23),points.get(25),points.get(26),new Color3f(0.5f,0.5f,0.5f)));
-
-        points.add(new Point3D(50,-200,00));//27
-        points.add(new Point3D(-50,-200,00));//28
-        points.add(new Point3D(50,-300,00));//29
-        points.add(new Point3D(-50,-300,00));//30
-        sides.add(new Side(points.get(19),points.get(21),points.get(27),new Color3f(0.8f,0.8f,0.8f)));
-        sides.add(new Side(points.get(25),points.get(23),points.get(29),new Color3f(0.8f,0.8f,0.8f)));
-        sides.add(new Side(points.get(20),points.get(22),points.get(28),new Color3f(0.8f,0.8f,0.8f)));
-        sides.add(new Side(points.get(26),points.get(24),points.get(30),new Color3f(0.8f,0.8f,0.8f)));
-
-        sides.add(new Side(points.get(21),points.get(27),points.get(29),new Color3f(0.8f,0.8f,0.8f)));
-        sides.add(new Side(points.get(21),points.get(23),points.get(29),new Color3f(0.8f,0.8f,0.8f)));
-        sides.add(new Side(points.get(22),points.get(28),points.get(30),new Color3f(0.8f,0.8f,0.8f)));
-        sides.add(new Side(points.get(22),points.get(24),points.get(30),new Color3f(0.8f,0.8f,0.8f)));*/
 
 }
