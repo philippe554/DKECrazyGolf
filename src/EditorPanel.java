@@ -320,58 +320,16 @@ public class EditorPanel extends JPanel{
             for (int j = 0; j < data[i].length; j++) {
                 if(!alreadyConverted[i][j]) {
                     if (data[i][j].equals("W")) {
-                        addSquare(output,new Point3D(i*gs,j*gs,30),
-                                new Point3D(i*gs+gs,j*gs,30),
-                                new Point3D(i*gs+gs,j*gs+gs,30),
-                                new Point3D(i*gs,j*gs+gs,30),
-                                new Color3f(0.8f,0.8f,0.8f));
-                        if(i-1>=0 && !data[i-1][j].equals("W"))
-                        {
-                            addSquare(output,new Point3D(i*gs,j*gs,30),
-                                    new Point3D(i*gs,j*gs+gs,30),
-                                    new Point3D(i*gs,j*gs+gs,0),
-                                    new Point3D(i*gs,j*gs,0),
-                                    new Color3f(0.5f,0.5f,0.5f));
-                        }
-                        if(j-1>=0 && !data[i][j-1].equals("W"))
-                        {
-                            addSquare(output,new Point3D(i*gs,j*gs,30),
-                                    new Point3D(i*gs+gs,j*gs,30),
-                                    new Point3D(i*gs+gs,j*gs,0),
-                                    new Point3D(i*gs,j*gs,0),
-                                    new Color3f(0.5f,0.5f,0.5f));
-                        }
-                        if(i+1<data.length && !data[i+1][j].equals("W"))
-                        {
-                            addSquare(output,new Point3D(i*gs+gs,j*gs,30),
-                                    new Point3D(i*gs+gs,j*gs+gs,30),
-                                    new Point3D(i*gs+gs,j*gs+gs,0),
-                                    new Point3D(i*gs+gs,j*gs,0),
-                                    new Color3f(0.5f,0.5f,0.5f));
-                        }
-                        if(j+1<data[i].length && !data[i][j+1].equals("W"))
-                        {
-                            addSquare(output,new Point3D(i*gs,j*gs+gs,30),
-                                    new Point3D(i*gs+gs,j*gs+gs,30),
-                                    new Point3D(i*gs+gs,j*gs+gs,0),
-                                    new Point3D(i*gs,j*gs+gs,0),
-                                    new Color3f(0.5f,0.5f,0.5f));
-                        }
-                        alreadyConverted[i][j]=true;
+                        addWall(data,output,alreadyConverted,i,j,gs);
                     } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
-                        addSquare(output,new Point3D(i*gs,j*gs,0),
-                                new Point3D(i*gs+gs,j*gs,0),
-                                new Point3D(i*gs+gs,j*gs+gs,0),
-                                new Point3D(i*gs,j*gs+gs,0),
-                                new Color3f(0,1,0));
-                        alreadyConverted[i][j]=true;
+                        addGrass(data,output,alreadyConverted,i,j,gs);
                     } else if (data[i][j].equals("H")) {
                         addHole(output,i*gs+1.5*gs,j*gs+1.5*gs,0,30,80,30);
                         for(int k=0;k<3;k++)
                         {
                             for(int l=0;l<3;l++)
                             {
-                                if(i+k<data.length && i+l<data[i+k].length) {
+                                if(i+k<data.length && j+l<data[i+k].length) {
                                     alreadyConverted[i + k][j + l] = true;
                                 }
                             }
@@ -432,6 +390,123 @@ public class EditorPanel extends JPanel{
             }
         }
         return output;
+    }
+    public void addGrass(String[][]data,LinkedList<String> output,boolean[][]alreadyConverted,int i,int j,double gs) {
+        int iCounter=0;
+        int jCounter=0;
+        boolean keepCountingI=true;
+        boolean keepCountingJ=true;
+        while(keepCountingI||keepCountingJ)
+        {
+            if(keepCountingI) {
+                if ((iCounter + i) < data.length && expandGrass(data,i, j, iCounter + 1, jCounter, alreadyConverted)) {
+                    iCounter++;
+                }else{
+                    keepCountingI=false;
+                }
+            }
+            if(keepCountingJ) {
+                if ((jCounter + j) < data[0].length && expandGrass(data,i, j, iCounter , jCounter+1, alreadyConverted)) {
+                    jCounter++;
+                }else{
+                    keepCountingJ=false;
+                }
+            }
+        }
+        addSquare(output,new Point3D(i*gs,j*gs,0),
+                new Point3D(i*gs+iCounter*gs,j*gs,0),
+                new Point3D(i*gs+iCounter*gs,j*gs+jCounter*gs,0),
+                new Point3D(i*gs,j*gs+jCounter*gs,0),
+                new Color3f(0,1,0));
+        for(int k=i;k<(i+iCounter);k++) {
+            for(int l=j;l<(j+jCounter);l++) {
+                alreadyConverted[k][l] = true;
+            }
+        }
+    }
+    public boolean expandGrass(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted) {
+        boolean possible=true;
+        for(int i=iStart;i<(iStart+iSize);i++)
+        {
+            for(int j=jStart;j<(jStart+jSize);j++)
+            {
+                if(alreadyConverted[i][j]==true || !(data[i][j].equals("F") || data[i][j].equals("B")))
+                {
+                    possible=false;
+                }
+            }
+        }
+        return possible;
+    }
+    public void addWall(String[][]data,LinkedList<String> output,boolean[][]alreadyConverted,int i,int j,double gs) {
+        int iCounter=0;
+        int jCounter=0;
+        boolean keepCountingI=true;
+        boolean keepCountingJ=true;
+        while(keepCountingI||keepCountingJ)
+        {
+            if(keepCountingI) {
+                if ((iCounter + i) < data.length && expandWall(data,i, j, iCounter + 1, jCounter, alreadyConverted) && iCounter<10) {
+                    iCounter++;
+                }else{
+                    keepCountingI=false;
+                }
+            }
+            if(keepCountingJ) {
+                if ((jCounter + j) < data[0].length && expandWall(data,i, j, iCounter , jCounter+1, alreadyConverted) && jCounter<10) {
+                    jCounter++;
+                }else{
+                    keepCountingJ=false;
+                }
+            }
+        }
+
+        //iCounter=1;
+        //jCounter=1;
+        addSquare(output,new Point3D(i*gs+1,j*gs,30),
+                new Point3D(i*gs+gs*iCounter+1,j*gs,30),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,30),
+                new Point3D(i*gs,j*gs+gs*jCounter,30),
+                new Color3f(0.8f,0.8f,0.8f));
+        addSquare(output,new Point3D(i*gs+1,j*gs,30),
+                new Point3D(i*gs+1,j*gs+gs*jCounter,30),
+                new Point3D(i*gs,j*gs+gs*jCounter,0),
+                new Point3D(i*gs,j*gs,0),
+                new Color3f(0.5f,0.5f,0.5f));
+        addSquare(output,new Point3D(i*gs+1,j*gs,30),
+                new Point3D(i*gs+1+gs*iCounter,j*gs,30),
+                new Point3D(i*gs+gs*iCounter,j*gs,0),
+                new Point3D(i*gs,j*gs,0),
+                new Color3f(0.5f,0.5f,0.5f));
+       addSquare(output,new Point3D(i*gs+gs*iCounter+1,j*gs,30),
+                new Point3D(i*gs+gs*iCounter+1,j*gs+gs*jCounter,30),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0),
+                new Point3D(i*gs+gs*iCounter,j*gs,0),
+                new Color3f(0.5f,0.5f,0.5f));
+        addSquare(output,new Point3D(i*gs+1,j*gs+gs*jCounter,30),
+                new Point3D(i*gs+gs*iCounter+1,j*gs+gs*jCounter,30),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0),
+                new Point3D(i*gs,j*gs+gs*jCounter,0),
+                new Color3f(0.5f,0.5f,0.5f));
+        for(int k=i;k<(i+iCounter);k++) {
+            for(int l=j;l<(j+jCounter);l++) {
+                alreadyConverted[k][l] = true;
+            }
+        }
+    }
+    public boolean expandWall(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted) {
+        boolean possible=true;
+        for(int i=iStart;i<(iStart+iSize);i++)
+        {
+            for(int j=jStart;j<(jStart+jSize);j++)
+            {
+                if(alreadyConverted[i][j]==true || !(data[i][j].equals("W")))
+                {
+                    possible=false;
+                }
+            }
+        }
+        return possible;
     }
     public void addHole(LinkedList<String> output,double x,double y, double z,double radius,double depth,int parts) {
         output.add("hole");

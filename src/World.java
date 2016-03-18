@@ -15,7 +15,7 @@ public class World {
     public LinkedList<Side> sides;
     public LinkedList<Ball> balls;
     public Point3D hole;
-    public int amountOfThreads=4;
+    public int amountOfThreads=1;
     public int mode;
 
     class WorkThread extends Thread {
@@ -24,8 +24,7 @@ public class World {
         int jstop;
         Point3D v;
         public boolean collisionWithWalls;
-        public WorkThread(int ti,int tjstart,int tjstop,Point3D tv,int tmode)
-        {
+        public WorkThread(int ti,int tjstart,int tjstop,Point3D tv,int tmode) {
             i=ti;
             jstart=tjstart;
             jstop=tjstop;
