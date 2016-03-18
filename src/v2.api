@@ -1,0 +1,22 @@
+world
+TODO: add world parameters
+balls
+<x>;<y>;<z>;<radius>;<mass>
+...
+<x>;<y>;<z>
+holes
+<x>;<y>;<z>
+points
+<x>;<y>;<z>
+...
+<x>;<y>;<z>
+edges
+<#p1>;<#p2>
+...
+<#p1>;<#p2>
+triangels
+<#p1>;<#p2>;<#p3>;<r>;<g>;<b>
+...
+<#p1>;<#p2>;<#p3>;<r>;<g>;<b>
+water
+TODO: add water parameters
