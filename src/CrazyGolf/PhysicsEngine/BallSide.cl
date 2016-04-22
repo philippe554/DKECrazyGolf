@@ -1,7 +1,12 @@
-__kernel void ballSide(__global const float *points,__global const int *sides, __global const float *sidesData,__global float *ball)
+__kernel void ballSide(__global const float *points,__global const int *sides, __global const float *sidesData,__global const float *ball,__global char *colDetected)
 {
     int gid = get_global_id(0);
-    int lid = get_local_id(0);
+    int lid = get_global_id(1);
+    //colDetected[gid]=colDetected[gid]&(~(1<<lid));
+    char CD=colDetected[gid*get_global_size(1)+lid];
+    CD&=~(1<<0);
+    colDetected[gid*get_global_size(1)+lid]=CD;
+    //colDetected[gid*get_global_size(1)+lid]=0;
 
     float a = sidesData[gid*9];
     float b = sidesData[gid*9+1];
@@ -10,12 +15,13 @@ __kernel void ballSide(__global const float *points,__global const int *sides, _
     float Nv = sidesData[gid*9+4];
     float3 normal =  {sidesData[gid*9+5],sidesData[gid*9+6],sidesData[gid*9+7]};
 
-    float Nr0=a*ball[lid*11+0]+b*ball[lid*11+1]+c*ball[lid*11+2];
-    float t=(d-Nr0)/Nv;
-    float3 i = {ball[lid*11+0]+normal.x*t,ball[lid*11+1]+normal.y*t,ball[lid*11+2]+normal.z*t};
-    float distance = sqrt(((i.x-ball[lid*11+0])*(i.x-ball[lid*11+0]))+((i.y-ball[lid*11+1])*(i.y-ball[lid*11+1]))+((i.z-ball[lid*11+2])*(i.z-ball[lid*11+2])));
+    float3 ballPos = {ball[lid*4+0],ball[lid*4+1],ball[lid*4+2]};
+    float ballSize=ball[lid*4+3];
 
-    if(distance<ball[lid*11+9])
+    float t=(d-(a*ballPos.x+b*ballPos.y+c*ballPos.z))/Nv;
+    float3 i = {ballPos.x +(normal.x*t),ballPos.y +(normal.y*t),ballPos.z +(normal.z*t)};
+    float distance = ((i.x-ballPos.x)*(i.x-ballPos.x))+((i.y-ballPos.y)*(i.y-ballPos.y))+((i.z-ballPos.z)*(i.z-ballPos.z));
+    if(distance<(ballSize*ballSize))
     {
         float3 p1 = {points[sides[gid*3]*3],points[sides[gid*3]*3+1],points[sides[gid*3]*3+2]};
         float3 p2 = {points[sides[gid*3+1]*3],points[sides[gid*3+1]*3+1],points[sides[gid*3+1]*3+2]};
@@ -35,79 +41,61 @@ __kernel void ballSide(__global const float *points,__global const int *sides, _
         float v = (v0v0*v1v2-v0v1*v0v2)/(v0v0*v1v1-v0v1*v0v1);
         if(u>=0 && v>=0 && u<=1 && v<=1 && (u+v)<=1)
         {
-            float c1 = -((t / fabs(t))*ball[lid*11+9]);
-            ball[lid*11+0] = i.x+normal.x*c1;
-            ball[lid*11+1] = i.y+normal.y*c1;
-            ball[lid*11+2] = i.z+normal.z*c1;
-            float c2 = ((ball[lid*11+6]*normal.x)+(ball[lid*11+7]*normal.y)+(ball[lid*11+8]*normal.z))*1.8;
-            ball[lid*11+3] = ball[lid*11+6]-normal.x*c2;
-            ball[lid*11+4] = ball[lid*11+7]-normal.y*c2;
-            ball[lid*11+5] = ball[lid*11+8]-normal.z*c2;
-            ball[lid*11+10]=1;
+            //colDetected[gid]=colDetected[gid]|(1<<(lid));
+            //colDetected[gid*get_global_size(1)+lid]=1;
+            CD|=(1<<0);
+            colDetected[gid*get_global_size(1)+lid]=CD;
         }
     }
 }
 
-__kernel void ballEdge(__global const float *points,__global const int *edges, __global const float *edgesData,__global float *ball)
+__kernel void ballEdge(__global const float *points,__global const int *edges, __global const float *edgesData,__global const float *ball,__global char *colDetected)
 {
     int gid = get_global_id(0);
-    int lid = get_local_id(0);
+    int lid = get_global_id(1);
+    char CD=colDetected[gid*get_global_size(1)+lid];
+    CD&=~(1<<1);
+    colDetected[gid*get_global_size(1)+lid]=CD;
 
     float l = edgesData[gid*4];
     float3 unit =  {edgesData[gid*4+1],edgesData[gid*4+2],edgesData[gid*4+3]};
-
     float3 p1 = {points[edges[gid*2]*3],points[edges[gid*2]*3+1],points[edges[gid*2]*3+2]};
     float3 p2 = {points[edges[gid*2+1]*3],points[edges[gid*2+1]*3+1],points[edges[gid*2+1]*3+2]};
 
-    float t=unit.x*(ball[lid*11+0]-p1.x)+unit.y*(ball[lid*11+1]-p1.y)+unit.z*(ball[lid*11+2]-p1.z);
+    float3 ballPos = {ball[lid*4+0],ball[lid*4+1],ball[lid*4+2]};
+    float ballSize=ball[lid*4+3];
 
+    float t=unit.x*(ballPos.x-p1.x)+unit.y*(ballPos.y-p1.y)+unit.z*(ballPos.z-p1.z);
     if (t > 0 && t < l)
     {
         float3 closest={p1.x+unit.x*t,p1.y+unit.y*t,p1.z+unit.z*t};
-        float3 perpendicular = {ball[lid*11+0]-closest.x,ball[lid*11+1]-closest.y,ball[lid*11+2]-closest.z};
-        float d = sqrt(perpendicular.x*perpendicular.x+perpendicular.y*perpendicular.y+perpendicular.z*perpendicular.z);
-        if(d<ball[lid*11+9])
+        float3 perpendicular = {ballPos.x-closest.x,ballPos.y-closest.y,ballPos.z-closest.z};
+        float d = perpendicular.x*perpendicular.x+perpendicular.y*perpendicular.y+perpendicular.z*perpendicular.z;
+        if(d<(ballSize*ballSize))
         {
-            float3 perpendicularUnit = {perpendicular.x/d,perpendicular.y/d,perpendicular.z/d};
-
-            ball[lid*11+0] = closest.x+perpendicularUnit.x*ball[lid*11+9];
-            ball[lid*11+1] = closest.y+perpendicularUnit.y*ball[lid*11+9];
-            ball[lid*11+2] = closest.z+perpendicularUnit.z*ball[lid*11+9];
-
-            float c = ((ball[lid*11+6]*perpendicularUnit.x)+(ball[lid*11+7]*perpendicularUnit.y)+(ball[lid*11+8]*perpendicularUnit.z))*1.8;
-            ball[lid*11+3] = ball[lid*11+6]-perpendicularUnit.x*c;
-            ball[lid*11+4] = ball[lid*11+7]-perpendicularUnit.y*c;
-            ball[lid*11+5] = ball[lid*11+8]-perpendicularUnit.z*c;
-
-            ball[lid*11+10]=1;
+            CD|=(1<<1);
+            colDetected[gid*get_global_size(1)+lid]=CD;
         }
     }
 }
 
-__kernel void ballPoint(__global const float *points,__global float *ball)
+__kernel void ballPoint(__global const float *points,__global const float *ball,__global char *colDetected)
 {
     int gid = get_global_id(0);
-    int lid = get_local_id(0);
+    int lid = get_global_id(1);
+    char CD=colDetected[gid*get_global_size(1)+lid];
+    CD&=~(1<<2);
+    colDetected[gid*get_global_size(1)+lid]=CD;
 
     float3 p1 = {points[gid*3],points[gid*3+1],points[gid*3+2]};
 
-    float3 ballPoint = {ball[lid*11+0]-p1.x,ball[lid*11+1]-p1.y,ball[lid*11+2]-p1.z};
+    float3 ballPoint = {ball[lid*4+0]-p1.x,ball[lid*4+1]-p1.y,ball[lid*4+2]-p1.z};
+    float ballSize=ball[lid*4+3];
 
-    float d = sqrt(ballPoint.x*ballPoint.x+ballPoint.y*ballPoint.y+ballPoint.z*ballPoint.z);
-
-    if(d<ball[lid*11+9])
+    float d = ballPoint.x*ballPoint.x+ballPoint.y*ballPoint.y+ballPoint.z*ballPoint.z;
+    if(d<(ballSize*ballSize))
     {
-        float3 unit = {ballPoint.x/d,ballPoint.y/d,ballPoint.z/d};
-
-        ball[lid*11+0] = ball[lid*11+0]+unit.x*ball[lid*11+9];
-        ball[lid*11+1] = ball[lid*11+1]+unit.y*ball[lid*11+9];
-        ball[lid*11+2] = ball[lid*11+2]+unit.z*ball[lid*11+9];
-
-        float c = ((ball[lid*11+6]*unit.x)+(ball[lid*11+7]*unit.y)+(ball[lid*11+8]*unit.z))*1.8;
-        ball[lid*11+3] = ball[lid*11+6]-unit.x*c;
-        ball[lid*11+4] = ball[lid*11+7]-unit.y*c;
-        ball[lid*11+5] = ball[lid*11+8]-unit.z*c;
-
-        ball[lid*11+10]=1;
+       CD|=(1<<2);
+       colDetected[gid*get_global_size(1)+lid]=CD;
     }
 }

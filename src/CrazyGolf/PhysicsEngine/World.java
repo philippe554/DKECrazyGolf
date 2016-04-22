@@ -19,10 +19,19 @@ public class World {
     private Physics physics;
     private boolean editMode;
 
+    public static final boolean DEBUG = true;
+    public static final boolean CPUCHECK=false;
+    public static final boolean USEGPU=true;
+
     public World(String file) {
         this();
         loadWorldApi2(file);
-        physics=new PhysicsGPU();
+        if(USEGPU) {
+            physics = new PhysicsGPU();
+        }else
+        {
+            physics=new PhysicsCPU();
+        }
         physics.loadWorld(this);
         editMode=false;
     }
@@ -51,13 +60,19 @@ public class World {
                     ballSize = balls.get(i).size;
                 }
             }
-            physics.step(((int) (maxV / ballSize * 1.1) + 1) * precision);
+            int subSteps=((int) (maxV / ballSize * 1.1*precision) + 1);
+            physics.step(subSteps);
         }
     }
     public void toGameMode(){
         if(editMode)
         {
-            physics=new PhysicsGPU();
+            if(USEGPU) {
+                physics = new PhysicsGPU();
+            }else
+            {
+                physics=new PhysicsCPU();
+            }
             physics.loadWorld(this);
             editMode=false;
         }
@@ -71,7 +86,7 @@ public class World {
 
     public void pushBall(int i, Point3D dir) {
         if(!editMode) {
-            balls.get(i).velocity = dir;
+            balls.get(i).acceleration= balls.get(i).acceleration.add(dir);
         }
     }
     public boolean checkBallInHole(int i) {
@@ -110,7 +125,9 @@ public class World {
                     field.add(s.nextLine());
                 }
             } catch (IOException e) {
-                System.out.println("Error reading field plan from " + file);
+                if(DEBUG) {
+                    System.out.println("Error reading field plan from " + file);
+                }
                 System.exit(0);
             }
             int sort = 0;
@@ -167,6 +184,10 @@ public class World {
                         }
                     }
                 }
+            }
+            if(DEBUG)
+            {
+                System.out.println("Sides loaded: "+sides.size());
             }
         }
     }
@@ -313,10 +334,10 @@ public class World {
     }
 
     public void addSquare(Point3D p1, Point3D p2, Point3D p3, Point3D p4, int c, double f) {
-        points.add(p1);
-        points.add(p2);
-        points.add(p3);
-        points.add(p4);
+        points.add(p1.add(0,0,0));
+        points.add(p2.add(0,0,0));
+        points.add(p3.add(0,0,0));
+        points.add(p4.add(0,0,0));
         sides.add(new Side(this,points.size()-4, points.size()-3, points.size()-2, c,f));
         sides.add(new Side(this,points.size()-4, points.size()-1, points.size()-2, c,f));
         edges.add(new Edge(this,points.size()-4, points.size()-3));
@@ -389,14 +410,14 @@ public class World {
         while(keepCountingI||keepCountingJ)
         {
             if(keepCountingI) {
-                if ((iCounter + i) < data.length && expandWall(data,i, j, iCounter + 1, jCounter, alreadyConverted) && iCounter<10) {
+                if ((iCounter + i) < data.length && expandWall(data,i, j, iCounter + 1, jCounter, alreadyConverted)) {
                     iCounter++;
                 }else{
                     keepCountingI=false;
                 }
             }
             if(keepCountingJ) {
-                if ((jCounter + j) < data[0].length && expandWall(data,i, j, iCounter , jCounter+1, alreadyConverted) && jCounter<10) {
+                if ((jCounter + j) < data[0].length && expandWall(data,i, j, iCounter , jCounter+1, alreadyConverted)) {
                     jCounter++;
                 }else{
                     keepCountingJ=false;
@@ -404,30 +425,30 @@ public class World {
             }
         }
 
-        //iCounter=1;
-        //jCounter=1;
-        addSquare(new Point3D(i*gs+1,j*gs,30),
-                new Point3D(i*gs+gs*iCounter+1,j*gs,30),
-                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,30),
-                new Point3D(i*gs,j*gs+gs*jCounter,30),
+        double borderHeight=60;
+
+        addSquare(new Point3D(i*gs,j*gs,borderHeight),
+                new Point3D(i*gs+gs*iCounter,j*gs,borderHeight),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight),
+                new Point3D(i*gs,j*gs+gs*jCounter,borderHeight),
                 0,1);
-        addSquare(new Point3D(i*gs+1,j*gs,30),
-                new Point3D(i*gs+1,j*gs+gs*jCounter,30),
+        addSquare(new Point3D(i*gs,j*gs,borderHeight),
+                new Point3D(i*gs,j*gs+gs*jCounter,borderHeight),
                 new Point3D(i*gs,j*gs+gs*jCounter,0),
                 new Point3D(i*gs,j*gs,0),
                 1,1);
-        addSquare(new Point3D(i*gs+1,j*gs,30),
-                new Point3D(i*gs+1+gs*iCounter,j*gs,30),
+        addSquare(new Point3D(i*gs,j*gs,borderHeight),
+                new Point3D(i*gs+gs*iCounter,j*gs,borderHeight),
                 new Point3D(i*gs+gs*iCounter,j*gs,0),
                 new Point3D(i*gs,j*gs,0),
                 1,1);
-        addSquare(new Point3D(i*gs+gs*iCounter+1,j*gs,30),
-                new Point3D(i*gs+gs*iCounter+1,j*gs+gs*jCounter,30),
+        addSquare(new Point3D(i*gs+gs*iCounter,j*gs,borderHeight),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0),
                 new Point3D(i*gs+gs*iCounter,j*gs,0),
                 1,1);
-        addSquare(new Point3D(i*gs+1,j*gs+gs*jCounter,30),
-                new Point3D(i*gs+gs*iCounter+1,j*gs+gs*jCounter,30),
+        addSquare(new Point3D(i*gs,j*gs+gs*jCounter,borderHeight),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0),
                 new Point3D(i*gs,j*gs+gs*jCounter,0),
                 1,1);

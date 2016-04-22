@@ -10,69 +10,73 @@ import java.io.IOException;
 
 import static org.jocl.CL.*;
 
-public class PhysicsGPU implements Physics{
-    private World world;
+public class PhysicsGPU extends PhysicsCPU{
+    protected String kernelFile;
+    protected cl_context context;
+    protected cl_kernel kernelBallSide;
+    protected cl_kernel kernelBallEdge;
+    protected cl_kernel kernelBallPoint;
+    protected cl_command_queue commandQueue;
+    protected cl_program program;
+    protected cl_mem memObjects[];
 
-    private String kernelFile;
-    private cl_context context;
-    private cl_kernel kernelBallSide;
-    private cl_kernel kernelBallEdge;
-    private cl_kernel kernelBallPoint;
-    private cl_command_queue commandQueue;
-    private cl_program program;
-    private cl_mem memObjects[];
+    protected byte srcCollision[];
+    protected Pointer pCollision;
 
     public void step(int subframes) {
-        double subframeInv = 1.0 / subframes;
+        double subframeInv = 1.0 / (double)(subframes);
+        float friction[]=new float[world.balls.size()];
+        for(int i=0;i<world.balls.size();i++)
+        {
+            friction[i]=0.0f;
+        }
         for (int l = 0; l < subframes; l++) {
-            float srcBall[] = new float[12 * world.balls.size()];
-
+            float srcBall[] = new float[4 * world.balls.size()];
             for (int i = 0; i < world.balls.size(); i++) {
-                world.balls.get(i).acceleration = world.balls.get(i).acceleration.add(0, 0, -1); //gravity
-                world.balls.get(i).velocity = world.balls.get(i).velocity.add(world.balls.get(i).acceleration.multiply(subframeInv));
+                world.balls.get(i).acceleration = world.balls.get(i).acceleration.add(0, 0, -1*subframeInv); //gravity
+                world.balls.get(i).velocity = world.balls.get(i).velocity.add(world.balls.get(i).acceleration);
                 world.balls.get(i).place = world.balls.get(i).place.add(world.balls.get(i).velocity.multiply(subframeInv));
                 world.balls.get(i).acceleration = new Point3D(0, 0, 0);
 
-                srcBall[i * 11 + 0] = (float) world.balls.get(i).place.getX();
-                srcBall[i * 11 + 1] = (float) world.balls.get(i).place.getY();
-                srcBall[i * 11 + 2] = (float) world.balls.get(i).place.getZ();
-                srcBall[i * 11 + 3] = (float) world.balls.get(i).velocity.getX();
-                srcBall[i * 11 + 4] = (float) world.balls.get(i).velocity.getY();
-                srcBall[i * 11 + 5] = (float) world.balls.get(i).velocity.getZ();
-                srcBall[i * 11 + 6] = (float) world.balls.get(i).velocity.getX();
-                srcBall[i * 11 + 7] = (float) world.balls.get(i).velocity.getY();
-                srcBall[i * 11 + 8] = (float) world.balls.get(i).velocity.getZ();
-                srcBall[i * 11 + 9] = (float) world.balls.get(i).size;
-                srcBall[i * 11 + 10] = 0;
+                srcBall[i * 4 + 0] = (float) world.balls.get(i).place.getX();
+                srcBall[i * 4 + 1] = (float) world.balls.get(i).place.getY();
+                srcBall[i * 4 + 2] = (float) world.balls.get(i).place.getZ();
+                srcBall[i * 4 + 3] = (float) world.balls.get(i).size;
             }
             Pointer pBall = Pointer.to(srcBall);
-            memObjects[3] = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * srcBall.length, pBall, null);
+            memObjects[3] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * srcBall.length, pBall, null);
             clFinish(commandQueue);
-            clSetKernelArg(kernelBallSide, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));
-            clEnqueueNDRangeKernel(commandQueue, kernelBallSide, 1, null, new long[]{world.sides.size() * world.balls.size()}, new long[]{world.balls.size()}, 0, null, null);
-            clFinish(commandQueue);
-            clSetKernelArg(kernelBallEdge, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));
-            clEnqueueNDRangeKernel(commandQueue, kernelBallEdge, 1, null, new long[]{world.sides.size() * world.balls.size() * 3}, new long[]{world.balls.size()}, 0, null, null);
-            clFinish(commandQueue);
-            clSetKernelArg(kernelBallPoint, 1, Sizeof.cl_mem, Pointer.to(memObjects[3]));
-            clEnqueueNDRangeKernel(commandQueue, kernelBallPoint, 1, null, new long[]{world.sides.size() * world.balls.size() * 3}, new long[]{world.balls.size()}, 0, null, null);
-            clFinish(commandQueue);
-            clEnqueueReadBuffer(commandQueue, memObjects[3], CL_TRUE, 0, srcBall.length * Sizeof.cl_float, pBall, 0, null, null);
-            clReleaseMemObject(memObjects[3]);
 
-            for (int i = 0; i < world.balls.size(); i++) {
-                world.balls.get(i).place = new Point3D(srcBall[i * 11 + 0], srcBall[i * 11 + 1], srcBall[i * 11 + 2]);
-                world.balls.get(i).velocity = new Point3D(srcBall[i * 11 + 3], srcBall[i * 11 + 4], srcBall[i * 11 + 5]);
-                if (srcBall[i * 11 + 10] > 0.5) {
-                    double friction=0.1*subframeInv;
-                    if(world.balls.get(i).velocity.magnitude()>friction){
-                        world.balls.get(i).velocity = world.balls.get(i).velocity.subtract(world.balls.get(i).velocity.normalize().multiply(friction));
-                    }else {
-                        world.balls.get(i).velocity = new Point3D(0, 0, 0);
-                    }
+            clSetKernelArg(kernelBallSide, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));
+            clEnqueueNDRangeKernel(commandQueue, kernelBallSide, 2, null, new long[]{world.sides.size(),world.balls.size()}, null, 0, null, null);
+            clSetKernelArg(kernelBallEdge, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));
+            clEnqueueNDRangeKernel(commandQueue, kernelBallEdge, 2, null, new long[]{world.edges.size(),world.balls.size() * 3}, null, 0, null, null);
+            clSetKernelArg(kernelBallPoint, 1, Sizeof.cl_mem, Pointer.to(memObjects[3]));
+            clEnqueueNDRangeKernel(commandQueue, kernelBallPoint, 2, null, new long[]{world.points.size(),world.balls.size() * 3}, null, 0, null, null);
+            clFinish(commandQueue);
+
+            clEnqueueReadBuffer(commandQueue, memObjects[6], CL_TRUE, 0, world.sides.size() * Sizeof.cl_char*world.balls.size(), pCollision, 0, null, null);
+            clReleaseMemObject(memObjects[3]);
+            clFinish(commandQueue);
+
+            if(World.CPUCHECK){
+                applyCollisionCPUCheck(friction);
+            }else
+            {
+                applyCollision(friction);
+            }
+
+        }
+        for(int i=0;i<world.balls.size();i++) {
+            if (friction[i] > 0.001) {
+                if (world.balls.get(i).velocity.magnitude() > friction[i]) {
+                    world.balls.get(i).velocity = world.balls.get(i).velocity.subtract(world.balls.get(i).velocity.normalize().multiply(friction[i]));
+
                 } else {
-                    world.balls.get(i).velocity = world.balls.get(i).velocity.multiply(Math.pow(0.999, subframeInv));
+                    world.balls.get(i).velocity = new Point3D(0, 0, 0);
                 }
+            } else {
+                world.balls.get(i).velocity = world.balls.get(0).velocity.multiply(0.999);
             }
         }
     }
@@ -117,7 +121,13 @@ public class PhysicsGPU implements Physics{
             srcSidesData[i * 9 + 5] = (float) world.sides.get(i).normal.getX();
             srcSidesData[i * 9 + 6] = (float) world.sides.get(i).normal.getY();
             srcSidesData[i * 9 + 7] = (float) world.sides.get(i).normal.getZ();
-            srcSidesData[i * 9 + 8] = world.sides.get(i).color;
+            srcSidesData[i * 9 + 8] = (float )world.sides.get(i).color;
+        }
+        int max=Math.max(world.sides.size(),Math.max(world.points.size(),world.edges.size()));
+        srcCollision=new byte[max*world.balls.size()];
+        for(int i=0;i<srcCollision.length;i++)
+        {
+            srcCollision[i]=0;
         }
 
         Pointer pPoints = Pointer.to(srcPoints);
@@ -125,18 +135,12 @@ public class PhysicsGPU implements Physics{
         Pointer pSidesData = Pointer.to(srcSidesData);
         Pointer pEdges = Pointer.to(srcEdges);
         Pointer pEdgesData = Pointer.to(srcEdgeData);
+        pCollision = Pointer.to(srcCollision);
 
-        if(memObjects!=null)
-        {
-            clFinish(commandQueue);
-            clReleaseMemObject(memObjects[0]);
-            clReleaseMemObject(memObjects[1]);
-            clReleaseMemObject(memObjects[2]);
-            clReleaseMemObject(memObjects[4]);
-            clReleaseMemObject(memObjects[5]);
-        }
+        releaseMemObjects();
 
-        memObjects = new cl_mem[6];
+
+        memObjects = new cl_mem[7];
         memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
                 Sizeof.cl_float * srcPoints.length, pPoints, null);
         memObjects[1] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
@@ -148,12 +152,17 @@ public class PhysicsGPU implements Physics{
         memObjects[5] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
                 Sizeof.cl_float * srcEdgeData.length, pEdgesData, null);
 
+        memObjects[6] = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
+                Sizeof.cl_char * srcCollision.length, pCollision, null);
+
         clSetKernelArg(kernelBallSide, 0,
                 Sizeof.cl_mem, Pointer.to(memObjects[0]));
         clSetKernelArg(kernelBallSide, 1,
                 Sizeof.cl_mem, Pointer.to(memObjects[1]));
         clSetKernelArg(kernelBallSide, 2,
                 Sizeof.cl_mem, Pointer.to(memObjects[2]));
+        clSetKernelArg(kernelBallSide, 4,
+                Sizeof.cl_mem, Pointer.to(memObjects[6]));
 
         clSetKernelArg(kernelBallEdge, 0,
                 Sizeof.cl_mem, Pointer.to(memObjects[0]));
@@ -161,28 +170,27 @@ public class PhysicsGPU implements Physics{
                 Sizeof.cl_mem, Pointer.to(memObjects[4]));
         clSetKernelArg(kernelBallEdge, 2,
                 Sizeof.cl_mem, Pointer.to(memObjects[5]));
+        clSetKernelArg(kernelBallEdge, 4,
+                Sizeof.cl_mem, Pointer.to(memObjects[6]));
 
         clSetKernelArg(kernelBallPoint, 0,
                 Sizeof.cl_mem, Pointer.to(memObjects[0]));
+        clSetKernelArg(kernelBallPoint, 2,
+                Sizeof.cl_mem, Pointer.to(memObjects[6]));
     }
     public void cleanUp() {
         clFinish(commandQueue);
-        if(memObjects!=null)
-        {
-            clReleaseMemObject(memObjects[0]);
-            clReleaseMemObject(memObjects[1]);
-            clReleaseMemObject(memObjects[2]);
-            clReleaseMemObject(memObjects[4]);
-            clReleaseMemObject(memObjects[5]);
-        }
-
+        releaseMemObjects();
         clReleaseKernel(kernelBallSide);
         clReleaseProgram(program);
         clReleaseCommandQueue(commandQueue);
         clReleaseContext(context);
+        if(World.DEBUG) {
+            System.out.println("OpenCl released.");
+        }
     }
 
-    private void startOpenGL() {
+    protected void startOpenGL() {
         // The platform, device type and device number
         // that will be used
         final int platformIndex = 0;
@@ -230,7 +238,7 @@ public class PhysicsGPU implements Physics{
         kernelBallEdge = clCreateKernel(program, "ballEdge", null);
         kernelBallPoint = clCreateKernel(program, "ballPoint", null);
     }
-    private static String readFile(String fileName) {
+    protected static String readFile(String fileName) {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(fileName));
@@ -253,6 +261,119 @@ public class PhysicsGPU implements Physics{
                     br.close();
                 } catch (IOException ex) {
                     ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    protected void applyCollision(float friction[]){
+        int falseAlarms=0;
+        for (int i = 0; i < world.balls.size(); i++) {
+            for (int j = 0; j < world.sides.size(); j++) {
+                if(((srcCollision[j*world.balls.size()+i]>>0)&1) != 0) {
+                    if (sideCollision(i, j)) {
+                        if (world.sides.get(j).friction > friction[i]) {
+                            friction[i] = (float) world.sides.get(j).friction;
+                        }
+                    }
+                    else
+                    {
+                        falseAlarms++;
+                    }
+                }
+            }
+            for (int j = 0; j < world.edges.size(); j++) {
+                if(((srcCollision[j*world.balls.size()+i]>>1)&1) != 0) {
+                    if(!edgeCollision(i,j))
+                    {
+                        falseAlarms++;
+                    }
+                }
+            }
+            for (int j = 0; j < world.points.size(); j++) {
+                if(((srcCollision[j*world.balls.size()+i]>>2)&1) != 0) {
+                    if(!pointCollision(i, j))
+                    {
+                        falseAlarms++;
+                    }
+                }
+            }
+        }
+        if(World.DEBUG && falseAlarms>0)
+        {
+            System.out.println("False Alarms: "+falseAlarms);
+        }
+    }
+    protected void applyCollisionCPUCheck(float friction[]){
+        int falseAlarms=0;
+        int missed=0;
+        for (int i = 0; i < world.balls.size(); i++) {
+            for (int j = 0; j < world.sides.size(); j++) {
+                if(sideCollision(i,j)) {
+                    if (world.sides.get(j).friction > friction[i]) {
+                        friction[i] = (float) world.sides.get(j).friction;
+                    }
+                    if (((srcCollision[j*world.balls.size()+i]>>0)&1) == 0)
+                    {
+                        missed++;
+                    }
+                }
+                else
+                {
+                    if (((srcCollision[j*world.balls.size()+i]>>0)&1) != 0)
+                    {
+                        falseAlarms++;
+                    }
+                }
+            }
+
+            for (int j = 0; j < world.edges.size(); j++) {
+                if(edgeCollision(i,j)) {
+                    if (((srcCollision[j*world.balls.size()+i]>>1)&1) == 0)
+                    {
+                        missed++;
+                    }
+                }
+                else
+                {
+                    if (((srcCollision[j*world.balls.size()+i]>>1)&1) != 0)
+                    {
+                        falseAlarms++;
+                    }
+                }
+            }
+            for (int j = 0; j < world.points.size(); j++) {
+                if(pointCollision(i,j)) {
+                    if (((srcCollision[j*world.balls.size()+i]>>2)&1) == 0)
+                    {
+                        missed++;
+                    }
+                }
+                else
+                {
+                    if (((srcCollision[j*world.balls.size()+i]>>2)&1) != 0)
+                    {
+                        falseAlarms++;
+                    }
+                }
+            }
+        }
+        if(World.DEBUG && falseAlarms>0)
+        {
+            System.out.println("False Alarms: "+falseAlarms);
+        }
+        if(World.DEBUG && missed>0)
+        {
+            System.out.println("Missed: "+missed);
+        }
+    }
+
+    protected void releaseMemObjects() {
+        clFinish(commandQueue);
+        if(memObjects!=null) {
+            for (int i = 0; i < memObjects.length; i++) {
+                if(i!=3) {
+                    clReleaseMemObject(memObjects[i]);
                 }
             }
         }

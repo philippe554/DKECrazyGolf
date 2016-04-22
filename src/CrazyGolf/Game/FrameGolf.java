@@ -81,7 +81,7 @@ public class FrameGolf extends JFrame
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)Player.downPressed=false;
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=false;
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=false;
-                if(e.getKeyChar() == KeyEvent.VK_ENTER )players[currentPlayer].launch();
+                if(e.getKeyChar() == KeyEvent.VK_ENTER)players[currentPlayer].launch();
             }
         });
         golf3D.setFocusable(true);
@@ -94,7 +94,7 @@ public class FrameGolf extends JFrame
             if(lastTime+1000.0/30.0<currentTime) {
                 lastTime=currentTime;
                 if (players[currentPlayer].step()) {
-                    if (players[currentPlayer].endFlag) {
+                    if (players[currentPlayer].getEndFlag()) {
                         keepPlaying = false;
                     } else {
                         currentPlayer++;

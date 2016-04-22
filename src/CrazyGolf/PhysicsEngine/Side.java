@@ -34,6 +34,12 @@ public class Side {
 
         Nv = abc.dotProduct(normal);
 
-        friction=f;
+        if(World.DEBUG) {
+            if (0.0001f > Nv) {
+                System.out.println("Small Nv found expected to divide by 0: " + Nv);
+            }
+        }
+
+        friction=0.1;//f;
     }
 }

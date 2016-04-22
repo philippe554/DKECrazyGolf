@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import CrazyGolf.PhysicsEngine.World;
+import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
 import com.sun.j3d.utils.universe.*;
 import com.sun.j3d.utils.geometry.*;
 import javax.media.j3d.*;
@@ -112,11 +113,11 @@ public class Golf3D extends JComponent{
     }
 
     private void orbitControls(Canvas3D c)    {
-        //OrbitBehavior orbit =new OrbitBehavior(c, OrbitBehavior.REVERSE_ROTATE|OrbitBehavior.REVERSE_TRANSLATE);
+        OrbitBehavior orbit =new OrbitBehavior(c, OrbitBehavior.REVERSE_ROTATE|OrbitBehavior.REVERSE_TRANSLATE);
         //orbit.setRotationCenter();
-        // orbit.setSchedulingBounds(bounds);
-        //ViewingPlatform vp = su.getViewingPlatform();
-        // vp.setViewPlatformBehavior(orbit);
+         orbit.setSchedulingBounds(bounds);
+        ViewingPlatform vp = su.getViewingPlatform();
+         vp.setViewPlatformBehavior(orbit);
     }
 
     private void initUserPosition() {
@@ -172,7 +173,7 @@ public class Golf3D extends JComponent{
     public void updateBall(){
         t3dBall.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
         tgBall.setTransform(t3dBall);
-        initUserPosition();
+        //initUserPosition();
     }
 
     public void createScene() {

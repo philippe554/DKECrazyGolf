@@ -12,10 +12,10 @@ public class Player {
     int ballId;
     int turns=0;
 
-    boolean inputFlag = true;
-    boolean endFlag=false;
-    boolean deadFlag=false;
-    int velocityZeroCounter = 0;
+    private boolean inputFlag = true;
+    private boolean endFlag=false;
+    private boolean deadFlag=false;
+    private int velocityZeroCounter = 0;
 
     int angle = 0;
     int angleUp = 0;
@@ -33,39 +33,38 @@ public class Player {
     private long totalTime=0;
     private long framesCalculated=0;
 
-    public Player(Golf3D g3d, World tworld,int tballId)
-    {
+
+    public Player(Golf3D g3d, World tworld,int tballId) {
         golf3D=g3d;
         world = tworld;
         ballId=tballId;
     }
 
-    public void launch()
-    {
+    public void launch() {
         if(inputFlag)
         {
-            world.pushBall(0,pushVector);
+            world.pushBall(ballId,pushVector);
             golf3D.removeArrow();
             inputFlag=false;
             turns++;
         }
     }
 
-    public boolean step()
-    {
+    public boolean step() {
         long startTime = System.currentTimeMillis();
-        world.step(2);
+        for(int i=0;i<1;i++) {
+            world.step(4);
+        }
         long time = System.currentTimeMillis()-startTime;
         totalTime+=time;
         framesCalculated++;
-        //System.out.println(totalTime/framesCalculated);
-        world.step(1);
+        System.out.println(totalTime/framesCalculated);
         if(inputFlag) {
             updatePushParameters();
         }
         golf3D.requestFocus();
         golf3D.updateBall();
-        if(!inputFlag&&world.getBallVelocity(0)<0.5)
+        if((!inputFlag)&&(world.getBallVelocity(0)<1))
         {
             velocityZeroCounter++;
         }
@@ -73,7 +72,7 @@ public class Player {
         {
             velocityZeroCounter=0;
         }
-        if(velocityZeroCounter==10)
+        if(velocityZeroCounter>20)
         {
             velocityZeroCounter=0;
             inputFlag=true;
@@ -92,14 +91,13 @@ public class Player {
         return false;
     }
 
-    public void resumeGame()
-    {
+    public void resumeGame() {
         inputFlag=true;
         endFlag=false;
+        velocityZeroCounter=0;
     }
 
-    public void updatePushParameters()
-    {
+    public void updatePushParameters() {
         if(leftPressed)angle+=2;
         if(rightPressed)angle-=2;
         if(upPressed && angleUp<35)angleUp++;
@@ -110,4 +108,7 @@ public class Player {
         golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector.multiply(10)));
     }
 
+    public boolean getInputFlag(){return inputFlag;}
+    public boolean getEndFlag(){return endFlag;}
+    public boolean getDeadFlag(){return deadFlag;}
 }
