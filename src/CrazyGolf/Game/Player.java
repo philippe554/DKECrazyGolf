@@ -58,7 +58,7 @@ public class Player {
         long time = System.currentTimeMillis()-startTime;
         totalTime+=time;
         framesCalculated++;
-        System.out.println(totalTime/framesCalculated);
+        //System.out.println(totalTime/framesCalculated);
         if(inputFlag) {
             updatePushParameters();
         }

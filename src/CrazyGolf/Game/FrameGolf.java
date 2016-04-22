@@ -13,45 +13,28 @@ import java.awt.event.*;
 public class FrameGolf extends JFrame
 {
     private Golf3D golf3D;
-    private Player[] players;
-    private int currentPlayer;
-    private int amountOfPlayers=1;
 
     private JLabel labelTitle;
     private JLabel labelCurrentPlayer;
     private JLabel[] labelPlayer;
     private JLabel labelWin;
 
+    private Game game;
+
     private boolean keepPlaying;
 
-    public FrameGolf(int player) {
-        amountOfPlayers = player;
+    public FrameGolf(int amountOfPlayers) {
 
         setLayout( new BorderLayout() );
 
         golf3D = new Golf3D(0.05f);
+        game= new Game(golf3D,amountOfPlayers);
+        game.start();
 
-        players = new Player[amountOfPlayers];
-        currentPlayer = 0;
-        for(int i=0;i<amountOfPlayers;i++) {
-            World world = new World(FileLocations.level1);
-
-            players[i] = new Player(golf3D, world, 0);
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            public void run() {
-                for(int i=0;i<amountOfPlayers;i++) {
-                    keepPlaying=false;
-                    players[i].world.cleanUp();
-                }
-            }
-        }, "Shutdown-thread"));
-
-        golf3D.loadWorld(players[currentPlayer].world);
         add(golf3D);
 
-        setupLabels();
+        //setupLabels();
+
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         setResizable(true);
         setVisible(true);
@@ -81,38 +64,13 @@ public class FrameGolf extends JFrame
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)Player.downPressed=false;
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=false;
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=false;
-                if(e.getKeyChar() == KeyEvent.VK_ENTER)players[currentPlayer].launch();
+                if(e.getKeyChar() == KeyEvent.VK_ENTER)game.launch();
             }
         });
         golf3D.setFocusable(true);
-
-        keepPlaying=true;
-        long lastTime=System.currentTimeMillis();
-        while(keepPlaying)
-        {
-            long currentTime=System.currentTimeMillis();
-            if(lastTime+1000.0/30.0<currentTime) {
-                lastTime=currentTime;
-                if (players[currentPlayer].step()) {
-                    if (players[currentPlayer].getEndFlag()) {
-                        keepPlaying = false;
-                    } else {
-                        currentPlayer++;
-                        if (currentPlayer == amountOfPlayers) {
-                            currentPlayer = 0;
-                        }
-
-                        golf3D.loadWorld(players[currentPlayer].world);
-                        players[currentPlayer].resumeGame();
-                    }
-                    updateLabels();
-                }
-            }
-        }
-        labelWin.setText("Player "+(currentPlayer+1)+" wins!");
     }
 
-    private void setupLabels() {
+    /*private void setupLabels() {
         JComponent EastPanel = new JPanel();
         EastPanel.setPreferredSize( new Dimension(300, 800));
         EastPanel.setLayout( new GridLayout(0,1));
@@ -145,7 +103,7 @@ public class FrameGolf extends JFrame
         for(int i=0;i<amountOfPlayers;i++) {
             labelPlayer[i].setText("p" + (i + 1) + ": " + players[i].turns);
         }
-    }
+    }*/
 }
 
 //    public static void main(String[] args) { 
