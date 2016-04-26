@@ -20,6 +20,8 @@ class PhysicsCPU extends Thread implements Physics {
             friction[i]=0.0f;
         }
         for (int l = 0; l < subframes; l++) {
+            ballCollisionComplete();
+
             for (int i = 0; i < world.balls.size(); i++) {
                 world.balls.get(i).acceleration = world.balls.get(i).acceleration.add(0, 0, -1*subframeInv); //gravity
                 world.balls.get(i).velocity = world.balls.get(i).velocity.add(world.balls.get(i).acceleration);
@@ -44,15 +46,14 @@ class PhysicsCPU extends Thread implements Physics {
             }
         }
         for(int i=0;i<world.balls.size();i++) {
-            if (friction[i] > 0.001) {
+            if (friction[i] > 0.001f) {
                 if (world.balls.get(i).velocity.magnitude() > friction[i]) {
                     world.balls.get(i).velocity = world.balls.get(i).velocity.subtract(world.balls.get(i).velocity.normalize().multiply(friction[i]));
-
                 } else {
                     world.balls.get(i).velocity = new Point3D(0, 0, 0);
                 }
             } else {
-                world.balls.get(i).velocity = world.balls.get(0).velocity.multiply(0.999);
+                world.balls.get(i).velocity = world.balls.get(i).velocity.multiply(0.999);
             }
         }
     }
@@ -113,6 +114,49 @@ class PhysicsCPU extends Thread implements Physics {
             result=true;
         }
         return result;
+    }
+    protected boolean ballCollision(int i, int j){
+        boolean result=false;
+
+        Point3D distanceVector = world.balls.get(i).place.subtract(world.balls.get(j).place);
+
+        if(distanceVector.magnitude()<(world.balls.get(i).size+world.balls.get(j).size))
+        {
+            Point3D l12 = world.balls.get(j).place.subtract(world.balls.get(i).place).normalize();
+            Point3D l21 = world.balls.get(i).place.subtract(world.balls.get(j).place).normalize();
+
+            Point3D v1=l12.multiply(world.balls.get(i).velocity.dotProduct(l12));
+            Point3D v2=l21.multiply(world.balls.get(j).velocity.dotProduct(l21));
+
+            Point3D v1p=world.balls.get(i).velocity.subtract(v1);
+            Point3D v2p=world.balls.get(j).velocity.subtract(v2);
+
+            double m1=world.balls.get(i).mass;
+            double m2=world.balls.get(j).mass;
+
+            world.balls.get(i).velocity=v1.multiply (m1-m2).add(v2.multiply(2 * m2)).multiply(1/(m1+m2)).add(v1p);
+            world.balls.get(j).velocity=v2.multiply (m2-m1).add(v1.multiply(2 * m1)).multiply(1/(m1+m2)).add(v2p);
+
+            world.balls.get(i).place=world.balls.get(i).place.add(world.balls.get(i).velocity);
+            world.balls.get(j).place=world.balls.get(j).place.add(world.balls.get(j).velocity);
+        }
+
+        return result;
+    }
+    protected void ballCollisionComplete() {
+        for(int i=0;i<world.balls.size();i++)
+        {
+            for(int j=i+1;j<world.balls.size();j++)
+            {
+                ballCollision(i,j);
+            }
+        }
+        /*double total=0;
+        for(int i=0;i<world.balls.size();i++)
+        {
+            total+=world.balls.get(i).velocity.magnitude()*world.balls.get(i).velocity.magnitude()*world.balls.get(i).mass;
+        }
+        System.out.println("Total kinetic energy: "+total);*/
     }
     private boolean PointInTriangle(Point3D p, Point3D a, Point3D b, Point3D c) {
         Point3D v0 = c.subtract(a);

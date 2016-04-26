@@ -31,6 +31,8 @@ public class PhysicsGPU extends PhysicsCPU{
             friction[i]=0.0f;
         }
         for (int l = 0; l < subframes; l++) {
+            ballCollisionComplete();
+
             float srcBall[] = new float[4 * world.balls.size()];
             for (int i = 0; i < world.balls.size(); i++) {
                 world.balls.get(i).acceleration = world.balls.get(i).acceleration.add(0, 0, -1*subframeInv); //gravity
@@ -76,7 +78,7 @@ public class PhysicsGPU extends PhysicsCPU{
                     world.balls.get(i).velocity = new Point3D(0, 0, 0);
                 }
             } else {
-                world.balls.get(i).velocity = world.balls.get(0).velocity.multiply(0.999);
+                world.balls.get(i).velocity = world.balls.get(i).velocity.multiply(0.999);
             }
         }
     }

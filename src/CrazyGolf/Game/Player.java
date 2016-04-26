@@ -9,7 +9,7 @@ import javafx.geometry.Point3D;
 public class Player {
     World world;
     Golf3D golf3D;
-    int ballId;
+    private final int ballId;
     int turns=0;
 
     private boolean inputFlag = true;
@@ -43,6 +43,10 @@ public class Player {
     public void launch() {
         if(inputFlag)
         {
+            if(World.DEBUG)
+            {
+                System.out.println("Ball pushed: "+ballId);
+            }
             world.pushBall(ballId,pushVector);
             golf3D.removeArrow();
             inputFlag=false;
@@ -64,7 +68,15 @@ public class Player {
         }
         golf3D.requestFocus();
         golf3D.updateBall();
-        if((!inputFlag)&&(world.getBallVelocity(0)<1))
+        boolean allBallsVelocityZero=true;
+        for(int i=0;i<world.balls.size();i++)
+        {
+            if(world.getBallVelocity(i)>1)
+            {
+                allBallsVelocityZero=false;
+            }
+        }
+        if((!inputFlag)&&allBallsVelocityZero)
         {
             velocityZeroCounter++;
         }
@@ -85,6 +97,10 @@ public class Player {
         }
         if(world.balls.get(ballId).place.getZ()<-1000)
         {
+            if(World.DEBUG)
+            {
+                System.out.println("Ball dead: "+ballId);
+            }
             deadFlag=true;
             return true;
         }
@@ -107,6 +123,7 @@ public class Player {
         pushVector= new Point3D(Math.cos(angle*Math.PI/180.0),Math.sin(angle*Math.PI/180.0),Math.tan(angleUp*Math.PI/180.0)).normalize().multiply(power);
         golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector.multiply(10)));
     }
+
 
     public boolean getInputFlag(){return inputFlag;}
     public boolean getEndFlag(){return endFlag;}

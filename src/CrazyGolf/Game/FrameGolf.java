@@ -28,7 +28,7 @@ public class FrameGolf extends JFrame
         setLayout( new BorderLayout() );
 
         golf3D = new Golf3D(0.05f);
-        game= new Game(golf3D,amountOfPlayers);
+        game= new Game(golf3D);
         game.start();
 
         add(golf3D);

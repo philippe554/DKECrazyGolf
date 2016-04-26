@@ -23,8 +23,8 @@ public class Golf3D extends JComponent{
     private BranchGroup sceneBG;
     private BranchGroup sceneBall=null;
     private BranchGroup sceneArrow=null;
-    private Transform3D t3dBall;
-    private TransformGroup tgBall;
+    private Transform3D t3dBall[];
+    private TransformGroup tgBall[];
     private Transform3D t3dArrow;
     private TransformGroup tgArrow;
     private BoundingSphere bounds;
@@ -151,28 +151,37 @@ public class Golf3D extends JComponent{
         Appearance blueApp = new Appearance();
         blueApp.setMaterial(blueMat);
 
-        // position the sphere
-        t3dBall = new Transform3D();
-        t3dBall.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
-        tgBall = new TransformGroup(t3dBall);
-        Sphere ball = new Sphere((float) world.balls.get(0).size*scale, blueApp);// set its radius and appearance
-        ball.setPickable(true);
-
-        tgBall.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-        tgBall.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
-        tgBall.addChild(ball);
-
+        tgBall = new TransformGroup[world.balls.size()];
+        t3dBall = new Transform3D[world.balls.size()];
         sceneBall = new BranchGroup();
-        sceneBall.addChild(tgBall);
+
+        for(int i=0;i<world.balls.size();i++) {
+            // position the sphere
+            t3dBall[i] = new Transform3D();
+            t3dBall[i].set(new Vector3f((float) world.balls.get(i).place.getX() * scale, (float) world.balls.get(i).place.getY() * scale,
+                    (float) world.balls.get(i).place.getZ() * scale));
+            tgBall[i] = new TransformGroup(t3dBall[i]);
+            Sphere ball = new Sphere((float) world.balls.get(i).size * scale, blueApp);// set its radius and appearance
+            ball.setPickable(true);
+
+            tgBall[i].setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+            tgBall[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+            tgBall[i].addChild(ball);
+
+            sceneBall.addChild(tgBall[i]);
+        }
         sceneBall.setCapability(BranchGroup.ALLOW_DETACH);
         sceneBall.compile();
         su.addBranchGraph( sceneBall );
     }
 
     public void updateBall(){
-        t3dBall.set(new Vector3f((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale));
-        tgBall.setTransform(t3dBall);
+        for(int i=0;i<world.balls.size();i++) {
+            t3dBall[i].set(new Vector3f((float) world.balls.get(i).place.getX() * scale, (float) world.balls.get(i).place.getY() * scale,
+                    (float) world.balls.get(i).place.getZ() * scale));
+            tgBall[i].setTransform(t3dBall[i]);
+        }
         //initUserPosition();
     }
 

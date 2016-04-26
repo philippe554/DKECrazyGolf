@@ -9,29 +9,29 @@ import CrazyGolf.PhysicsEngine.World;
 public class Game extends Thread{
 
     public boolean keepPlaying;
+    public boolean pause;
+
     private Player[] players;
     private int currentPlayer;
 
     private Golf3D golf3D;
 
-    public Game(Golf3D tGolf3D,int amountOfPlayers) {
+    public Game(Golf3D tGolf3D) {
         keepPlaying=true;
+        pause=false;
         golf3D=tGolf3D;
 
-        players = new Player[amountOfPlayers];
-        currentPlayer = 0;
-        for(int i=0;i<amountOfPlayers;i++) {
-            World world = new World(FileLocations.level1);
+        World world = new World(FileLocations.level1);
 
-            players[i] = new Player(golf3D, world, 0);
+        players = new Player[world.balls.size()];
+        currentPlayer = 0;
+        for(int i=0;i<world.balls.size();i++) {
+            players[i] = new Player(golf3D, world, i);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-                for(int i=0;i<amountOfPlayers;i++) {
-                    keepPlaying=false;
-                    players[i].world.cleanUp();
-                }
+                world.cleanUp();
             }
         }, "Shutdown-thread"));
 
@@ -43,7 +43,7 @@ public class Game extends Thread{
         while(keepPlaying)
         {
             long currentTime=System.currentTimeMillis();
-            if(lastTime+1000.0/30.0<currentTime) {
+            if(lastTime+1000.0/30.0<currentTime && !pause) {
                 lastTime=currentTime;
                 if (players[currentPlayer].step()) {
                     if (players[currentPlayer].getEndFlag()) {
@@ -54,10 +54,9 @@ public class Game extends Thread{
                             currentPlayer = 0;
                         }
 
-                        golf3D.loadWorld(players[currentPlayer].world);
+                        //golf3D.loadWorld(players[currentPlayer].world);
                         players[currentPlayer].resumeGame();
                     }
-                    //updateLabels();
                 }
             }
         }
