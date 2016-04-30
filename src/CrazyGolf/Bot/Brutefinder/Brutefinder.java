@@ -71,7 +71,7 @@ public class Brutefinder implements BotInterface{
             for (int m = 0; m < amountPowersHighRes; m++) {
                 ArrayList<Ball> balls = new ArrayList<>();
                 balls.add(new Ball(World.ballSize, world.balls.get(p.ballId).place.add(0,0,0)));
-                balls.get(0).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
+                balls.get(0).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep).add(world.balls.get(p.ballId).velocity);
                 int velocityCounter = 0;
                 int totalCounter=0;
                 boolean outOfWorld = false;
@@ -95,7 +95,7 @@ public class Brutefinder implements BotInterface{
                 int newk=(int)(balls.get(0).place.getZ()/World.GS)+zOffset;
                 if (!outOfWorld) {
                     if(newi>=0&&newi<nodes.length && newj>=0&&newj<nodes[newi].length && newk>=0&&newk<nodes[newi][newj].length) {
-                        if(nodes[newi][newj][newk]!=null) {
+                        if(nodes[newi][newj][newk]!=null && nodes[newi][newj][newk].minPath>-0.5) {
                             Point3D center = new Point3D((newi-xOffset) * World.GS, (newj-yOffset) * World.GS, (newk-zOffset) * World.GS);
                             double distance = center.distance(balls.get(0).place)/(World.GS*2);
                             double newBestPlace=nodes[newi][newj][newk].minPath+distance;
@@ -127,7 +127,7 @@ public class Brutefinder implements BotInterface{
         Point3D push = new Point3D(Math.cos(bestDir * 2 * Math.PI / amountDirectionsHighRes)
                 , Math.sin(bestDir * 2 * Math.PI / amountDirectionsHighRes), 0).multiply((bestPow + 1) * World.maxPower / amountPowersHighRes);
 
-        if(World.DEBUG)System.out.println("Brutefinder: Push "+bestDir+";"+bestPow+": Successful: " + push);
+        if(World.DEBUG)System.out.println("Brutefinder: Push "+bestDir+";"+bestPow+": Successful: " + push+" - Expected path to hole: "+ bestPlace);
 
         world.pushBall(p.ballId,push);
     }
