@@ -1,5 +1,6 @@
 package CrazyGolf.Game;
 
+import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.FileLocations;
 import CrazyGolf.PhysicsEngine.World;
 
@@ -16,6 +17,8 @@ public class Game extends Thread{
 
     private Golf3D golf3D;
 
+    public Brutefinder brutefinder;
+
     public Game(Golf3D tGolf3D) {
         keepPlaying=true;
         pause=false;
@@ -23,10 +26,13 @@ public class Game extends Thread{
 
         World world = new World(FileLocations.level1);
 
+        brutefinder = new Brutefinder();
+        brutefinder.init(world);
+
         players = new Player[world.balls.size()];
         currentPlayer = 0;
         for(int i=0;i<world.balls.size();i++) {
-            players[i] = new Player(golf3D, world, i);
+            players[i] = new Player(golf3D, world, i,this);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

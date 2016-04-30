@@ -303,7 +303,7 @@ public class PhysicsGPU extends PhysicsCPU{
         }
         if(World.DEBUG && falseAlarms>0)
         {
-            System.out.println("False Alarms: "+falseAlarms);
+            //System.out.println("False Alarms: "+falseAlarms);
         }
     }
     protected void applyCollisionCPUCheck(float friction[]){

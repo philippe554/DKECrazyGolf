@@ -1,19 +1,21 @@
 package CrazyGolf.PhysicsEngine;
 
+import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class World {
-    public LinkedList<Point3D> points;
-    public LinkedList<Color3f> colors;
-    public LinkedList<Side> sides;
-    public LinkedList<Edge> edges;
-    public LinkedList<Ball> balls;
+    public ArrayList<Point3D> points;
+    public ArrayList<Color3f> colors;
+    public ArrayList<Side> sides;
+    public ArrayList<Edge> edges;
+    public ArrayList<Ball> balls;
     public Point3D hole;
 
     private Physics physics;
@@ -21,7 +23,11 @@ public class World {
 
     public static final boolean DEBUG = true;
     public static final boolean CPUCHECK=false;
-    public static final boolean USEGPU=true;
+    public static final boolean USEGPU=false;
+    public static final int precision=4;
+    public static final int GS=20;
+    public static final int maxPower=40;
+    public static final int ballSize=20;
 
     public World(String file) {
         this();
@@ -37,11 +43,11 @@ public class World {
     }
     public World() {
         editMode=true;
-        points = new LinkedList<>();
-        colors = new LinkedList<>();
-        edges = new LinkedList<>();
-        sides = new LinkedList<>();
-        balls = new LinkedList<>();
+        points = new ArrayList<>();
+        colors = new ArrayList<>();
+        edges = new ArrayList<>();
+        sides = new ArrayList<>();
+        balls = new ArrayList<>();
         loadDefaultColors();
         hole = new Point3D(0,0,0);
     }
@@ -50,7 +56,7 @@ public class World {
             physics.cleanUp();
         }
     }
-    public void step(int precision){
+    public synchronized void step(){
         if(!editMode) {
             double maxV = -1;
             double ballSize = 0;
@@ -64,6 +70,13 @@ public class World {
             physics.step(subSteps);
         }
     }
+    public synchronized void stepSimulated(ArrayList<Ball> simBalls){
+        ArrayList<Ball> original=balls;
+        balls=simBalls;
+        step();
+        balls=original;
+    }
+
     public void toGameMode(){
         if(editMode)
         {
@@ -86,7 +99,7 @@ public class World {
 
     public void pushBall(int i, Point3D dir) {
         if(!editMode) {
-            balls.get(i).acceleration= balls.get(i).acceleration.add(dir);
+            balls.get(i).velocity= balls.get(i).velocity.add(dir);
         }
     }
     public boolean checkBallInHole(int i) {
@@ -493,7 +506,7 @@ public class World {
         }
     }
     public void addHole(double x, double y, double z, double radius, double depth, int parts) {
-        hole=new Point3D(x,y,z);
+        hole=new Point3D(x,y,z-depth+20);
         Point3D center = new Point3D(x, y, z - depth);
         Point3D cornerPoints[] = new Point3D[4];
         cornerPoints[0] = new Point3D(x + radius, y + radius, z);

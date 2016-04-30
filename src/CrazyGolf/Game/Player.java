@@ -9,13 +9,15 @@ import javafx.geometry.Point3D;
 public class Player {
     World world;
     Golf3D golf3D;
-    private final int ballId;
+    Game game;
+    public final int ballId;
     int turns=0;
 
     private boolean inputFlag = true;
     private boolean endFlag=false;
     private boolean deadFlag=false;
     private int velocityZeroCounter = 0;
+    private boolean launchFlag=false;
 
     int angle = 0;
     int angleUp = 0;
@@ -33,31 +35,38 @@ public class Player {
     private long totalTime=0;
     private long framesCalculated=0;
 
-
-    public Player(Golf3D g3d, World tworld,int tballId) {
+    public Player(Golf3D g3d, World tworld,int tballId,Game tGame) {
         golf3D=g3d;
         world = tworld;
         ballId=tballId;
+        game=tGame;
     }
 
     public void launch() {
-        if(inputFlag)
-        {
-            if(World.DEBUG)
-            {
-                System.out.println("Ball pushed: "+ballId);
-            }
-            world.pushBall(ballId,pushVector);
-            golf3D.removeArrow();
-            inputFlag=false;
-            turns++;
-        }
+        launchFlag=true;
     }
 
     public boolean step() {
+
+        if(launchFlag)
+        {
+            launchFlag=false;
+            if(inputFlag)
+            {
+                /*if(World.DEBUG)
+                {
+                    System.out.println("Ball pushed: "+ballId);
+                }*/
+                //world.pushBall(ballId,pushVector);
+                game.brutefinder.calcNextShot(this);
+                golf3D.removeArrow();
+                inputFlag=false;
+                turns++;
+            }
+        }
         long startTime = System.currentTimeMillis();
         for(int i=0;i<1;i++) {
-            world.step(4);
+            world.step();
         }
         long time = System.currentTimeMillis()-startTime;
         totalTime+=time;
@@ -71,7 +80,7 @@ public class Player {
         boolean allBallsVelocityZero=true;
         for(int i=0;i<world.balls.size();i++)
         {
-            if(world.getBallVelocity(i)>1)
+            if(world.getBallVelocity(i)>1.5)
             {
                 allBallsVelocityZero=false;
             }
@@ -90,6 +99,7 @@ public class Player {
             inputFlag=true;
             if(world.checkBallInHole(ballId))
             {
+                System.out.println("Ball in hole");
                 inputFlag=false;
                 endFlag=true;
             }
@@ -118,7 +128,7 @@ public class Player {
         if(rightPressed)angle-=2;
         if(upPressed && angleUp<35)angleUp++;
         if(downPressed && angleUp>0)angleUp--;
-        if(powerUpPressed && power<35)power++;
+        if(powerUpPressed && power<World.maxPower)power++;
         if(powerDownPressed && power>1)power--;
         pushVector= new Point3D(Math.cos(angle*Math.PI/180.0),Math.sin(angle*Math.PI/180.0),Math.tan(angleUp*Math.PI/180.0)).normalize().multiply(power);
         golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector.multiply(10)));
