@@ -1,7 +1,10 @@
 package CrazyGolf.Editor;
 
+import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.FileLocations;
 import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.WorldCPU;
+import CrazyGolf.PhysicsEngine.WorldContainer;
 import javafx.geometry.Point3D;
 
 import javax.swing.*;
@@ -294,9 +297,32 @@ public class EditorPanel extends JPanel{
     }
 
     public LinkedList<String> getDataForFileWriting(){
-        World world = new World();
+
+        WorldContainer world = new WorldContainer();
         world.loadWorld(stringGrid,pixelSIZE,0);
-        return world.outputWorldApi2();
+        LinkedList<String> worldData = world.outputWorldApi2();
+
+        World worldWithPhysics = new WorldCPU(worldData);
+        Brutefinder brutefinder = new Brutefinder();
+        brutefinder.init(worldWithPhysics);
+        brutefinder.makeDatabase();
+        LinkedList<String> brutefinderData = brutefinder.ouputDatabase();
+
+        LinkedList<String> returnData = new LinkedList<>();
+        returnData.add("Master:World");
+        for(int i=0;i<worldData.size();i++)
+        {
+            returnData.add(worldData.get(i));
+        }
+
+        returnData.add("Master:Brutefinder");
+        for(int i=0;i<brutefinderData.size();i++)
+        {
+            returnData.add(brutefinderData.get(i));
+        }
+
+        return returnData;
+
     }
 
     public LinkedList<String> outputWorld(String[][]data, double gs) {

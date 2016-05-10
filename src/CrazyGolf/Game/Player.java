@@ -58,7 +58,7 @@ public class Player {
                     System.out.println("Ball pushed: "+ballId);
                 }*/
                 //world.pushBall(ballId,pushVector);
-                game.brutefinder.calcNextShot(this);
+                game.brutefinder.calcNextShot(ballId);
                 golf3D.removeArrow();
                 inputFlag=false;
                 turns++;
@@ -66,7 +66,7 @@ public class Player {
         }
         long startTime = System.currentTimeMillis();
         for(int i=0;i<1;i++) {
-            world.step();
+            world.step(true);
         }
         long time = System.currentTimeMillis()-startTime;
         totalTime+=time;
@@ -78,11 +78,20 @@ public class Player {
         golf3D.requestFocus();
         golf3D.updateBall();
         boolean allBallsVelocityZero=true;
-        for(int i=0;i<world.balls.size();i++)
+        for(int i=0;i<world.getAmountBalls();i++)
         {
-            if(world.getBallVelocity(i)>1.5)
+            if(world.getBallVelocity(i).magnitude()>1.5)
             {
                 allBallsVelocityZero=false;
+            }
+            if(world.getBallPosition(i).getZ()<-200)
+            {
+                if(World.DEBUG)
+                {
+                    System.out.println("Ball dead: "+ballId);
+                }
+                deadFlag=true;
+                return true;
             }
         }
         if((!inputFlag)&&allBallsVelocityZero)
@@ -105,15 +114,6 @@ public class Player {
             }
             return true;
         }
-        if(world.balls.get(ballId).place.getZ()<-1000)
-        {
-            if(World.DEBUG)
-            {
-                System.out.println("Ball dead: "+ballId);
-            }
-            deadFlag=true;
-            return true;
-        }
         return false;
     }
 
@@ -131,7 +131,7 @@ public class Player {
         if(powerUpPressed && power<World.maxPower)power++;
         if(powerDownPressed && power>1)power--;
         pushVector= new Point3D(Math.cos(angle*Math.PI/180.0),Math.sin(angle*Math.PI/180.0),Math.tan(angleUp*Math.PI/180.0)).normalize().multiply(power);
-        golf3D.createArrow(world.balls.get(ballId).place,world.balls.get(ballId).place.add(pushVector.multiply(10)));
+        golf3D.createArrow(world.getBallPosition(ballId),world.getBallPosition(ballId).add(pushVector.multiply(10)));
     }
 
 

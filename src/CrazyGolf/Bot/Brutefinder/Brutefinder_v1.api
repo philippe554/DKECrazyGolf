@@ -1,0 +1,7 @@
+<Grid Size>
+<# Nodes X>;<# Nodes Y>;<# Nodes Z>
+<Offset nodes X>;<Offset nodes Y>;<Offset nodes Z>
+<Amount of directions>;<Amount of directions>
+<x>;<y>;<z>;<min path>
+...
+<x>;<y>;<z>;<min path>

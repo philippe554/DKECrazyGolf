@@ -6,14 +6,19 @@ import java.util.ArrayList;
  * Created by pmmde on 4/29/2016.
  */
 public class Node {
-    public Connection[][] forwardConnections;
-    public ArrayList<Connection> backwardConnections;
+    public Node[][] forward;
+    public ArrayList<Node> backward;
     public boolean initDone=false;
     public int minPath=-1;
 
-    public Node()
+    public Node(int amountDirections,int amountPowers)
     {
-        forwardConnections=new Connection[Brutefinder.amountDirections][Brutefinder.amountPowers];
-        backwardConnections= new ArrayList<>();
+        forward=new Node[amountDirections][amountPowers];
+        backward= new ArrayList<>();
+    }
+
+    public Node(int tMinPath)
+    {
+        minPath=tMinPath;
     }
 }

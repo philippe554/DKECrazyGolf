@@ -24,11 +24,11 @@ public class Side {
 
         //pre calculations for collision detection
 
-        Point3D d1= world.points.get(points[0]).subtract(world.points.get(points[2]));
-        Point3D d2= world.points.get(points[1]).subtract(world.points.get(points[2]));
+        Point3D d1= world.getPoint(points[0]).subtract(world.getPoint(points[2]));
+        Point3D d2= world.getPoint(points[1]).subtract(world.getPoint(points[2]));
 
         abc = d1.crossProduct(d2);
-        d=abc.dotProduct(world.points.get(points[2]));
+        d=abc.dotProduct(world.getPoint(points[2]));
 
         normal=abc.normalize();
 

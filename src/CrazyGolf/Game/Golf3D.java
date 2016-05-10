@@ -127,8 +127,8 @@ public class Golf3D extends JComponent{
         Transform3D t3d = new Transform3D();
         steerTG.getTransform(t3d);
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt(new Point3d((float)world.balls.get(0).place.getX()*scale+50,(float)world.balls.get(0).place.getY()*scale+50,(float)world.balls.get(0).place.getZ()*scale+50),
-                new Point3d((float)world.balls.get(0).place.getX()*scale,(float)world.balls.get(0).place.getY()*scale,(float)world.balls.get(0).place.getZ()*scale)
+        t3d.lookAt(new Point3d((float)world.getBallPosition(0).getX()*scale+50,(float)world.getBallPosition(0).getY()*scale+50,(float)world.getBallPosition(0).getZ()*scale+50),
+                new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale,(float)world.getBallPosition(0).getZ()*scale)
                 , new Vector3d(0,0,1));
 
         t3d.invert();
@@ -151,17 +151,17 @@ public class Golf3D extends JComponent{
         Appearance blueApp = new Appearance();
         blueApp.setMaterial(blueMat);
 
-        tgBall = new TransformGroup[world.balls.size()];
-        t3dBall = new Transform3D[world.balls.size()];
+        tgBall = new TransformGroup[world.getAmountBalls()];
+        t3dBall = new Transform3D[world.getAmountBalls()];
         sceneBall = new BranchGroup();
 
-        for(int i=0;i<world.balls.size();i++) {
+        for(int i=0;i<world.getAmountBalls();i++) {
             // position the sphere
             t3dBall[i] = new Transform3D();
-            t3dBall[i].set(new Vector3f((float) world.balls.get(i).place.getX() * scale, (float) world.balls.get(i).place.getY() * scale,
-                    (float) world.balls.get(i).place.getZ() * scale));
+            t3dBall[i].set(new Vector3f((float) world.getBallPosition(i).getX() * scale, (float) world.getBallPosition(i).getY() * scale,
+                    (float) world.getBallPosition(i).getZ() * scale));
             tgBall[i] = new TransformGroup(t3dBall[i]);
-            Sphere ball = new Sphere((float) world.balls.get(i).size * scale, blueApp);// set its radius and appearance
+            Sphere ball = new Sphere((float) world.getBallSize(i) * scale, blueApp);// set its radius and appearance
             ball.setPickable(true);
 
             tgBall[i].setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
@@ -177,9 +177,9 @@ public class Golf3D extends JComponent{
     }
 
     public void updateBall(){
-        for(int i=0;i<world.balls.size();i++) {
-            t3dBall[i].set(new Vector3f((float) world.balls.get(i).place.getX() * scale, (float) world.balls.get(i).place.getY() * scale,
-                    (float) world.balls.get(i).place.getZ() * scale));
+        for(int i=0;i<world.getAmountBalls();i++) {
+            t3dBall[i].set(new Vector3f((float) world.getBallPosition(i).getX() * scale, (float) world.getBallPosition(i).getY() * scale,
+                    (float) world.getBallPosition(i).getZ() * scale));
             tgBall[i].setTransform(t3dBall[i]);
         }
         //initUserPosition();
@@ -188,15 +188,16 @@ public class Golf3D extends JComponent{
     public void createScene() {
         BranchGroup scene = new BranchGroup();
 
-        for(int i=0;i<world.sides.size();i++)
+        for(int i=0;i<world.getAmountTriangles();i++)
         {
             ArrayList<Point3f> coords = new ArrayList();
+            Point3D[] triangle = world.getTriangle(i);
             for(int j=0;j<3;j++) {
-                coords.add(new Point3f((float) world.points.get(world.sides.get(i).points[j]).getX()*scale,
-                        (float) world.points.get(world.sides.get(i).points[j]).getY()*scale,
-                        (float) world.points.get(world.sides.get(i).points[j]).getZ()*scale));
+                coords.add(new Point3f((float) triangle[j].getX()*scale,
+                        (float) triangle[j].getY()*scale,
+                        (float) triangle[j].getZ()*scale));
             }
-            scene.addChild(new Triangle(coords,world.colors.get(world.sides.get(i).color)));
+            scene.addChild(new Triangle(coords,world.getTriangleColor(i)));
         }
 
         sceneBG.addChild(scene);

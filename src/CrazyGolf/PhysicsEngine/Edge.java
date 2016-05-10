@@ -14,7 +14,7 @@ public class Edge {
         points=new int[2];
         points[0]=p1;
         points[1]=p2;
-        unit = world.points.get(p2).subtract(world.points.get(p1));
+        unit = world.getPoint(p2).subtract(world.getPoint(p1));
         lenght=unit.magnitude();
         unit=unit.normalize();
     }
