@@ -115,10 +115,10 @@ public class RadioButtons extends JPanel {
             g2.setColor(Color.red);
         }
         if (s.equals("Ball")){
-            g2.setColor(Color.black);
+            g2.setColor(Color.gray);
         }
         if (s.equals("Hole")){
-            g2.setColor(Color.gray);
+            g2.setColor(Color.black);
         }
         if (s.equals("Loop")){
             g2.setColor(Color.yellow);
@@ -147,6 +147,7 @@ public class RadioButtons extends JPanel {
         JPanel choicePanel = createButtons();
         JPanel controlPanel = new JPanel();
 
+
        /* controlPanel.setLayout(new BorderLayout());
         controlPanel.setLayout(new GridLayout(3,1));
         choicePanel.setBackground(Color.GREEN);
@@ -157,6 +158,7 @@ public class RadioButtons extends JPanel {
         add(controlPanel);*/
         add(choicePanel);
     }
+
 
     public JPanel createButtons(){
 

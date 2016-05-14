@@ -12,7 +12,7 @@ import java.awt.event.*;
 
 public class FrameGolf extends JFrame
 {
-    private Golf3D golf3D;
+    public Golf3D golf3D;
 
     private JLabel labelTitle;
     private JLabel labelCurrentPlayer;
