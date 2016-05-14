@@ -223,9 +223,9 @@ public class WorldContainer implements World {
                 for (int j = 0; j < data[i].length; j++) {
                     if(!alreadyConverted[i][j]) {
                         if (data[i][j].equals("W")) {
-                            addWall(data,alreadyConverted,i,j,gs);
+                            addWall(data,alreadyConverted,i,j,gs,Z);
                         } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
-                            addGrass(data,alreadyConverted,i,j,gs);
+                            addGrass(data,alreadyConverted,i,j,gs,Z);
                         } else if (data[i][j].equals("H")) {
                             addHole(i*gs+1.5*gs,j*gs+1.5*gs,Z,30,80,30);
                             for(int k=0;k<3;k++)
@@ -356,7 +356,7 @@ public class WorldContainer implements World {
         edges.add(new Edge(this,points.size()-1, points.size()-3));
     }
 
-    private void addGrass(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs) {
+    private void addGrass(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,double Z) {
         int iCounter=0;
         int jCounter=0;
         boolean keepCountingI=true;
@@ -378,10 +378,10 @@ public class WorldContainer implements World {
                 }
             }
         }
-        addSquare(new Point3D(i*gs,j*gs,0),
-                new Point3D(i*gs+iCounter*gs,j*gs,0),
-                new Point3D(i*gs+iCounter*gs,j*gs+jCounter*gs,0),
-                new Point3D(i*gs,j*gs+jCounter*gs,0),
+        addSquare(new Point3D(i*gs,j*gs,Z),
+                new Point3D(i*gs+iCounter*gs,j*gs,Z),
+                new Point3D(i*gs+iCounter*gs,j*gs+jCounter*gs,Z),
+                new Point3D(i*gs,j*gs+jCounter*gs,Z),
                 2,1);
         for(int k=i;k<(i+iCounter);k++) {
             for(int l=j;l<(j+jCounter);l++) {
@@ -403,7 +403,7 @@ public class WorldContainer implements World {
         }
         return possible;
     }
-    private void addWall(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs) {
+    private void addWall(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,double Z) {
         int iCounter=0;
         int jCounter=0;
         boolean keepCountingI=true;
@@ -428,30 +428,30 @@ public class WorldContainer implements World {
 
         double borderHeight=60;
 
-        addSquare(new Point3D(i*gs,j*gs,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight),
-                new Point3D(i*gs,j*gs+gs*jCounter,borderHeight),
+        addSquare(new Point3D(i*gs,j*gs,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight+Z),
+                new Point3D(i*gs,j*gs+gs*jCounter,borderHeight+Z),
                 0,1);
-        addSquare(new Point3D(i*gs,j*gs,borderHeight),
-                new Point3D(i*gs,j*gs+gs*jCounter,borderHeight),
-                new Point3D(i*gs,j*gs+gs*jCounter,0),
-                new Point3D(i*gs,j*gs,0),
+        addSquare(new Point3D(i*gs,j*gs,borderHeight+Z),
+                new Point3D(i*gs,j*gs+gs*jCounter,borderHeight+Z),
+                new Point3D(i*gs,j*gs+gs*jCounter,0+Z),
+                new Point3D(i*gs,j*gs,0+Z),
                 1,1);
-        addSquare(new Point3D(i*gs,j*gs,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs,0),
-                new Point3D(i*gs,j*gs,0),
+        addSquare(new Point3D(i*gs,j*gs,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs,0+Z),
+                new Point3D(i*gs,j*gs,0+Z),
                 1,1);
-        addSquare(new Point3D(i*gs+gs*iCounter,j*gs,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0),
-                new Point3D(i*gs+gs*iCounter,j*gs,0),
+        addSquare(new Point3D(i*gs+gs*iCounter,j*gs,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs,0+Z),
                 1,1);
-        addSquare(new Point3D(i*gs,j*gs+gs*jCounter,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight),
-                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0),
-                new Point3D(i*gs,j*gs+gs*jCounter,0),
+        addSquare(new Point3D(i*gs,j*gs+gs*jCounter,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight+Z),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0+Z),
+                new Point3D(i*gs,j*gs+gs*jCounter,0+Z),
                 1,1);
         for(int k=i;k<(i+iCounter);k++) {
             for(int l=j;l<(j+jCounter);l++) {

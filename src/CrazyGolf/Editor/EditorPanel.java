@@ -349,7 +349,7 @@ public class EditorPanel extends JPanel{
     public LinkedList<String> getDataForFileWriting(){
         WorldContainer world = new WorldContainer();
         for(int i=0;i<grid.length;i++) {
-            world.loadWorld(grid[i].getStringGrid(), pixelSIZE, pixelSIZE);
+            world.loadWorld(grid[i].getStringGrid(), pixelSIZE, 50*i);
         }
         LinkedList<String> worldData = world.outputWorldApi2();
 
