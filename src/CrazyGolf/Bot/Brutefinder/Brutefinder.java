@@ -207,7 +207,7 @@ public class Brutefinder implements BotInterface{
         }
         int frameCounter=0;
         while(balls.size()>0) {
-            world.stepSimulated(balls, true);
+            world.stepSimulated(balls, false);
             for (int i = 0; i < balls.size(); i++) {
                 BrutefinderBall tBall = (BrutefinderBall) balls.get(i);
                 tBall.totalCounter++;
@@ -240,7 +240,7 @@ public class Brutefinder implements BotInterface{
                         nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
                     }
                 }
-                if (tBall.place.getZ() < -150) {
+                if (tBall.place.getZ() < -100) {
                     balls.remove(i);
                     i--;
                 }

@@ -20,6 +20,8 @@ public interface World {
     Point3D getHolePosition();
     Point3D getBallPosition(int i);
     Point3D getBallVelocity(int i);
+    void setBallPosition(int i,Point3D pos);
+    void setBallVelocity(int i,Point3D vel);
     int getAmountTriangles();
     Point3D[] getTriangle(int i);
     Color3f getTriangleColor(int i);

@@ -1,23 +1,28 @@
 package CrazyGolf.Game;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-
 import CrazyGolf.PhysicsEngine.World;
 import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
-import com.sun.j3d.utils.universe.*;
-import com.sun.j3d.utils.geometry.*;
-import javax.media.j3d.*;
-import javax.vecmath.*;
-
+import com.sun.j3d.utils.geometry.Sphere;
+import com.sun.j3d.utils.universe.SimpleUniverse;
+import com.sun.j3d.utils.universe.ViewingPlatform;
 import javafx.geometry.Point3D;
 
+import javax.media.j3d.*;
+import javax.swing.*;
+import javax.vecmath.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
-public class Golf3D extends JComponent{
+/**
+ * Created by pmmde on 5/15/2016.
+ */
+public class GolfPanel extends JPanel{
 
     private static final int PWIDTH = 1200;
     private static final int PHEIGHT = 800;
+    private static final float scale=0.1f;
 
     private SimpleUniverse su=null;
     private BranchGroup sceneBG;
@@ -30,12 +35,9 @@ public class Golf3D extends JComponent{
     private BoundingSphere bounds;
 
     private World world;
-    private float scale;
     Canvas3D canvas3D;
 
-    public Golf3D(float s)    {
-        scale=s;
-
+    public GolfPanel(){
         setLayout( new BorderLayout() );
         setOpaque( false );
         setPreferredSize( new Dimension(PWIDTH, PHEIGHT));
@@ -67,7 +69,6 @@ public class Golf3D extends JComponent{
 
         createBall();
     }
-
     private void createSceneGraph() {
         sceneBG = new BranchGroup();
         sceneBG.setCapability(BranchGroup.ALLOW_DETACH);
@@ -80,7 +81,6 @@ public class Golf3D extends JComponent{
         //Ball(START);
         sceneBG.compile();   // fix the scene
     }
-
     private void lightScene() {
         Color3f white = new Color3f(1.0f, 1.0f, 1.0f);
 
@@ -105,21 +105,18 @@ public class Golf3D extends JComponent{
         light2.setInfluencingBounds(bounds);
         sceneBG.addChild(light2);
     }
-
     private void addBackground() { Background back = new Background();
         back.setApplicationBounds( bounds );
         back.setColor(0.17f, 0.65f, 0.92f);    // sky colour
         sceneBG.addChild( back );
     }
-
     private void orbitControls(Canvas3D c)    {
         OrbitBehavior orbit =new OrbitBehavior(c, OrbitBehavior.REVERSE_ROTATE|OrbitBehavior.REVERSE_TRANSLATE);
         //orbit.setRotationCenter();
-         orbit.setSchedulingBounds(bounds);
+        orbit.setSchedulingBounds(bounds);
         ViewingPlatform vp = su.getViewingPlatform();
-         vp.setViewPlatformBehavior(orbit);
+        vp.setViewPlatformBehavior(orbit);
     }
-
     private void initUserPosition() {
         ViewingPlatform vp = su.getViewingPlatform();
         TransformGroup steerTG = vp.getViewPlatformTransform();
@@ -135,7 +132,6 @@ public class Golf3D extends JComponent{
 
         steerTG.setTransform(t3d);
     }
-
     public void createBall(){
         // located at start
         // Create the blue appearance node
@@ -175,7 +171,6 @@ public class Golf3D extends JComponent{
         sceneBall.compile();
         su.addBranchGraph( sceneBall );
     }
-
     public void updateBall(){
         for(int i=0;i<world.getAmountBalls();i++) {
             t3dBall[i].set(new Vector3f((float) world.getBallPosition(i).getX() * scale, (float) world.getBallPosition(i).getY() * scale,
@@ -184,7 +179,6 @@ public class Golf3D extends JComponent{
         }
         //initUserPosition();
     }
-
     public void createScene() {
         BranchGroup scene = new BranchGroup();
 
@@ -202,7 +196,6 @@ public class Golf3D extends JComponent{
 
         sceneBG.addChild(scene);
     }
-
     public void createArrow(Point3D ballCoor, Point3D aimVector){
 
         ArrayList<Point3f> arrowCoor = new ArrayList<Point3f>();
@@ -222,12 +215,10 @@ public class Golf3D extends JComponent{
         sceneArrow.compile();
         su.addBranchGraph( sceneArrow );
     }
-
     public void removeArrow() {
         if(sceneArrow!=null) {
             sceneArrow.detach();
             sceneArrow = null;
         }
     }
-
-} 
+}

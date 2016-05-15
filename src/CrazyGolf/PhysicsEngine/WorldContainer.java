@@ -80,11 +80,20 @@ public class WorldContainer implements World {
     public Point3D getHolePosition() {
         return hole;
     }
+    @Override
     public Point3D getBallVelocity(int i) {
         if(!editMode) {
             return balls.get(i).velocity;
         }
         return new Point3D(0,0,0);
+    }
+    @Override
+    public void setBallPosition(int i, Point3D pos) {
+        balls.get(i).place=pos;
+    }
+    @Override
+    public void setBallVelocity(int i, Point3D vel) {
+        balls.get(i).velocity=vel;
     }
     @Override
     public int getAmountTriangles() {
@@ -177,10 +186,6 @@ public class WorldContainer implements World {
                         }
                     }
                 }
-            }
-            if(DEBUG)
-            {
-                System.out.println("Sides loaded: "+sides.size());
             }
         }
     }
