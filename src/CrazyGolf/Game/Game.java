@@ -6,6 +6,7 @@ import CrazyGolf.FileLocations;
 import CrazyGolf.PhysicsEngine.World;
 import CrazyGolf.PhysicsEngine.WorldGPU;
 import CrazyGolf.PhysicsEngine.WorldCPU;
+import CrazyGolf.PhysicsEngine.WorldGPUBotOpti;
 import javafx.geometry.Point3D;
 
 import java.awt.event.KeyEvent;

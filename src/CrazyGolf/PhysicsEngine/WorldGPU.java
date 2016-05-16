@@ -13,14 +13,14 @@ import java.util.LinkedList;
 import static org.jocl.CL.*;
 
 public class WorldGPU extends WorldCPU{
-    private String kernelFile;
-    private cl_context context;
-    private cl_kernel kernelBallSide;
-    private cl_kernel kernelBallEdge;
-    private cl_kernel kernelBallPoint;
-    private cl_command_queue commandQueue;
-    private cl_program program;
-    private cl_mem memObjects[];
+    protected String kernelFile;
+    protected cl_context context;
+    protected cl_kernel kernelBallSide;
+    protected cl_kernel kernelBallEdge;
+    protected cl_kernel kernelBallPoint;
+    protected cl_command_queue commandQueue;
+    protected cl_program program;
+    protected cl_mem memObjects[];
 
     public WorldGPU(LinkedList<String> input){
         super(input);
@@ -64,7 +64,7 @@ public class WorldGPU extends WorldCPU{
             srcSidesData[i * 9 + 5] = (float) sides.get(i).normal.getX();
             srcSidesData[i * 9 + 6] = (float) sides.get(i).normal.getY();
             srcSidesData[i * 9 + 7] = (float) sides.get(i).normal.getZ();
-            srcSidesData[i * 9 + 8] = (float )sides.get(i).color;
+            srcSidesData[i * 9 + 8] = (float )sides.get(i).friction;
         }
 
         Pointer pPoints = Pointer.to(srcPoints);
@@ -74,7 +74,6 @@ public class WorldGPU extends WorldCPU{
         Pointer pEdgesData = Pointer.to(srcEdgeData);
 
         releaseMemObjects();
-
 
         memObjects = new cl_mem[7];
         memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
@@ -140,6 +139,7 @@ public class WorldGPU extends WorldCPU{
             friction[i]=0.0f;
         }
         for (int l = 0; l < subframes; l++) {
+            long t0 = System.currentTimeMillis();
             if(useBallBallCollision) {
                 ballCollisionComplete();
             }
@@ -156,6 +156,9 @@ public class WorldGPU extends WorldCPU{
                 srcBall[i * 4 + 2] = (float) balls.get(i).place.getZ();
                 srcBall[i * 4 + 3] = (float) balls.get(i).size;
             }
+
+            long t1 = System.currentTimeMillis();
+
             Pointer pBall = Pointer.to(srcBall);
             memObjects[3] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * srcBall.length, pBall, null);
             clFinish(commandQueue);
@@ -171,6 +174,9 @@ public class WorldGPU extends WorldCPU{
             pCollision = Pointer.to(srcCollision);
             memObjects[6] = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
                     Sizeof.cl_char * srcCollision.length, pCollision, null);
+            clFinish(commandQueue);
+
+            long t2 = System.currentTimeMillis();
 
             clSetKernelArg(kernelBallSide, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));
             clSetKernelArg(kernelBallSide, 4, Sizeof.cl_mem, Pointer.to(memObjects[6]));
@@ -183,10 +189,14 @@ public class WorldGPU extends WorldCPU{
             clEnqueueNDRangeKernel(commandQueue, kernelBallPoint, 2, null, new long[]{points.size(),balls.size()}, null, 0, null, null);
             clFinish(commandQueue);
 
+            long t3 = System.currentTimeMillis();
+
             clEnqueueReadBuffer(commandQueue, memObjects[6], CL_TRUE, 0, sides.size() * Sizeof.cl_char*balls.size(), pCollision, 0, null, null);
             clReleaseMemObject(memObjects[3]);
             clReleaseMemObject(memObjects[6]);
             clFinish(commandQueue);
+
+            long t4 = System.currentTimeMillis();
 
             if(CPUCHECK){
                 applyCollisionCPUCheck(friction,srcCollision);
@@ -194,6 +204,10 @@ public class WorldGPU extends WorldCPU{
             {
                 applyCollision(friction,srcCollision);
             }
+
+            long t5 = System.currentTimeMillis();
+
+            System.out.println("__"+(t1-t0)+";"+(t2-t1)+";"+(t3-t2)+";"+(t4-t3)+";"+(t5-t4));
 
         }
         for(int i=0;i<balls.size();i++) {
@@ -236,6 +250,7 @@ public class WorldGPU extends WorldCPU{
         clGetPlatformIDs(0, null, numPlatformsArray);
         int numPlatforms = numPlatformsArray[0];
 
+
         // Obtain a platform ID
         cl_platform_id platforms[] = new cl_platform_id[numPlatforms];
         clGetPlatformIDs(platforms.length, platforms, null);
@@ -271,41 +286,27 @@ public class WorldGPU extends WorldCPU{
     }
 
     protected void applyCollision(float friction[],byte srcCollision[]){
-        int falseAlarms=0;
-        for (int i = 0; i < balls.size(); i++) {
+        int ballsSize=balls.size();
+        for (int i = 0; i < ballsSize; i++) {
             for (int j = 0; j < sides.size(); j++) {
-                if(((srcCollision[j*balls.size()+i]>>0)&1) != 0) {
+                if(((srcCollision[j*ballsSize+i]>>0)&1) != 0) {
                     if (sideCollision(i, j)) {
                         if (sides.get(j).friction > friction[i]) {
                             friction[i] = (float) sides.get(j).friction;
                         }
                     }
-                    else
-                    {
-                        falseAlarms++;
-                    }
                 }
             }
             for (int j = 0; j < edges.size(); j++) {
-                if(((srcCollision[j*balls.size()+i]>>1)&1) != 0) {
-                    if(!edgeCollision(i,j))
-                    {
-                        falseAlarms++;
-                    }
+                if(((srcCollision[j*ballsSize+i]>>1)&1) != 0) {
+                    edgeCollision(i,j);
                 }
             }
             for (int j = 0; j < points.size(); j++) {
-                if(((srcCollision[j*balls.size()+i]>>2)&1) != 0) {
-                    if(!pointCollision(i, j))
-                    {
-                        falseAlarms++;
-                    }
+                if(((srcCollision[j*ballsSize+i]>>2)&1) != 0) {
+                    pointCollision(i, j);
                 }
             }
-        }
-        if(DEBUG && falseAlarms>0)
-        {
-            //System.out.println("False Alarms: "+falseAlarms);
         }
     }
     protected void applyCollisionCPUCheck(float friction[],byte srcCollision[]){

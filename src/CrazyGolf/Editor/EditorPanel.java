@@ -2,10 +2,7 @@ package CrazyGolf.Editor;
 
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.FileLocations;
-import CrazyGolf.PhysicsEngine.World;
-import CrazyGolf.PhysicsEngine.WorldCPU;
-import CrazyGolf.PhysicsEngine.WorldContainer;
-import CrazyGolf.PhysicsEngine.WorldGPU;
+import CrazyGolf.PhysicsEngine.*;
 import javafx.geometry.Point3D;
 
 import javax.swing.*;

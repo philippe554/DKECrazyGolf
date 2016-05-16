@@ -207,7 +207,9 @@ public class Brutefinder implements BotInterface{
         }
         int frameCounter=0;
         while(balls.size()>0) {
+            long t1 = System.currentTimeMillis();
             world.stepSimulated(balls, false);
+            long t2 = System.currentTimeMillis();
             for (int i = 0; i < balls.size(); i++) {
                 BrutefinderBall tBall = (BrutefinderBall) balls.get(i);
                 tBall.totalCounter++;
@@ -246,7 +248,7 @@ public class Brutefinder implements BotInterface{
                 }
             }
             frameCounter++;
-            System.out.println(frameCounter+"/"+balls.size());
+            System.out.println(frameCounter+"/"+balls.size()+"/"+(t2-t1));
         }
     }
     private void findMinPath(Node n,int counter){
