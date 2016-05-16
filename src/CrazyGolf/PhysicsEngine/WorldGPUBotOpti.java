@@ -16,52 +16,28 @@ import static org.jocl.CL.clReleaseMemObject;
 /**
  * Created by pmmde on 5/15/2016.
  */
-public class WorldGPUBotOpti extends WorldGPU {
-    protected cl_kernel kernelBotOpti;
-    protected cl_mem memSizes;
-
+public class WorldGPUBotOpti extends PhysicsGPU {
     public WorldGPUBotOpti(LinkedList<String> input){
         super(input);
-        kernelBotOpti = clCreateKernel(program, "botOpti", null);
-
-        clSetKernelArg(kernelBotOpti, 0, Sizeof.cl_mem, Pointer.to(memObjects[0]));
-        clSetKernelArg(kernelBotOpti, 1, Sizeof.cl_mem, Pointer.to(memObjects[4]));
-        clSetKernelArg(kernelBotOpti, 2, Sizeof.cl_mem, Pointer.to(memObjects[5]));
-        clSetKernelArg(kernelBotOpti, 3, Sizeof.cl_mem, Pointer.to(memObjects[1]));
-        clSetKernelArg(kernelBotOpti, 4, Sizeof.cl_mem, Pointer.to(memObjects[2]));
+    }
+    @Override
+    protected void loadKernalsAndMemObjects() {
+        kernels = new cl_kernel[1];
+        kernels[0] = clCreateKernel(program, "botOpti", null);
 
         int srcSizes[] = {sides.size(),edges.size(),points.size()};
         Pointer pSizes = Pointer.to(srcSizes);
-        memSizes = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-                Sizeof.cl_int * srcSizes.length, pSizes, null);
+        memObjectsDedi = new cl_mem[1];
+        memObjectsDedi[0]= clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_int * srcSizes.length, pSizes, null);
 
-        clSetKernelArg(kernelBotOpti, 6, Sizeof.cl_mem, Pointer.to(memSizes));
+        clSetKernelArg(kernels[0], 0, Sizeof.cl_mem, Pointer.to(memObjectsDefault[0]));
+        clSetKernelArg(kernels[0], 1, Sizeof.cl_mem, Pointer.to(memObjectsDefault[1]));
+        clSetKernelArg(kernels[0], 2, Sizeof.cl_mem, Pointer.to(memObjectsDefault[2]));
+        clSetKernelArg(kernels[0], 3, Sizeof.cl_mem, Pointer.to(memObjectsDefault[3]));
+        clSetKernelArg(kernels[0], 4, Sizeof.cl_mem, Pointer.to(memObjectsDefault[4]));
+        clSetKernelArg(kernels[0], 6, Sizeof.cl_mem, Pointer.to(memObjectsDedi[0]));
     }
-    @Override
-    public synchronized void step(boolean useBallBallCollision){
-        if(!editMode) {
-            double maxV = -1;
-            double ballSize = 0;
-            for (int i = 0; i < balls.size(); i++) {
-                if (balls.get(i).velocity.magnitude() > maxV) {
-                    maxV = balls.get(i).velocity.magnitude();
-                    ballSize = balls.get(i).size;
-                }
-            }
-            int subSteps=((int) (maxV / ballSize * 1.1*precision) + 1);
-            stepCalc(subSteps,useBallBallCollision);
-        }
-    }
-    @Override
-    public synchronized void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision){
-        ArrayList<Ball> original=balls;
-        balls=simBalls;
-        long start = System.currentTimeMillis();
-        step(useBallBallCollision);
-        //System.out.println(System.currentTimeMillis()-start);
-        balls=original;
-    }
-    private void stepCalc(int subframes,boolean useBallBallCollision) {
+    protected void stepCalc(int subframes,boolean useBallBallCollision) {
         double subframeInv = 1.0 / (double)(subframes);
         float friction[]=new float[balls.size()];
         for(int i=0;i<balls.size();i++)
@@ -91,16 +67,16 @@ public class WorldGPUBotOpti extends WorldGPU {
             }
 
             Pointer pBall = Pointer.to(srcBall);
-            memObjects[3] = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * srcBall.length, pBall, null);
+            cl_mem ball = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * srcBall.length, pBall, null);
             clFinish(commandQueue);
 
-            clSetKernelArg(kernelBotOpti, 5, Sizeof.cl_mem, Pointer.to(memObjects[3]));
-            clEnqueueNDRangeKernel(commandQueue, kernelBotOpti, 1, null, new long[]{balls.size()}, null, 0, null, null);
+            clSetKernelArg(kernels[0], 5, Sizeof.cl_mem, Pointer.to(ball));
+            clEnqueueNDRangeKernel(commandQueue, kernels[0], 1, null, new long[]{balls.size()}, null, 0, null, null);
             clFinish(commandQueue);
 
-            clEnqueueReadBuffer(commandQueue, memObjects[3], CL_TRUE, 0, srcBall.length * Sizeof.cl_float, pBall, 0, null, null);
+            clEnqueueReadBuffer(commandQueue, ball, CL_TRUE, 0, srcBall.length * Sizeof.cl_float, pBall, 0, null, null);
             clFinish(commandQueue);
-            clReleaseMemObject(memObjects[3]);
+            clReleaseMemObject(ball);
 
             for (int i = 0; i < balls.size(); i++) {
                 balls.get(i).place=new Point3D(srcBall[i*8+0],srcBall[i*8+1],srcBall[i*8+2]);
