@@ -55,7 +55,6 @@ public abstract class Physics extends WorldContainer{
                     points.get(sides.get(j).points[2]))) {
                 double dir = t > 0 ? -1 : 1;
                 balls.get(i).place = intersection.add(sides.get(j).normal.multiply(dir * balls.get(i).size));
-                //balls.get(i).acceleration=balls.get(i).acceleration.add(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal)*dir*2));
                 balls.get(i).velocity = balls.get(i).velocity.subtract(sides.get(j).normal.multiply(balls.get(i).velocity.dotProduct(sides.get(j).normal) * 1.8));
                 result =true;
             }

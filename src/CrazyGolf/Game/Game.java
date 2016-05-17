@@ -3,10 +3,7 @@ package CrazyGolf.Game;
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.FileLocations;
-import CrazyGolf.PhysicsEngine.World;
-import CrazyGolf.PhysicsEngine.WorldGPU;
-import CrazyGolf.PhysicsEngine.WorldCPU;
-import CrazyGolf.PhysicsEngine.WorldGPUBotOpti;
+import CrazyGolf.PhysicsEngine.*;
 import javafx.geometry.Point3D;
 
 import java.awt.event.KeyEvent;
@@ -63,7 +60,7 @@ public class Game extends GolfPanel implements Runnable{
             }
         }
 
-        world = new WorldCPU(worldData);
+        world = new WorldCPUMultiThread(worldData);
 
         if(brutefinderData.size()>0) {
             brutefinder = new Brutefinder();
