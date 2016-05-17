@@ -17,6 +17,7 @@ public class WorldContainer implements World {
     protected ArrayList<Side> sides;
     protected ArrayList<Edge> edges;
     protected ArrayList<Ball> balls;
+    protected ArrayList<Water> waters;
     protected Point3D hole;
 
     protected boolean editMode;
@@ -25,6 +26,9 @@ public class WorldContainer implements World {
         editMode=true;
         initContainer();
         loadWorldApi2(input);
+
+        addWater(new Point3D[]{new Point3D(0,0,0),new Point3D(200,200,40)});
+
         if(DEBUG)System.out.println("WorldContainer: World file loaded: "+sides.size()+" sides");
         editMode=false;
     }
@@ -38,6 +42,7 @@ public class WorldContainer implements World {
         edges = new ArrayList<>();
         sides = new ArrayList<>();
         balls = new ArrayList<>();
+        waters=new ArrayList<>();
         loadDefaultColors();
         hole = new Point3D(0,0,0);
     }
@@ -120,8 +125,16 @@ public class WorldContainer implements World {
         return points.get(i);
     }
     @Override
-    public boolean isBallOutsideWorld(int i) {
-        return balls.get(i).place.getZ()<-200;
+    public int getAmountOfWater() {
+        return waters.size();
+    }
+    @Override
+    public Point3D[] getWaterPoints(int i) {
+        return waters.get(i).place;
+    }
+    @Override
+    public Color3f getWaterColor(int i) {
+        return colors.get(waters.get(i).color);
     }
     @Override
     public Point3D getBallPosition(int i) {
@@ -337,6 +350,7 @@ public class WorldContainer implements World {
         colors.add(new Color3f(1.0f, 0.0f, 0.5f));//3
         colors.add(new Color3f(0.2f, 0.2f, 0.2f));//4
         colors.add(new Color3f(0.4f, 0.4f, 0.4f));//5
+        colors.add(new Color3f(0.0f, 0.8f, 1.0f));//6
     }
 
     public void addSquare(Point3D p1, Point3D p2, Point3D p3, Point3D p4, int c, double f) {
@@ -601,5 +615,33 @@ public class WorldContainer implements World {
         addSquare(p2, p2d, p2d.add(0, 0, borderHeight), p2.add(0, 0, borderHeight), 1,1);
         addSquare(p3, p3d, p3d.add(0, 0, borderHeight), p3.add(0, 0, borderHeight), 1,1);
         addSquare(p4, p4d, p4d.add(0, 0, borderHeight), p4.add(0, 0, borderHeight), 1,1);
+    }
+    public void addWater(Point3D[] points){
+        waters.add(new Water(points,6));
+        addSquare(new Point3D(points[0].getX(),points[0].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[0].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[1].getY(),points[0].getZ()),
+                new Point3D(points[0].getX(),points[1].getY(),points[0].getZ()),
+                2,1);
+        addSquare(new Point3D(points[0].getX(),points[0].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[0].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[0].getY(),points[1].getZ()),
+                new Point3D(points[0].getX(),points[0].getY(),points[1].getZ()),
+                2,1);
+        addSquare(new Point3D(points[0].getX(),points[0].getY(),points[0].getZ()),
+                new Point3D(points[0].getX(),points[1].getY(),points[0].getZ()),
+                new Point3D(points[0].getX(),points[1].getY(),points[1].getZ()),
+                new Point3D(points[0].getX(),points[0].getY(),points[1].getZ()),
+                2,1);
+        addSquare(new Point3D(points[0].getX(),points[1].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[1].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[1].getY(),points[1].getZ()),
+                new Point3D(points[0].getX(),points[1].getY(),points[1].getZ()),
+                2,1);
+        addSquare(new Point3D(points[1].getX(),points[0].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[1].getY(),points[0].getZ()),
+                new Point3D(points[1].getX(),points[1].getY(),points[1].getZ()),
+                new Point3D(points[1].getX(),points[0].getY(),points[1].getZ()),
+                2,1);
     }
 }

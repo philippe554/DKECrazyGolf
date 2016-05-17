@@ -27,11 +27,14 @@ public interface World {
     Color3f getTriangleColor(int i);
     int getAmountPoints();
     Point3D getPoint(int i);
-    boolean isBallOutsideWorld(int i);
+    int getAmountOfWater();
+    Point3D[] getWaterPoints(int i);
+    Color3f getWaterColor(int i);
 
     boolean DEBUG = true;
     boolean CPUCHECK = false;
     int precision=4;
     int maxPower=40;
     int ballSize=20;
+    double gravity=1;
 }

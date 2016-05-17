@@ -351,12 +351,12 @@ public class EditorPanel extends JPanel{
         }
         LinkedList<String> worldData = world.outputWorldApi2();
 
-        World worldWithPhysics = new WorldCPU(worldData);
+        /*World worldWithPhysics = new WorldCPU(worldData);
         Brutefinder brutefinder = new Brutefinder();
         brutefinder.init(worldWithPhysics);
         brutefinder.makeDatabase();
         LinkedList<String> brutefinderData = brutefinder.ouputDatabase();
-
+*/
         LinkedList<String> returnData = new LinkedList<>();
         returnData.add("Master:World");
         for(int i=0;i<worldData.size();i++)
@@ -364,11 +364,11 @@ public class EditorPanel extends JPanel{
             returnData.add(worldData.get(i));
         }
 
-        returnData.add("Master:Brutefinder");
+        /*returnData.add("Master:Brutefinder");
         for(int i=0;i<brutefinderData.size();i++)
         {
             returnData.add(brutefinderData.get(i));
-        }
+        }*/
 
         return returnData;
     }

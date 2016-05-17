@@ -125,12 +125,49 @@ public abstract class Physics extends WorldContainer{
                 ballCollision(i,j);
             }
         }
-        /*double total=0;
+    }
+    protected void waterComplete(float[] f,double subFrameInv){
         for(int i=0;i<balls.size();i++)
         {
-            total+=balls.get(i).velocity.magnitude()*balls.get(i).velocity.magnitude()*balls.get(i).mass;
+            for(int j=0;j<waters.size();j++)
+            {
+                ballWater(i,j,f,subFrameInv);
+            }
         }
-        System.out.println("Total kinetic energy: "+total);*/
+    }
+    protected void ballWater(int i,int j,float[] f,double subFrameInv){
+       if(balls.get(i).place.getX()>waters.get(j).place[0].getX()&&
+               balls.get(i).place.getX()<waters.get(j).place[1].getX()&&
+               balls.get(i).place.getY()>waters.get(j).place[0].getY()&&
+               balls.get(i).place.getY()<waters.get(j).place[1].getY())
+       {
+           if(balls.get(i).place.getZ()>(waters.get(j).place[1].getZ()+balls.get(i).size)||
+                   balls.get(i).place.getZ()<(waters.get(j).place[0].getZ()-balls.get(i).size)){
+               //Ball is outside water
+           }else{
+               double volume=0.0;
+               if(balls.get(i).place.getZ()<waters.get(j).place[1].getZ()){
+                   double h=Math.abs(waters.get(j).place[1].getZ()-balls.get(i).place.getZ());
+                   h=h>balls.get(i).size?balls.get(i).size:h;
+                   volume+=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
+                   if(balls.get(i).place.getZ()<waters.get(j).place[0].getZ()){
+                       h=Math.abs(waters.get(j).place[0].getZ()-balls.get(i).place.getZ());
+                       volume-=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
+                   }
+               }
+               if(balls.get(i).place.getZ()>waters.get(j).place[0].getZ()){
+                   double h=Math.abs(waters.get(j).place[0].getZ()-balls.get(i).place.getZ());
+                   h=h>balls.get(i).size?balls.get(i).size:h;
+                   volume+=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
+                   if(balls.get(i).place.getZ()>waters.get(j).place[1].getZ()){
+                       h=Math.abs(waters.get(j).place[1].getZ()-balls.get(i).place.getZ());
+                       volume-=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
+                   }
+               }
+               balls.get(i).acceleration=balls.get(i).acceleration.add(0,0,volume*gravity*subFrameInv*0.0001);
+               f[i]=f[i]>1?f[i]:1;
+           }
+       }
     }
     private boolean PointInTriangle(Point3D p, Point3D a, Point3D b, Point3D c) {
         Point3D v0 = c.subtract(a);

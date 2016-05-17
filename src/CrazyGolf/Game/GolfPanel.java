@@ -194,6 +194,21 @@ public class GolfPanel extends JPanel{
             scene.addChild(new Triangle(coords,world.getTriangleColor(i)));
         }
 
+        for(int i=0;i<world.getAmountOfWater();i++)
+        {
+            Point3D[] points = world.getWaterPoints(i);
+            ArrayList<Point3f> coords1 = new ArrayList();
+            coords1.add(new Point3f((float)points[0].getX()*scale,(float)points[0].getY()*scale,(float)points[1].getZ()*scale));
+            coords1.add(new Point3f((float)points[1].getX()*scale,(float)points[0].getY()*scale,(float)points[1].getZ()*scale));
+            coords1.add(new Point3f((float)points[1].getX()*scale,(float)points[1].getY()*scale,(float)points[1].getZ()*scale));
+            scene.addChild(new Triangle(coords1,world.getWaterColor(i)));
+            ArrayList<Point3f> coords2 = new ArrayList();
+            coords2.add(new Point3f((float)points[0].getX()*scale,(float)points[0].getY()*scale,(float)points[1].getZ()*scale));
+            coords2.add(new Point3f((float)points[0].getX()*scale,(float)points[1].getY()*scale,(float)points[1].getZ()*scale));
+            coords2.add(new Point3f((float)points[1].getX()*scale,(float)points[1].getY()*scale,(float)points[1].getZ()*scale));
+            scene.addChild(new Triangle(coords2,world.getWaterColor(i)));
+        }
+
         sceneBG.addChild(scene);
     }
     public void createArrow(Point3D ballCoor, Point3D aimVector){

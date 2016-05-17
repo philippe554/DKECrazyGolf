@@ -60,7 +60,7 @@ public class Game extends GolfPanel implements Runnable{
             }
         }
 
-        world = new WorldCPUMultiThread(worldData);
+        world = new WorldCPU(worldData);
 
         if(brutefinderData.size()>0) {
             brutefinder = new Brutefinder();
