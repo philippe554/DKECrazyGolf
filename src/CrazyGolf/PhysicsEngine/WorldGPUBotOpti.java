@@ -48,7 +48,7 @@ public class WorldGPUBotOpti extends PhysicsGPU {
             if(useBallBallCollision) {
                 ballCollisionComplete();
             }
-
+            waterComplete(subframeInv);
             float srcBall[] = new float[8 * balls.size()];
             for (int i = 0; i < balls.size(); i++) {
                 balls.get(i).acceleration = balls.get(i).acceleration.add(0, 0, -1*subframeInv); //gravity

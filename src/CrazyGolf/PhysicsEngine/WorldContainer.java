@@ -27,7 +27,7 @@ public class WorldContainer implements World {
         initContainer();
         loadWorldApi2(input);
 
-        addWater(new Point3D[]{new Point3D(0,0,0),new Point3D(200,200,40)});
+        addWater(new Point3D[]{new Point3D(0,0,-100),new Point3D(200,200,40)});
 
         if(DEBUG)System.out.println("WorldContainer: World file loaded: "+sides.size()+" sides");
         editMode=false;

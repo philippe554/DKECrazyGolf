@@ -53,7 +53,7 @@ public class WorldCPUMultiThread extends Physics{
             if(useBallBallCollision) {
                 ballCollisionComplete();
             }
-
+            waterComplete(subframeInv);
             for (int i = 0; i < balls.size(); i++) {
                 balls.get(i).acceleration = balls.get(i).acceleration.add(0, 0, -1*subframeInv); //gravity
                 balls.get(i).velocity = balls.get(i).velocity.add(balls.get(i).acceleration);

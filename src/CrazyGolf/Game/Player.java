@@ -49,7 +49,7 @@ public class Player {
         if(launchSort==0) {
             if (leftPressed) angle += 2;
             if (rightPressed) angle -= 2;
-            if (upPressed && angleUp < 35) angleUp++;
+            if (upPressed && angleUp < 90) angleUp++;
             if (downPressed && angleUp > 0) angleUp--;
             if (powerUpPressed && power < World.maxPower) power++;
             if (powerDownPressed && power > 1) power--;

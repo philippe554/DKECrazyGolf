@@ -121,7 +121,7 @@ public class Brutefinder implements BotInterface{
     }
     @Override
     public void makeDatabase(){
-        nodes=new Node[100][100][20];
+        nodes=new Node[100][100][40];
 
         if(World.DEBUG)System.out.println("Brutefinder: Start calculating bruteforce...");
 

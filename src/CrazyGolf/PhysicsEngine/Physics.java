@@ -126,16 +126,16 @@ public abstract class Physics extends WorldContainer{
             }
         }
     }
-    protected void waterComplete(float[] f,double subFrameInv){
+    protected void waterComplete(double subFrameInv){
         for(int i=0;i<balls.size();i++)
         {
             for(int j=0;j<waters.size();j++)
             {
-                ballWater(i,j,f,subFrameInv);
+                ballWater(i,j,subFrameInv);
             }
         }
     }
-    protected void ballWater(int i,int j,float[] f,double subFrameInv){
+    protected void ballWater(int i,int j,double subFrameInv){
        if(balls.get(i).place.getX()>waters.get(j).place[0].getX()&&
                balls.get(i).place.getX()<waters.get(j).place[1].getX()&&
                balls.get(i).place.getY()>waters.get(j).place[0].getY()&&
@@ -146,26 +146,25 @@ public abstract class Physics extends WorldContainer{
                //Ball is outside water
            }else{
                double volume=0.0;
+               double completeVolume = (4/3)*Math.PI*Math.pow(balls.get(i).size,3);
                if(balls.get(i).place.getZ()<waters.get(j).place[1].getZ()){
-                   double h=Math.abs(waters.get(j).place[1].getZ()-balls.get(i).place.getZ());
-                   h=h>balls.get(i).size?balls.get(i).size:h;
-                   volume+=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
-                   if(balls.get(i).place.getZ()<waters.get(j).place[0].getZ()){
-                       h=Math.abs(waters.get(j).place[0].getZ()-balls.get(i).place.getZ());
+                   volume+=completeVolume/2;
+                   if(balls.get(i).place.getZ()+balls.get(i).size<waters.get(j).place[1].getZ()){
+                       volume+=completeVolume/2;
+                   }
+                   else {
+                       volume+=completeVolume/2;
+                       double h=balls.get(i).size-(waters.get(j).place[1].getZ()-balls.get(i).place.getZ());
                        volume-=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
                    }
                }
-               if(balls.get(i).place.getZ()>waters.get(j).place[0].getZ()){
-                   double h=Math.abs(waters.get(j).place[0].getZ()-balls.get(i).place.getZ());
-                   h=h>balls.get(i).size?balls.get(i).size:h;
+               else {
+                   double h=waters.get(j).place[1].getZ()-(balls.get(i).place.getZ()-balls.get(i).size);
                    volume+=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
-                   if(balls.get(i).place.getZ()>waters.get(j).place[1].getZ()){
-                       h=Math.abs(waters.get(j).place[1].getZ()-balls.get(i).place.getZ());
-                       volume-=((Math.PI*h*h)/3.0)*(3*balls.get(i).size-h);
-                   }
                }
+               double ratio = volume/completeVolume;
                balls.get(i).acceleration=balls.get(i).acceleration.add(0,0,volume*gravity*subFrameInv*0.0001);
-               f[i]=f[i]>1?f[i]:1;
+               balls.get(i).velocity = balls.get(i).velocity.multiply(Math.pow((0.85+(1-ratio)*0.15),subFrameInv));
            }
        }
     }

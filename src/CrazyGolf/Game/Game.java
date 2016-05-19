@@ -116,6 +116,8 @@ public class Game extends GolfPanel implements Runnable{
                 lastTime=currentTime;
                 requestFocus();
                 if(inputFlag) {
+                    world.step(true);
+                    updateBall();
                     players[currentPlayer].updatePushParameters();
                     if(enterPressed) {
                         backupBallLocations();

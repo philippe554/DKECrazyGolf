@@ -21,7 +21,7 @@ public class WorldCPU extends Physics {
             if(useBallBallCollision) {
                 ballCollisionComplete();
             }
-            waterComplete(friction,subframeInv);
+            waterComplete(subframeInv);
             for (int i = 0; i < balls.size(); i++) {
                 balls.get(i).acceleration = balls.get(i).acceleration.add(0, 0, -gravity*subframeInv); //gravity
                 balls.get(i).velocity = balls.get(i).velocity.add(balls.get(i).acceleration);
