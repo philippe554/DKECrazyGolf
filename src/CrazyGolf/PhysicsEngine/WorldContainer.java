@@ -27,7 +27,7 @@ public class WorldContainer implements World {
         initContainer();
         loadWorldApi2(input);
 
-        addWater(new Point3D[]{new Point3D(0,0,-100),new Point3D(200,200,40)});
+        addPool(-100,-400,0,400,200,12,40);
 
         if(DEBUG)System.out.println("WorldContainer: World file loaded: "+sides.size()+" sides");
         editMode=false;
@@ -244,6 +244,8 @@ public class WorldContainer implements World {
                             addWall(data,alreadyConverted,i,j,gs,Z);
                         } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
                             addGrass(data,alreadyConverted,i,j,gs,Z);
+                        } else if (data[i][j].equals("S")) {
+                            addSand(data,alreadyConverted,i,j,gs,Z);
                         } else if (data[i][j].equals("H")) {
                             addHole(i*gs+1.5*gs,j*gs+1.5*gs,Z,30,80,30);
                             for(int k=0;k<3;k++)
@@ -383,14 +385,14 @@ public class WorldContainer implements World {
         while(keepCountingI||keepCountingJ)
         {
             if(keepCountingI) {
-                if ((iCounter + i) < data.length && expandGrass(data,i, j, iCounter + 1, jCounter, alreadyConverted)) {
+                if ((iCounter + i) < data.length && expand(data,i, j, iCounter + 1, jCounter, alreadyConverted,"FB")) {
                     iCounter++;
                 }else{
                     keepCountingI=false;
                 }
             }
             if(keepCountingJ) {
-                if ((jCounter + j) < data[0].length && expandGrass(data,i, j, iCounter , jCounter+1, alreadyConverted)) {
+                if ((jCounter + j) < data[0].length && expand(data,i, j, iCounter , jCounter+1, alreadyConverted,"FB")) {
                     jCounter++;
                 }else{
                     keepCountingJ=false;
@@ -408,20 +410,6 @@ public class WorldContainer implements World {
             }
         }
     }
-    private boolean expandGrass(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted) {
-        boolean possible=true;
-        for(int i=iStart;i<(iStart+iSize);i++)
-        {
-            for(int j=jStart;j<(jStart+jSize);j++)
-            {
-                if(alreadyConverted[i][j]==true || !(data[i][j].equals("F") || data[i][j].equals("B")))
-                {
-                    possible=false;
-                }
-            }
-        }
-        return possible;
-    }
     private void addWall(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,double Z) {
         int iCounter=0;
         int jCounter=0;
@@ -430,14 +418,14 @@ public class WorldContainer implements World {
         while(keepCountingI||keepCountingJ)
         {
             if(keepCountingI) {
-                if ((iCounter + i) < data.length && expandWall(data,i, j, iCounter + 1, jCounter, alreadyConverted)) {
+                if ((iCounter + i) < data.length && expand(data,i, j, iCounter + 1, jCounter, alreadyConverted,"W")) {
                     iCounter++;
                 }else{
                     keepCountingI=false;
                 }
             }
             if(keepCountingJ) {
-                if ((jCounter + j) < data[0].length && expandWall(data,i, j, iCounter , jCounter+1, alreadyConverted)) {
+                if ((jCounter + j) < data[0].length && expand(data,i, j, iCounter , jCounter+1, alreadyConverted,"W")) {
                     jCounter++;
                 }else{
                     keepCountingJ=false;
@@ -478,13 +466,49 @@ public class WorldContainer implements World {
             }
         }
     }
-    private boolean expandWall(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted) {
+    private void addSand(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,double Z) {
+        int iCounter=0;
+        int jCounter=0;
+        boolean keepCountingI=true;
+        boolean keepCountingJ=true;
+        while(keepCountingI||keepCountingJ)
+        {
+            if(keepCountingI) {
+                if ((iCounter + i) < data.length && expand(data,i, j, iCounter + 1, jCounter, alreadyConverted,"S")) {
+                    iCounter++;
+                }else{
+                    keepCountingI=false;
+                }
+            }
+            if(keepCountingJ) {
+                if ((jCounter + j) < data[0].length && expand(data,i, j, iCounter , jCounter+1, alreadyConverted,"S")) {
+                    jCounter++;
+                }else{
+                    keepCountingJ=false;
+                }
+            }
+        }
+
+        double borderHeight=60;
+
+        addSquare(new Point3D(i*gs,j*gs,Z),
+                new Point3D(i*gs+gs*iCounter,j*gs,Z),
+                new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,Z),
+                new Point3D(i*gs,j*gs+gs*jCounter,Z),
+                0,2);
+        for(int k=i;k<(i+iCounter);k++) {
+            for(int l=j;l<(j+jCounter);l++) {
+                alreadyConverted[k][l] = true;
+            }
+        }
+    }
+    private boolean expand(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted,String ignoreData) {
         boolean possible=true;
         for(int i=iStart;i<(iStart+iSize);i++)
         {
             for(int j=jStart;j<(jStart+jSize);j++)
             {
-                if(alreadyConverted[i][j]==true || !(data[i][j].equals("W")))
+                if(alreadyConverted[i][j]==true || !ignoreData.contains(data[i][j]))
                 {
                     possible=false;
                 }
@@ -643,5 +667,20 @@ public class WorldContainer implements World {
                 new Point3D(points[1].getX(),points[1].getY(),points[1].getZ()),
                 new Point3D(points[1].getX(),points[0].getY(),points[1].getZ()),
                 2,1);
+    }
+    public void addPool(double x,double y,double z,double size,double debt,int parts,double waterDebt){
+        addWater(new Point3D[]{new Point3D(x,y,z-debt),new Point3D(x+size,y+size,z-waterDebt)});
+        double xStep=size/parts;
+        double yStep=size/parts;
+        for(double i=0;i<parts;i++)
+        {
+            for(double j=0;j<parts;j++){
+                Point3D p1=new Point3D(x+i*xStep,y+j*yStep,z+((Math.max((Math.cos(i/parts*Math.PI*2)-1),(Math.cos(j/parts*Math.PI*2)-1)))/4)*debt);
+                Point3D p2=new Point3D(x+(i+1)*xStep,y+j*yStep,z+((Math.max((Math.cos((i+1.0)/parts*Math.PI*2)-1),(Math.cos(j/parts*Math.PI*2)-1))))/4*debt);
+                Point3D p3=new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+((Math.max((Math.cos((i+1.0)/parts*Math.PI*2)-1),(Math.cos((j+1.0)/parts*Math.PI*2)-1))))/4*debt);
+                Point3D p4=new Point3D(x+i*xStep,y+(j+1)*yStep,z+((Math.max((Math.cos(i/parts*Math.PI*2)-1),(Math.cos((j+1.0)/parts*Math.PI*2)-1))))/4*debt);
+                addSquare(p1,p2,p3,p4,2,1);
+            }
+        }
     }
 }
