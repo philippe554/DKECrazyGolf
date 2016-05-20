@@ -20,13 +20,16 @@ public class RadioButtons extends JPanel {
 
     private JButton saveButton;
     public JRadioButton wallButton;
+    public JRadioButton sandButton;
     public JRadioButton floorButton;
     public JRadioButton ballButton;
     public JRadioButton holeButton;
     public JRadioButton loopButton;
-    public JRadioButton castelButton;
+    public JRadioButton castleButton;
     public JRadioButton bridgeButton;
-    //public JRadioButton removeButton;
+    public JRadioButton poolButton;
+    public JRadioButton crocoButton;
+    public JRadioButton removeButton;
     public ActionListener listener;
     private String chosenOption;
 
@@ -61,6 +64,10 @@ public class RadioButtons extends JPanel {
                     chosenOption = "W";
                     System.out.println(chosenOption);
                 }
+                if (sandButton.isSelected()) {
+                    chosenOption = "S";
+                    System.out.println(chosenOption);
+                }
                 if (floorButton.isSelected()) {
                     chosenOption = "F";
                     System.out.println(chosenOption);
@@ -77,19 +84,26 @@ public class RadioButtons extends JPanel {
                     chosenOption = "L";
                     System.out.println(chosenOption);
                 }
-                if (castelButton.isSelected()) {
+                if (castleButton.isSelected()) {
                     chosenOption = "C";
                     System.out.println(chosenOption);
                 }
                 if (bridgeButton.isSelected()) {
+                    chosenOption = "R";
+                    System.out.println(chosenOption);
+                }
+                if (poolButton.isSelected()) {
                     chosenOption = "P";
                     System.out.println(chosenOption);
                 }
-
-                /*if (removeButton.isSelected()) {
-                    chosenOption = "R";
+                if (crocoButton.isSelected()) {
+                    chosenOption = "K";
+                    System.out.println(chosenOption);
+                }
+                if (removeButton.isSelected()) {
+                    chosenOption = "D";
                     System.out.println("remove");
-                }*/
+                }
             }
         }
 
@@ -111,6 +125,9 @@ public class RadioButtons extends JPanel {
         if (s.equals("Floor")){
             g2.setColor(Color.green);
         }
+        if (s.equals("Sand")){
+            g2.setColor(Color.orange);
+        }
         if (s.equals("Wall")){
             g2.setColor(Color.red);
         }
@@ -127,12 +144,17 @@ public class RadioButtons extends JPanel {
             g2.setColor(Color.pink);
         }
         if (s.equals("Bridge")){
+            g2.setColor(Color.magenta);
+        }
+        if (s.equals("Pool")){
             g2.setColor(Color.blue);
         }
-
-        /*if (s.equals("Remove")){
-            g2.setColor(Color.blue);
-        }*/
+        if (s.equals("Croco")){
+            g2.setColor(Color.cyan);
+        }
+        if (s.equals("REMOVE")){
+            g2.setColor(Color.lightGray);
+        }
 
         g2.fillOval(x, y, width, height);
         g2.setColor(Color.lightGray);
@@ -160,78 +182,65 @@ public class RadioButtons extends JPanel {
     }
 
 
+    public void buttonSettings(JRadioButton b){
+        b.setSelectedIcon(getSelectedIcon(b.getText()));
+        b.setBackground(Color.white);
+        b.setForeground(Color.darkGray);
+        b.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
+        b.addActionListener(listener);
+    }
+
     public JPanel createButtons(){
 
         floorButton = new JRadioButton("Floor", emptyIcon);
-        floorButton.setSelectedIcon(getSelectedIcon(floorButton.getText()));
-        floorButton.setBackground(Color.white);
-        floorButton.setForeground(Color.darkGray);
-        floorButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        floorButton.addActionListener(listener);
+        buttonSettings(floorButton);
+
+        sandButton = new JRadioButton("Sand", emptyIcon);
+        buttonSettings(sandButton);
 
         wallButton = new JRadioButton("Wall", emptyIcon);
-        wallButton.setSelectedIcon(getSelectedIcon(wallButton.getText()));
-        wallButton.setBackground(Color.white);
-        wallButton.setForeground(Color.darkGray);
-        wallButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        wallButton.addActionListener(listener);
+        buttonSettings(wallButton);
 
         ballButton = new JRadioButton("Ball", emptyIcon);
-        ballButton.setSelectedIcon(getSelectedIcon(ballButton.getText()));
-        ballButton.setBackground(Color.white);
-        ballButton.setForeground(Color.darkGray);
-        ballButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        ballButton.addActionListener(listener);
+        buttonSettings(ballButton);
 
         holeButton = new JRadioButton("Hole", emptyIcon);
-        holeButton.setSelectedIcon(getSelectedIcon(holeButton.getText()));
-        holeButton.setBackground(Color.white);
-        holeButton.setForeground(Color.darkGray);
-        holeButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        holeButton.addActionListener(listener);
+        buttonSettings(holeButton);
 
         loopButton = new JRadioButton("Loop", emptyIcon);
-        loopButton.setSelectedIcon(getSelectedIcon(loopButton.getText()));
-        loopButton.setBackground(Color.white);
-        loopButton.setForeground(Color.darkGray);
-        loopButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        loopButton.addActionListener(listener);
+        buttonSettings(loopButton);
 
-        castelButton = new JRadioButton("Castle", emptyIcon);
-        castelButton.setSelectedIcon(getSelectedIcon(castelButton.getText()));
-        castelButton.setBackground(Color.white);
-        castelButton.setForeground(Color.darkGray);
-        castelButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        castelButton.addActionListener(listener);
+        castleButton = new JRadioButton("Castle", emptyIcon);
+        buttonSettings(castleButton);
 
         bridgeButton = new JRadioButton("Bridge", emptyIcon);
-        bridgeButton.setSelectedIcon(getSelectedIcon(bridgeButton.getText()));
-        bridgeButton.setBackground(Color.white);
-        bridgeButton.setForeground(Color.darkGray);
-        bridgeButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        bridgeButton.addActionListener(listener);
+        buttonSettings(bridgeButton);
 
+        poolButton = new JRadioButton("Pool", emptyIcon);
+        buttonSettings(poolButton);
 
-        /*removeButton = new JRadioButton("Remove", emptyIcon);
-        removeButton.setSelectedIcon(getSelectedIcon(removeButton.getText()));
-        removeButton.setBackground(Color.white);
-        removeButton.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        removeButton.addActionListener(listener);*/
+        crocoButton = new JRadioButton("Croco", emptyIcon);
+        buttonSettings(crocoButton);
+
+        removeButton = new JRadioButton("REMOVE", emptyIcon);
+        buttonSettings(removeButton);
 
         ButtonGroup group = new ButtonGroup();
-        group.add(floorButton); group.add(wallButton);
-        group.add(ballButton); group.add(holeButton);
-        group.add(loopButton); group.add(castelButton);
-        group.add(bridgeButton);
-        //group.add(removeButton);
+        group.add(floorButton); group.add(sandButton);
+        group.add(wallButton); group.add(ballButton);
+        group.add(holeButton); group.add(loopButton);
+        group.add(castleButton); group.add(bridgeButton);
+        group.add(poolButton); group.add(crocoButton);
+        group.add(removeButton);
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(7,1));
+        panel.setLayout(new GridLayout(11,1));
 
-        panel.add(floorButton); panel.add(wallButton);
-        panel.add(ballButton); panel.add(holeButton);
-        panel.add(loopButton);panel.add(castelButton);
-        panel.add(bridgeButton);
-        // panel.add(removeButton);
+        panel.add(floorButton); panel.add(sandButton);
+        panel.add(wallButton); panel.add(ballButton);
+        panel.add(holeButton); panel.add(loopButton);
+        panel.add(castleButton); panel.add(bridgeButton);
+        panel.add(poolButton); panel.add(crocoButton);
+        panel.add(removeButton);
         return panel;
     }
 

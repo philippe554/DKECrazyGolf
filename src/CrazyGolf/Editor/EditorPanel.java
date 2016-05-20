@@ -23,20 +23,19 @@ public class EditorPanel extends JPanel{
     private ActionListener listener2;
     private ActionListener listener3;
 
-    private Color white = Color.white;;
-    private Color green= Color.green;
-    private Color gray= Color.gray;
-    private Color black= Color.black;
-    private Color yellow= Color.yellow;
+    private Color green = Color.green;
+    private Color gray = Color.gray;
+    private Color black = Color.black;
+    private Color yellow = Color.yellow;
     private Color pink = Color.PINK;
 
     private Rectangle[][] rectangleGrid;
     private String[][] stringGrid;
 
-    private String chosenOption;
+    private String chosenOption = "D";
 
-    private final double pixelSIZE = 20;
-    private final int SIZE = (int)pixelSIZE;
+    private final int pixelSIZE  = 20;
+
     private RadioButtons buttons;
 
     private String[] layerStrings = { "Layer 1", "Layer 2",
@@ -45,28 +44,23 @@ public class EditorPanel extends JPanel{
     private Grid[] grid = new Grid[layerStrings.length];
     private JLayeredPane layeredPane;
     private JLabel label;
-    private JCheckBox onTop;
     private JComboBox layerList;
-    private static String ON_TOP_COMMAND = "ontop";
     private static String LAYER_COMMAND = "layer";
 
     public EditorPanel(RadioButtons someButtons){
         setLayout(new BorderLayout());
         buttons = someButtons;
-        label = new JLabel();
-        label.setBounds(0,0,1,1);
-        label.setOpaque(true);
-        label.setBackground(Color.BLACK);
 
         class ChoiceListener implements MouseListener{
             Point startDrag;
 
             public void mouseClicked(MouseEvent e) {
-                if(buttons.ballButton.isEnabled() || buttons.wallButton.isEnabled() || buttons.floorButton.isEnabled()|| buttons.holeButton.isEnabled()){
+                if(buttons.ballButton.isEnabled() || buttons.wallButton.isEnabled() || buttons.floorButton.isEnabled()|| buttons.holeButton.isEnabled()
+                        || buttons.sandButton.isEnabled() || buttons.loopButton.isEnabled() || buttons.castleButton.isEnabled() || buttons.bridgeButton.isEnabled()
+                        || buttons.poolButton.isEnabled() || buttons.crocoButton.isEnabled()){
                     chosenOption = buttons.getChosenOption();
                     int x = e.getX();
-                    int y =e.getY();
-
+                    int y = e.getY();
 
                     for(int i=0; i<rectangleGrid.length; i++) {
                         for (int j=0; j<rectangleGrid[0].length; j++) {
@@ -75,14 +69,17 @@ public class EditorPanel extends JPanel{
                                 if (chosenOption.equals("W")){
                                     stringGrid[i][j] = "W";
                                 }
+                                if (chosenOption.equals("S")){
+                                    stringGrid[i][j] = "S";
+                                }
                                 if (chosenOption.equals("F")){
                                     stringGrid[i][j] = "F";
                                 }
                                 if (chosenOption.equals("B")){
-                                   /* if(cntrB!=0){
-                                        JOptionPane.showMessageDialog(null, "You can only place one ball, duh!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                   if(isPlaced("B")== true){
+                                        JOptionPane.showMessageDialog(null, "You can only place one ball!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
-                                    else {*/
+                                    else {
                                     if(i<stringGrid.length-1 && j<stringGrid[0].length-1) {
                                         //cntrB++;
                                         stringGrid[i][j] = "B";
@@ -93,12 +90,12 @@ public class EditorPanel extends JPanel{
                                     else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
-                                    //}
+                                    }
                                 }
                                 if (chosenOption.equals("H")) {
-                                    /*if (cntrH != 0) {
-                                        JOptionPane.showMessageDialog(null, "You can only place one hole, duh!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                    } else {*/
+                                    if (isPlaced("H")==true) {
+                                        JOptionPane.showMessageDialog(null, "You can only place one hole!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    } else {
                                     if (i > 0 && i < stringGrid.length - 1 && j > 0 && j < stringGrid[0].length - 1) {
                                         //cntrH++;
                                         stringGrid[i][j] = "H";
@@ -113,7 +110,7 @@ public class EditorPanel extends JPanel{
                                     } else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
-                                    // }
+                                    }
                                 }
                                 if (chosenOption.equals("L")){
                                     if ( i < stringGrid.length - 13 && j < stringGrid[0].length - 5) {
@@ -139,11 +136,23 @@ public class EditorPanel extends JPanel{
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
-                                if (chosenOption.equals("P")){
+                                if (chosenOption.equals("R")){
                                     if ( i < stringGrid.length - 3 && j < stringGrid[0].length - 23) {
-                                        stringGrid[i][j] = "P";
+                                        stringGrid[i][j] = "R";
                                         for (int m=0;m<4;m++){
                                             for(int k=0;k<24;k++){
+                                                stringGrid[i+m][j+k] = "R";
+                                            }
+                                        }
+                                    }  else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    }
+                                }
+                                if (chosenOption.equals("P")){
+                                    if ( i < stringGrid.length - 13 && j < stringGrid[0].length - 13) {
+                                        stringGrid[i][j] = "P";
+                                        for (int m=0;m<14;m++){
+                                            for(int k=0;k<14;k++){
                                                 stringGrid[i+m][j+k] = "P";
                                             }
                                         }
@@ -151,43 +160,22 @@ public class EditorPanel extends JPanel{
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
-
-                          /*      if (chosenOption.equals("R")) {
-                                    if (stringGrid[i][j] == "W" || stringGrid[i][j] == "F")
-                                        stringGrid[i][j] = "E";
-                                    else if (stringGrid[i][j] == "B") {
-                                        cntrB--;
-                                        stringGrid[i][j] = "E";
-                                        stringGrid[i][j + 1] = "E";
-                                        stringGrid[i + 1][j] = "E";
-                                        stringGrid[i + 1][j + 1] = "E";
-                                    } else if (stringGrid[i][j] == "H") {
-                                        cntrH--;
-                                        stringGrid[i][j] = "E";
-                                        stringGrid[i - 1][j - 1] = "E";
-                                        stringGrid[i - 1][j] = "E";
-                                        stringGrid[i - 1][j + 1] = "E";
-                                        stringGrid[i][j - 1] = "E";
-                                        stringGrid[i][j + 1] = "E";
-                                        stringGrid[i + 1][j - 1] = "E";
-                                        stringGrid[i + 1][j] = "E";
-                                        stringGrid[i + 1][j + 1] = "E";
-                                    } else if (stringGrid[i][j] == "L") {
-                                        int k=i;
-                                        int l=j;
-                                        while(stringGrid[k][l]=="L") {
-                                            k--;
-                                            while (stringGrid[k][l] == "L") {
-                                                j--;
+                               /* if (chosenOption.equals("K")){
+                                    if ( i < stringGrid.length - 3 && j < stringGrid[0].length - 23) {
+                                        stringGrid[i][j] = "K";
+                                        for (int m=0;m<4;m++){
+                                            for(int k=0;k<24;k++){
+                                                stringGrid[i+m][j+k] = "K";
                                             }
                                         }
-                                        for(int o = 0; o<14;o++) {
-                                            for (int p = 0; p < 6; p++) {
-                                                stringGrid[k+1+o][j+1+p]="E";
-                                            }
-                                        }
+                                    }  else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 } */
+
+                                if (chosenOption.equals("D")) {
+                                    stringGrid[i][j] = "D";
+                                }
 
                             }
                             repaint();
@@ -216,8 +204,14 @@ public class EditorPanel extends JPanel{
                                 if (chosenOption.equals("W")){
                                     stringGrid[i][j] = "W";
                                 }
+                                if (chosenOption.equals("S")){
+                                    stringGrid[i][j] = "S";
+                                }
                                 if (chosenOption.equals("F")){
                                     stringGrid[i][j] = "F";
+                                }
+                                if (chosenOption.equals("D")){
+                                    stringGrid[i][j] = "D";
                                 }
                                 repaint();
                             }
@@ -246,8 +240,6 @@ public class EditorPanel extends JPanel{
         listener1 = new ChoiceListener();
         listener2 = new SaveListener();
 
-
-
         setSaveButton(new JButton("SAVE"));
         getSaveButton().setBackground(Color.lightGray);
         getSaveButton().setForeground(Color.darkGray);
@@ -258,14 +250,65 @@ public class EditorPanel extends JPanel{
         getSaveButton().setSize(new Dimension(20,20));
         add(getSaveButton(),BorderLayout.EAST);
 
-        class DukeMouseMoveListener implements MouseMotionListener {
+        label = new JLabel();
+        label.setBounds(0,0,1,1);
+        label.setOpaque(true);
+        label.setBackground(Color.BLACK);
+
+        class ObjectPreviewListener implements MouseMotionListener {
 
             public void mouseDragged(MouseEvent e) {
 
             }
 
             public void mouseMoved(MouseEvent e) {
-                label.setLocation(e.getX(), e.getY());
+                chosenOption = buttons.getChosenOption();
+                if (chosenOption==null) {
+                    label.setBounds(0, 0, 1, 1);
+                    label.setBackground(Color.black);
+                } else {
+                    if (chosenOption.equals("W")) {
+                        label.setBounds(0, 0, pixelSIZE, pixelSIZE);
+                        label.setBackground(Color.red);
+                        // label.setOpaque(true);
+                    } else if (chosenOption.equals("S")) {
+                        label.setBounds(0, 0, pixelSIZE, pixelSIZE);
+                        label.setBackground(Color.orange);
+                        //  label.setOpaque(true);
+                    } else if (chosenOption.equals("F")) {
+                        label.setBounds(0, 0, pixelSIZE, pixelSIZE);
+                        label.setBackground(Color.green);
+                        //   label.setOpaque(true);
+                    } else if (chosenOption.equals("B")) {
+                        label.setBounds(0, 0, pixelSIZE * 2, pixelSIZE * 2);
+                        label.setBackground(Color.gray);
+                    } else if (chosenOption.equals("H")) {
+                        label.setBounds(0, 0, pixelSIZE * 3, pixelSIZE * 3);
+                        label.setBackground(Color.black);
+                    } else if (chosenOption.equals("L")) {
+                        label.setBounds(0, 0, pixelSIZE * 14, pixelSIZE * 6);
+                        label.setBackground(Color.yellow);
+                    } else if (chosenOption.equals("C")) {
+                        label.setBounds(0, 0, pixelSIZE * 13, pixelSIZE * 4);
+                        label.setBackground(Color.pink);
+                    } else if (chosenOption.equals("R")) {
+                        label.setBounds(0, 0, pixelSIZE * 4, pixelSIZE * 24);
+                        label.setBackground(Color.magenta);
+                    } else if (chosenOption.equals("P")) {
+                        label.setBounds(0, 0, pixelSIZE * 14, pixelSIZE * 14);
+                        label.setBackground(Color.blue);
+                    }
+                /* if (chosenOption.equals("K")){
+                    label.setBounds(0,0,pixelSIZE*,pixelSIZE*);
+                    label.setBackground(Color.cyan);
+                } */
+                    else {
+                        label.setBounds(0, 0, 1, 1);
+                        label.setBackground(Color.black);
+                    }
+                    label.setLocation(e.getX(), e.getY());
+                    repaint();
+                }
             }
         }
 
@@ -273,8 +316,6 @@ public class EditorPanel extends JPanel{
 
             public void actionPerformed(ActionEvent e) {
                 String cmd = e.getActionCommand();
-                int position = 0;
-
                 if (LAYER_COMMAND.equals(cmd)) {
                     layeredPane.moveToFront(label);
                     layeredPane.setLayer(label,
@@ -293,7 +334,7 @@ public class EditorPanel extends JPanel{
         layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(300, 310));
         layeredPane.addMouseListener(listener1);
-        layeredPane.addMouseMotionListener(new DukeMouseMoveListener());
+        layeredPane.addMouseMotionListener(new ObjectPreviewListener());
 
         for (int i = 0; i < layerStrings.length; i++) {
             Grid g = new Grid();
@@ -301,7 +342,6 @@ public class EditorPanel extends JPanel{
             grid[i] = g;
             layeredPane.add(panel, new Integer(i));
         }
-        // ImageIcon image = new ImageIcon(FileLocations.mouse)
 
         layeredPane.add(label, new Integer(1), 0);
 
@@ -312,6 +352,17 @@ public class EditorPanel extends JPanel{
 
         add(layerList, BorderLayout.SOUTH);
         add(layeredPane);
+    }
+
+    public boolean isPlaced(String s){
+        for(int i=0; i<rectangleGrid.length; i++) {
+            for (int j = 0; j < rectangleGrid[0].length; j++) {
+                if (stringGrid[i][j].equals(s)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void writeItDown(LinkedList<String> list){
@@ -389,6 +440,10 @@ public class EditorPanel extends JPanel{
                         g2.setPaint(Color.RED);
                         g2.fill(rectangleGrid[i][j]);
                     }
+                    if (stringGrid[i][j].equals("S")) {
+                        g2.setPaint(Color.orange);
+                        g2.fill(rectangleGrid[i][j]);
+                    }
                     if (stringGrid[i][j].equals("F")) {
                         g2.setPaint(green);
                         g2.fill(rectangleGrid[i][j]);
@@ -409,8 +464,16 @@ public class EditorPanel extends JPanel{
                         g2.setPaint(pink);
                         g2.fill(rectangleGrid[i][j]);
                     }
+                    if (stringGrid[i][j].equals("R")) {
+                        g2.setPaint(Color.magenta);
+                        g2.fill(rectangleGrid[i][j]);
+                    }
                     if (stringGrid[i][j].equals("P")) {
                         g2.setPaint(Color.BLUE);
+                        g2.fill(rectangleGrid[i][j]);
+                    }
+                    if (stringGrid[i][j].equals("K")) {
+                        g2.setPaint(Color.cyan);
                         g2.fill(rectangleGrid[i][j]);
                     }
                     g2.setPaint(Color.lightGray);
