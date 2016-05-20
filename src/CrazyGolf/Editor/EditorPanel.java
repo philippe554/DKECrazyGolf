@@ -139,12 +139,12 @@ public class EditorPanel extends JPanel{
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
-                                if (chosenOption.equals("R")){
+                                if (chosenOption.equals("P")){
                                     if ( i < stringGrid.length - 3 && j < stringGrid[0].length - 23) {
-                                        stringGrid[i][j] = "R";
+                                        stringGrid[i][j] = "P";
                                         for (int m=0;m<4;m++){
                                             for(int k=0;k<24;k++){
-                                                stringGrid[i+m][j+k] = "R";
+                                                stringGrid[i+m][j+k] = "P";
                                             }
                                         }
                                     }  else {
@@ -409,7 +409,7 @@ public class EditorPanel extends JPanel{
                         g2.setPaint(pink);
                         g2.fill(rectangleGrid[i][j]);
                     }
-                    if (stringGrid[i][j].equals("R")) {
+                    if (stringGrid[i][j].equals("P")) {
                         g2.setPaint(Color.BLUE);
                         g2.fill(rectangleGrid[i][j]);
                     }
