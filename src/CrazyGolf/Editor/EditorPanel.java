@@ -19,9 +19,6 @@ import java.util.Scanner;
 public class EditorPanel extends JPanel{
 
     private JButton saveButton;
-    private MouseListener listener1;
-    private ActionListener listener2;
-    private ActionListener listener3;
 
     private Color green = Color.green;
     private Color gray = Color.gray;
@@ -32,24 +29,94 @@ public class EditorPanel extends JPanel{
     private Rectangle[][] rectangleGrid;
     private String[][] stringGrid;
 
-    private String chosenOption = "D";
+    private String chosenOption;
 
     private final int pixelSIZE  = 20;
 
     private RadioButtons buttons;
 
-    private String[] layerStrings = { "Layer 1", "Layer 2",
-            "Layer 3",   "Layer 4",
-            "Layer 5" };
-    private Grid[] grid = new Grid[layerStrings.length];
+    private boolean DataBaseCalculation;
+
+    private final String[] layerStrings = {"Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"};
     private JLayeredPane layeredPane;
-    private JLabel label;
     private JComboBox layerList;
+    private Grid[] grid = new Grid[layerStrings.length];
+    private JLabel label;
     private static String LAYER_COMMAND = "layer";
 
     public EditorPanel(RadioButtons someButtons){
+        chosenOption = "D";
+
         setLayout(new BorderLayout());
+
+        JPanel settingPanel = new JPanel();
+        settingPanel.setLayout(new BorderLayout());
+
+        JPanel settings = new JPanel();
+        settings.setLayout(new GridLayout(2,1));
+
         buttons = someButtons;
+
+
+        setSaveButton(new JButton("SAVE"));
+        getSaveButton().setBackground(Color.lightGray);
+        getSaveButton().setForeground(Color.darkGray);
+        getSaveButton().setBorderPainted(false);
+        getSaveButton().setFont(new Font("Century Gothic",Font.BOLD,30));
+
+        class SaveListener implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
+                //write into file
+                writeItDown(getDataForFileWriting());
+            }
+        }
+
+        getSaveButton().addActionListener(new SaveListener());
+        getSaveButton().setSize(new Dimension(20,20));
+
+
+        layerList = makeLayerList();
+        layeredPane = makeLayeredPane();
+
+        settings.add(layerList);
+        settings.add(makeCalculationCheckbox());
+        settingPanel.add(settings, BorderLayout.NORTH);
+        settingPanel.add(getSaveButton());
+        add(settingPanel, BorderLayout.EAST);
+        add(layeredPane, BorderLayout.CENTER);
+    }
+
+    public JComboBox makeLayerList(){
+
+        JComboBox list = new JComboBox(layerStrings);
+        list.setSelectedIndex(-1);    //no layer
+        list.setFont(new Font("Century Gothic", Font.PLAIN, 16));
+        list.setActionCommand(LAYER_COMMAND);
+
+        class LayeredActionListener implements ActionListener{
+
+            public void actionPerformed(ActionEvent e) {
+                String cmd = e.getActionCommand();
+                if (LAYER_COMMAND.equals(cmd)) {
+                    layeredPane.moveToFront(label);
+                    layeredPane.setLayer(label,
+                            layerList.getSelectedIndex());
+
+                }
+                Grid currentGrid = grid[layerList.getSelectedIndex()];
+                stringGrid = currentGrid.getStringGrid();
+                rectangleGrid = currentGrid.getRectanglegGrid();
+                revalidate();
+                repaint();
+            }
+        }
+
+        list.addActionListener(new LayeredActionListener());
+
+        return list;
+    }
+
+    public JLayeredPane makeLayeredPane(){
 
         class ChoiceListener implements MouseListener{
             Point startDrag;
@@ -76,40 +143,35 @@ public class EditorPanel extends JPanel{
                                     stringGrid[i][j] = "F";
                                 }
                                 if (chosenOption.equals("B")){
-                                   if(isPlaced("B")== true){
+                                    if(isPlaced("B")== true){
                                         JOptionPane.showMessageDialog(null, "You can only place one ball!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                     else {
-                                    if(i<stringGrid.length-1 && j<stringGrid[0].length-1) {
-                                        //cntrB++;
-                                        stringGrid[i][j] = "B";
-                                        stringGrid[i][j + 1] = "B";
-                                        stringGrid[i + 1][j]= "B";
-                                        stringGrid[i + 1][j + 1]="B";
-                                    }
-                                    else {
-                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                    }
+                                        if(i<stringGrid.length-1 && j<stringGrid[0].length-1) {
+                                            stringGrid[i][j] = "B";
+                                            stringGrid[i][j + 1] = "B";
+                                            stringGrid[i + 1][j]= "B";
+                                            stringGrid[i + 1][j + 1]="B";
+                                        }
+                                        else {
+                                            JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                        }
                                     }
                                 }
                                 if (chosenOption.equals("H")) {
                                     if (isPlaced("H")==true) {
                                         JOptionPane.showMessageDialog(null, "You can only place one hole!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     } else {
-                                    if (i > 0 && i < stringGrid.length - 1 && j > 0 && j < stringGrid[0].length - 1) {
-                                        //cntrH++;
-                                        stringGrid[i][j] = "H";
-                                        stringGrid[i - 1][j - 1] = "H";
-                                        stringGrid[i - 1][j] = "H";
-                                        stringGrid[i - 1][j + 1] = "H";
-                                        stringGrid[i][j - 1] = "H";
-                                        stringGrid[i][j + 1] = "H";
-                                        stringGrid[i + 1][j - 1] = "H";
-                                        stringGrid[i + 1][j] = "H";
-                                        stringGrid[i + 1][j + 1] = "H";
-                                    } else {
-                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                    }
+                                        if (i < stringGrid.length - 2 && j < stringGrid[0].length - 2) {
+                                            stringGrid[i][j] = "H";
+                                            for (int m=0;m<3;m++){
+                                                for(int k=0;k<3;k++){
+                                                    stringGrid[i+m][j+k] = "H";
+                                                }
+                                            }
+                                        } else {
+                                            JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                        }
                                     }
                                 }
                                 if (chosenOption.equals("L")){
@@ -223,37 +285,11 @@ public class EditorPanel extends JPanel{
                 }
             }
 
-
             public void mouseEntered(MouseEvent e) {}
 
             public void mouseExited(MouseEvent e) {}
 
         }
-
-        class SaveListener implements ActionListener {
-            public void actionPerformed(ActionEvent e) {
-                //write into file
-                writeItDown(getDataForFileWriting());
-            }
-        }
-
-        listener1 = new ChoiceListener();
-        listener2 = new SaveListener();
-
-        setSaveButton(new JButton("SAVE"));
-        getSaveButton().setBackground(Color.lightGray);
-        getSaveButton().setForeground(Color.darkGray);
-        getSaveButton().setBorderPainted(false);
-        getSaveButton().setFont(new Font("Century Gothic",Font.BOLD,30));
-
-        getSaveButton().addActionListener(listener2);
-        getSaveButton().setSize(new Dimension(20,20));
-        add(getSaveButton(),BorderLayout.EAST);
-
-        label = new JLabel();
-        label.setBounds(0,0,1,1);
-        label.setOpaque(true);
-        label.setBackground(Color.BLACK);
 
         class ObjectPreviewListener implements MouseMotionListener {
 
@@ -293,7 +329,7 @@ public class EditorPanel extends JPanel{
                         label.setBackground(Color.pink);
                     } else if (chosenOption.equals("R")) {
                         label.setBounds(0, 0, pixelSIZE * 4, pixelSIZE * 24);
-                        label.setBackground(Color.magenta);
+                        label.setBackground(new Color(0xC6774A));
                     } else if (chosenOption.equals("P")) {
                         label.setBounds(0, 0, pixelSIZE * 14, pixelSIZE * 14);
                         label.setBackground(Color.blue);
@@ -312,46 +348,45 @@ public class EditorPanel extends JPanel{
             }
         }
 
-        class LayeredActionListener implements ActionListener{
-
-            public void actionPerformed(ActionEvent e) {
-                String cmd = e.getActionCommand();
-                if (LAYER_COMMAND.equals(cmd)) {
-                    layeredPane.moveToFront(label);
-                    layeredPane.setLayer(label,
-                            layerList.getSelectedIndex());
-
-                }
-                Grid currentGrid = grid[layerList.getSelectedIndex()];
-                stringGrid = currentGrid.getStringGrid();
-                rectangleGrid = currentGrid.getRectanglegGrid();
-                revalidate();
-                repaint();
-            }
-        }
-        listener3 = new LayeredActionListener();
-
-        layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(300, 310));
-        layeredPane.addMouseListener(listener1);
-        layeredPane.addMouseMotionListener(new ObjectPreviewListener());
+        JLayeredPane pane = new JLayeredPane();
+        pane.setPreferredSize(new Dimension(300, 310));
+        pane.addMouseListener(new ChoiceListener());
+        pane.addMouseMotionListener(new ObjectPreviewListener());
 
         for (int i = 0; i < layerStrings.length; i++) {
             Grid g = new Grid();
             JComponent panel = g;
             grid[i] = g;
-            layeredPane.add(panel, new Integer(i));
+            pane.add(panel, new Integer(i));
         }
 
-        layeredPane.add(label, new Integer(1), 0);
+        label = new JLabel();
+        label.setBounds(0,0,1,1);
+        label.setOpaque(true);
+        label.setBackground(Color.BLACK);
 
-        layerList = new JComboBox(layerStrings);
-        layerList.setSelectedIndex(-1);    //no layer
-        layerList.setActionCommand(LAYER_COMMAND);
-        layerList.addActionListener(listener3);
+        pane.add(label, new Integer(1), 0);
 
-        add(layerList, BorderLayout.SOUTH);
-        add(layeredPane);
+        return pane;
+    }
+
+    public Component makeCalculationCheckbox(){
+        JCheckBox calculationCheckbox = new JCheckBox("Database?");
+        calculationCheckbox.setFont(new Font("Century Gothic", Font.PLAIN, 13));
+
+        class CheckBoxListener implements ItemListener{
+
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getSource() == calculationCheckbox){
+                    if (calculationCheckbox.isSelected()){
+                        DataBaseCalculation = true;
+                    } else { DataBaseCalculation = false; }
+                }
+            }
+        }
+        calculationCheckbox.addItemListener(new CheckBoxListener());
+
+        return calculationCheckbox;
     }
 
     public boolean isPlaced(String s){
@@ -396,18 +431,22 @@ public class EditorPanel extends JPanel{
     }
 
     public LinkedList<String> getDataForFileWriting(){
+        LinkedList<String> brutefinderData = null;
+
         WorldContainer world = new WorldContainer();
         for(int i=0;i<grid.length;i++) {
             world.loadWorld(grid[i].getStringGrid(), pixelSIZE, 50*i);
         }
         LinkedList<String> worldData = world.outputWorldApi2();
 
-        /*World worldWithPhysics = new WorldCPU(worldData);
-        Brutefinder brutefinder = new Brutefinder();
-        brutefinder.init(worldWithPhysics);
-        brutefinder.makeDatabase();
-        LinkedList<String> brutefinderData = brutefinder.ouputDatabase();
-*/
+        if (DataBaseCalculation == true){
+            World worldWithPhysics = new WorldCPU(worldData);
+            Brutefinder brutefinder = new Brutefinder();
+            brutefinder.init(worldWithPhysics);
+            brutefinder.makeDatabase();
+            brutefinderData = brutefinder.ouputDatabase();
+        }
+
         LinkedList<String> returnData = new LinkedList<>();
         returnData.add("Master:World");
         for(int i=0;i<worldData.size();i++)
@@ -415,11 +454,13 @@ public class EditorPanel extends JPanel{
             returnData.add(worldData.get(i));
         }
 
-        /*returnData.add("Master:Brutefinder");
-        for(int i=0;i<brutefinderData.size();i++)
-        {
-            returnData.add(brutefinderData.get(i));
-        }*/
+
+        if (DataBaseCalculation == true){
+            returnData.add("Master:Brutefinder");
+            for(int i=0;i<brutefinderData.size();i++) {
+                returnData.add(brutefinderData.get(i));
+             }
+        }
 
         return returnData;
     }
@@ -465,7 +506,7 @@ public class EditorPanel extends JPanel{
                         g2.fill(rectangleGrid[i][j]);
                     }
                     if (stringGrid[i][j].equals("R")) {
-                        g2.setPaint(Color.magenta);
+                        g2.setPaint(new Color(0xC6774A));
                         g2.fill(rectangleGrid[i][j]);
                     }
                     if (stringGrid[i][j].equals("P")) {

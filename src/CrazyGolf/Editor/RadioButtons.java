@@ -40,19 +40,7 @@ public class RadioButtons extends JPanel {
 
     public RadioButtons(){
         // the empty circle
-        BufferedImage img = new BufferedImage(BI_WIDTH, BI_WIDTH, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setStroke(new BasicStroke(4f));
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        int x = 4;
-        int y = x;
-        int width = BI_WIDTH - 2 * x;
-        int height = width;
-        g2.setColor(Color.lightGray);
-        g2.drawOval(x, y, width, height);
-        g2.dispose();
-
-        emptyIcon = new ImageIcon(img);
+        emptyIcon = getEmptyIcon();
 
         setLayout(new BorderLayout());
         class ChoiceListener implements ActionListener
@@ -111,6 +99,22 @@ public class RadioButtons extends JPanel {
         createControlPanel();
     }
 
+    public Icon getEmptyIcon(){
+        BufferedImage img = new BufferedImage(BI_WIDTH, BI_WIDTH, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setStroke(new BasicStroke(4f));
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        int x = 4;
+        int y = x;
+        int width = BI_WIDTH - 2 * x;
+        int height = width;
+        g2.setColor(Color.lightGray);
+        g2.drawOval(x, y, width, height);
+        g2.dispose();
+
+        return new ImageIcon(img);
+    }
+
     public Icon getSelectedIcon(String s){
         //filled circle
         BufferedImage img = new BufferedImage(BI_WIDTH, BI_WIDTH, BufferedImage.TYPE_INT_ARGB);
@@ -144,7 +148,7 @@ public class RadioButtons extends JPanel {
             g2.setColor(Color.pink);
         }
         if (s.equals("Bridge")){
-            g2.setColor(Color.magenta);
+            g2.setColor(new Color(0xC6774A));
         }
         if (s.equals("Pool")){
             g2.setColor(Color.blue);
@@ -180,7 +184,6 @@ public class RadioButtons extends JPanel {
         add(controlPanel);*/
         add(choicePanel);
     }
-
 
     public void buttonSettings(JRadioButton b){
         b.setSelectedIcon(getSelectedIcon(b.getText()));
@@ -245,7 +248,6 @@ public class RadioButtons extends JPanel {
     }
 
     public String getChosenOption(){
-
         return chosenOption;
     }
 
