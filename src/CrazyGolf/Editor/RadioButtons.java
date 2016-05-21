@@ -18,7 +18,6 @@ import java.util.Scanner;
  */
 public class RadioButtons extends JPanel {
 
-    private JButton saveButton;
     public JRadioButton wallButton;
     public JRadioButton sandButton;
     public JRadioButton floorButton;
@@ -30,72 +29,15 @@ public class RadioButtons extends JPanel {
     public JRadioButton poolButton;
     public JRadioButton crocoButton;
     public JRadioButton removeButton;
-    public ActionListener listener;
     private String chosenOption;
 
     private static final int BI_WIDTH = 50;
-    private Icon emptyIcon;
     private Icon selectedIcon;
     private final int FONTSIZE = 25;
 
     public RadioButtons(){
-        // the empty circle
-        emptyIcon = getEmptyIcon();
-
         setLayout(new BorderLayout());
-        class ChoiceListener implements ActionListener
-        {
-            public void actionPerformed(ActionEvent e) {
-                //save chosen option in order to get printed on other panel
-                System.out.println("works");
-                if (wallButton.isSelected()) {
-                    chosenOption = "W";
-                    System.out.println(chosenOption);
-                }
-                if (sandButton.isSelected()) {
-                    chosenOption = "S";
-                    System.out.println(chosenOption);
-                }
-                if (floorButton.isSelected()) {
-                    chosenOption = "F";
-                    System.out.println(chosenOption);
-                }
-                if (ballButton.isSelected()) {
-                    chosenOption = "B";
-                    System.out.println(chosenOption);
-                }
-                if (holeButton.isSelected()) {
-                    chosenOption = "H";
-                    System.out.println(chosenOption);
-                }
-                if (loopButton.isSelected()) {
-                    chosenOption = "L";
-                    System.out.println(chosenOption);
-                }
-                if (castleButton.isSelected()) {
-                    chosenOption = "C";
-                    System.out.println(chosenOption);
-                }
-                if (bridgeButton.isSelected()) {
-                    chosenOption = "R";
-                    System.out.println(chosenOption);
-                }
-                if (poolButton.isSelected()) {
-                    chosenOption = "P";
-                    System.out.println(chosenOption);
-                }
-                if (crocoButton.isSelected()) {
-                    chosenOption = "K";
-                    System.out.println(chosenOption);
-                }
-                if (removeButton.isSelected()) {
-                    chosenOption = "D";
-                    System.out.println("remove");
-                }
-            }
-        }
 
-        listener = new ChoiceListener();
         createControlPanel();
     }
 
@@ -190,42 +132,94 @@ public class RadioButtons extends JPanel {
         b.setBackground(Color.white);
         b.setForeground(Color.darkGray);
         b.setFont(new Font("Century Gothic",Font.BOLD,FONTSIZE));
-        b.addActionListener(listener);
+
+        class ChoiceListener implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
+                //save chosen option in order to get printed on other panel
+                System.out.println("works");
+                if (wallButton.isSelected()) {
+                    chosenOption = "W";
+                    System.out.println(chosenOption);
+                }
+                if (sandButton.isSelected()) {
+                    chosenOption = "S";
+                    System.out.println(chosenOption);
+                }
+                if (floorButton.isSelected()) {
+                    chosenOption = "F";
+                    System.out.println(chosenOption);
+                }
+                if (ballButton.isSelected()) {
+                    chosenOption = "B";
+                    System.out.println(chosenOption);
+                }
+                if (holeButton.isSelected()) {
+                    chosenOption = "H";
+                    System.out.println(chosenOption);
+                }
+                if (loopButton.isSelected()) {
+                    chosenOption = "L";
+                    System.out.println(chosenOption);
+                }
+                if (castleButton.isSelected()) {
+                    chosenOption = "C";
+                    System.out.println(chosenOption);
+                }
+                if (bridgeButton.isSelected()) {
+                    chosenOption = "R";
+                    System.out.println(chosenOption);
+                }
+                if (poolButton.isSelected()) {
+                    chosenOption = "P";
+                    System.out.println(chosenOption);
+                }
+                if (crocoButton.isSelected()) {
+                    chosenOption = "K";
+                    System.out.println(chosenOption);
+                }
+                if (removeButton.isSelected()) {
+                    chosenOption = "D";
+                    System.out.println("remove");
+                }
+            }
+        }
+
+        b.addActionListener(new ChoiceListener());
     }
 
     public JPanel createButtons(){
 
-        floorButton = new JRadioButton("Floor", emptyIcon);
+        floorButton = new JRadioButton("Floor", getEmptyIcon());
         buttonSettings(floorButton);
 
-        sandButton = new JRadioButton("Sand", emptyIcon);
+        sandButton = new JRadioButton("Sand", getEmptyIcon());
         buttonSettings(sandButton);
 
-        wallButton = new JRadioButton("Wall", emptyIcon);
+        wallButton = new JRadioButton("Wall", getEmptyIcon());
         buttonSettings(wallButton);
 
-        ballButton = new JRadioButton("Ball", emptyIcon);
+        ballButton = new JRadioButton("Ball", getEmptyIcon());
         buttonSettings(ballButton);
 
-        holeButton = new JRadioButton("Hole", emptyIcon);
+        holeButton = new JRadioButton("Hole", getEmptyIcon());
         buttonSettings(holeButton);
 
-        loopButton = new JRadioButton("Loop", emptyIcon);
+        loopButton = new JRadioButton("Loop", getEmptyIcon());
         buttonSettings(loopButton);
 
-        castleButton = new JRadioButton("Castle", emptyIcon);
+        castleButton = new JRadioButton("Castle", getEmptyIcon());
         buttonSettings(castleButton);
 
-        bridgeButton = new JRadioButton("Bridge", emptyIcon);
+        bridgeButton = new JRadioButton("Bridge", getEmptyIcon());
         buttonSettings(bridgeButton);
 
-        poolButton = new JRadioButton("Pool", emptyIcon);
+        poolButton = new JRadioButton("Pool", getEmptyIcon());
         buttonSettings(poolButton);
 
-        crocoButton = new JRadioButton("Croco", emptyIcon);
+        crocoButton = new JRadioButton("Croco", getEmptyIcon());
         buttonSettings(crocoButton);
 
-        removeButton = new JRadioButton("REMOVE", emptyIcon);
+        removeButton = new JRadioButton("REMOVE", getEmptyIcon());
         buttonSettings(removeButton);
 
         ButtonGroup group = new ButtonGroup();

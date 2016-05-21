@@ -53,7 +53,7 @@ public class EditorPanel extends JPanel{
         settingPanel.setLayout(new BorderLayout());
 
         JPanel settings = new JPanel();
-        settings.setLayout(new GridLayout(2,1));
+        settings.setLayout(new GridLayout(3,1));
 
         buttons = someButtons;
 
@@ -75,11 +75,14 @@ public class EditorPanel extends JPanel{
         getSaveButton().setSize(new Dimension(20,20));
 
 
-        layerList = makeLayerList();
         layeredPane = makeLayeredPane();
+        layerList = makeLayerList();
+
+        JCheckBox hardCodedLevel = makeHardCodedLevel();
 
         settings.add(layerList);
         settings.add(makeCalculationCheckbox());
+        settings.add(hardCodedLevel);
         settingPanel.add(settings, BorderLayout.NORTH);
         settingPanel.add(getSaveButton());
         add(settingPanel, BorderLayout.EAST);
@@ -96,14 +99,14 @@ public class EditorPanel extends JPanel{
         class LayeredActionListener implements ActionListener{
 
             public void actionPerformed(ActionEvent e) {
-                String cmd = e.getActionCommand();
-                if (LAYER_COMMAND.equals(cmd)) {
+                String command = e.getActionCommand();
+                if (LAYER_COMMAND.equals(command)) {
                     layeredPane.moveToFront(label);
                     layeredPane.setLayer(label,
-                            layerList.getSelectedIndex());
+                            list.getSelectedIndex());
 
                 }
-                Grid currentGrid = grid[layerList.getSelectedIndex()];
+                Grid currentGrid = grid[list.getSelectedIndex()];
                 stringGrid = currentGrid.getStringGrid();
                 rectangleGrid = currentGrid.getRectanglegGrid();
                 revalidate();
@@ -368,6 +371,36 @@ public class EditorPanel extends JPanel{
         pane.add(label, new Integer(1), 0);
 
         return pane;
+    }
+
+    public JCheckBox makeHardCodedLevel(){
+        JCheckBox box = new JCheckBox("Hardcoded?");
+        box.setFont(new Font("Century Gothic", Font.PLAIN, 11));
+
+        class CheckBoxListener implements ItemListener{
+
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getSource() == box){
+                    if (box.isSelected()){
+                        grid[layerList.getSelectedIndex()] = new Grid(1);
+                        Grid currentGrid = grid[layerList.getSelectedIndex()];
+                        stringGrid = currentGrid.getStringGrid();
+                        rectangleGrid = currentGrid.getRectanglegGrid();
+                        revalidate();
+                        repaint();
+                    } else {
+                        grid[layerList.getSelectedIndex()] = new Grid();
+                        Grid currentGrid = grid[layerList.getSelectedIndex()];
+                        stringGrid = currentGrid.getStringGrid();
+                        rectangleGrid = currentGrid.getRectanglegGrid();
+                        revalidate();
+                        repaint(); }
+                }
+            }
+        }
+        box.addItemListener(new CheckBoxListener());
+
+        return box;
     }
 
     public Component makeCalculationCheckbox(){
