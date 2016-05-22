@@ -291,7 +291,7 @@ public class WorldContainer implements World {
                                     }
                                 }
                             }
-                        } else if(data[i][j].equals("P"))
+                        } else if(data[i][j].equals("R"))
                         {
                             addSquare(new Point3D(i*gs,j*gs,Z),
                                     new Point3D(i*gs+gs*4,j*gs,Z),
