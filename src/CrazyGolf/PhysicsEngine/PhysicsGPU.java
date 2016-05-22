@@ -95,7 +95,7 @@ public abstract class PhysicsGPU extends Physics{
         }
     }
     protected final void startOpenGL() {
-        kernelFile = readFile(FileLocations.openCLFile);
+        kernelFile = readFile("open.cl");
 
         // The platform, device type and device number
         // that will be used

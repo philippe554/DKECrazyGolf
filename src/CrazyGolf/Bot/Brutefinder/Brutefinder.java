@@ -21,9 +21,6 @@ public class Brutefinder implements BotInterface{
 
     private int GS=20;
 
-    private int simCounter=0;
-    private int nodeCounter=0;
-
     private World world;
 
     private Node[][][] nodes;
@@ -35,6 +32,9 @@ public class Brutefinder implements BotInterface{
     private int xOffset=0;
     private int yOffset=0;
     private int zOffset=5;
+
+    private int amountNodes=0;
+    private int amountConnections=0;
 
     @Override
     public void init(World w) {
@@ -53,8 +53,10 @@ public class Brutefinder implements BotInterface{
         for (int l = 0; l < amountDirectionsHighRes; l++) {
             for (int m = 0; m < amountPowersHighRes; m++) {
                 ArrayList<Ball> balls = new ArrayList<>();
-                balls.add(new Ball(World.ballSize, world.getBallPosition(playerNumber)));
-                balls.get(0).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep).add(world.getBallVelocity(playerNumber));
+                for(int i=0;i<world.getAmountBalls();i++) {
+                    balls.add(new Ball(World.ballSize, world.getBallPosition(i)));
+                }
+                balls.get(playerNumber).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep).add(world.getBallVelocity(playerNumber));
                 int velocityCounter = 0;
                 int totalCounter=0;
                 boolean outOfWorld = false;
@@ -62,25 +64,26 @@ public class Brutefinder implements BotInterface{
                 while (velocityCounter < 20) {
                     totalCounter++;
                     world.stepSimulated(balls,true);
-                    if (balls.get(0).velocity.magnitude() < 1.5) {
-                        velocityCounter++;
-                    } else {
-                        velocityCounter = 0;
+                    velocityCounter++;
+                    for(int i=0;i<balls.size();i++){
+                        if (balls.get(i).velocity.magnitude() > 1.5 && balls.get(i).place.getZ() > -100) {
+                            velocityCounter = 0;
+                        }
                     }
-                    if (balls.get(0).place.getZ() < -100 || totalCounter > 1000) {
+                    if (balls.get(playerNumber).place.getZ() < -100 || totalCounter > 1000) {
                         outOfWorld = true;
                         velocityCounter = 20;
                     }
                 }
                 if(World.DEBUG)System.out.print(+totalCounter+" Stop");
-                int newi=(int)(balls.get(0).place.getX()/GS)+xOffset;
-                int newj=(int)(balls.get(0).place.getY()/GS)+yOffset;
-                int newk=(int)(balls.get(0).place.getZ()/GS)+zOffset;
+                int newi=(int)(balls.get(playerNumber).place.getX()/GS)+xOffset;
+                int newj=(int)(balls.get(playerNumber).place.getY()/GS)+yOffset;
+                int newk=(int)(balls.get(playerNumber).place.getZ()/GS)+zOffset;
                 if (!outOfWorld) {
                     if(newi>=0&&newi<nodes.length && newj>=0&&newj<nodes[newi].length && newk>=0&&newk<nodes[newi][newj].length) {
                         if(nodes[newi][newj][newk]!=null && nodes[newi][newj][newk].minPath>-0.5) {
                             Point3D center = new Point3D((newi-xOffset) * GS, (newj-yOffset) * GS, (newk-zOffset) * GS);
-                            double distance = center.distance(balls.get(0).place)/(GS*2);
+                            double distance = center.distance(balls.get(playerNumber).place)/(GS*2);
                             double newBestPlace=nodes[newi][newj][newk].minPath+distance;
                             if (newBestPlace < bestPlace || bestPlace < -0.5) {
                                 bestPlace = newBestPlace;
@@ -126,6 +129,8 @@ public class Brutefinder implements BotInterface{
         if(World.DEBUG)System.out.println("Brutefinder: Start calculating bruteforce...");
 
         calcNodes();
+
+        if(World.DEBUG)System.out.println("Brutefinder: Nodes: "+amountNodes+" | Connections: "+amountConnections);
 
         if(World.DEBUG)System.out.println("Brutefinder: Start calculating pathfinding...");
 
@@ -186,6 +191,7 @@ public class Brutefinder implements BotInterface{
         endJ=(int)(world.getHolePosition().getY()/GS)+yOffset;
         endK=(int)(world.getHolePosition().getZ()/GS)+zOffset;
         nodes[endI][endJ][endK]=new Node(amountDirections,amountPowers);
+        amountNodes++;
 
         ArrayList<Ball> balls = new ArrayList<>();
         double dirStep = 2 * Math.PI / (double) amountDirections;
@@ -197,6 +203,7 @@ public class Brutefinder implements BotInterface{
             int zGrid=(int)(world.getBallPosition(i).getZ()/GS)+zOffset;
             if(nodes[xGrid][yGrid][zGrid]==null) {
                 nodes[xGrid][yGrid][zGrid] = new Node(amountDirections,amountPowers);
+                amountNodes++;
                 for (int l = 0; l < amountDirections; l++) {
                     for (int m = 0; m < amountPowers; m++) {
                         balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid - zOffset) * GS), xGrid, yGrid, zGrid, l, m));
@@ -225,8 +232,10 @@ public class Brutefinder implements BotInterface{
                     int yGrid=(int)(tBall.place.getY()/GS)+yOffset;
                     int zGrid=(int)(tBall.place.getZ()/GS)+zOffset;
                     nodes[tBall.i][tBall.j][tBall.k].forward[tBall.dir][tBall.pow]=nodes[xGrid][yGrid][zGrid];
+                    amountConnections++;
                     if(nodes[xGrid][yGrid][zGrid]==null) {
                         nodes[xGrid][yGrid][zGrid]=new Node(amountDirections,amountPowers);
+                        amountNodes++;
                         nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
                         if (xGrid != endI || zGrid != endJ || zGrid != endK) {
                             for (int l = 0; l < amountDirections; l++) {
@@ -243,6 +252,11 @@ public class Brutefinder implements BotInterface{
                     }
                 }
                 if (tBall.place.getZ() < -100) {
+                    balls.remove(i);
+                    i--;
+                }
+                if(tBall.totalCounter>500 || tBall.place.getX()==Double.NaN || tBall.place.getY()==Double.NaN || tBall.place.getZ()==Double.NaN){
+                    if(World.DEBUG)System.out.println("Brutefinder: Something went wrong: "+tBall.place+" - "+tBall.velocity);
                     balls.remove(i);
                     i--;
                 }

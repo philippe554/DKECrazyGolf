@@ -119,7 +119,6 @@ public class RadioButtons extends JPanel {
        /* controlPanel.setLayout(new BorderLayout());
         controlPanel.setLayout(new GridLayout(3,1));
         choicePanel.setBackground(Color.GREEN);
-
         controlPanel.add(choicePanel, BorderLayout.CENTER);
         controlPanel.setBackground(Color.GRAY);
         this.setLayout(new GridLayout(1,1));
