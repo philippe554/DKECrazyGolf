@@ -67,7 +67,7 @@ public class EditorPanel extends JPanel{
         class SaveListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 //write into file
-                writeItDown(getDataForFileWriting());
+                //writeItDown(getDataForFileWriting());
             }
         }
 
@@ -435,8 +435,8 @@ public class EditorPanel extends JPanel{
         return false;
     }
 
-    public void writeItDown(LinkedList<String> list){
-        File field= new File(FileLocations.level1);
+    public void writeItDown(LinkedList<String> list, int i){
+        File field= new File("Slot"+i+".txt");
         FileWriter writeFile = null;
 
         // allows us to write the file
@@ -475,7 +475,7 @@ public class EditorPanel extends JPanel{
         LinkedList<String> worldData = world.outputWorldApi2();
 
         if (DataBaseCalculation == true){
-            World worldWithPhysics = new WorldCPU(worldData);
+            World worldWithPhysics = new WorldGPUBotOpti(worldData);
             Brutefinder brutefinder = new Brutefinder();
             brutefinder.init(worldWithPhysics);
             brutefinder.makeDatabase();

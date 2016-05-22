@@ -40,6 +40,6 @@ public class Side {
             }
         }
 
-        friction=0.1;//f;
+        friction=f;
     }
 }

@@ -136,23 +136,23 @@ public class StartMenu {
 
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() == level1b){
-					editor.writeItDown(editor.getDataForFileWriting());
+					editor.writeItDown(editor.getDataForFileWriting(),1);
 					level1b.setText("LEVEL 1");
 					main.repaint();
 				}
 
 				if(e.getSource() == level2b){
-					editor.writeItDown(editor.getDataForFileWriting());
+					editor.writeItDown(editor.getDataForFileWriting(),2);
 					level2b.setText("LEVEL 2");
 					main.repaint();;
 				}
 				if(e.getSource() == level3b){
-					editor.writeItDown(editor.getDataForFileWriting());
+					editor.writeItDown(editor.getDataForFileWriting(),3);
 					level3b.setText("LEVEL 3");
 					main.repaint();
 				}
 				if(e.getSource() == level4b){
-					editor.writeItDown(editor.getDataForFileWriting());
+					editor.writeItDown(editor.getDataForFileWriting(),4);
 					level4b.setText("LEVEL 4");
 					main.repaint();
 				}
