@@ -71,7 +71,7 @@ public class Game extends GolfPanel implements Runnable{
         players = new Player[world.getAmountBalls()];
         currentPlayer = 0;
         for(int i=0;i<world.getAmountBalls();i++) {
-            players[i] = new Player(this,i,1);
+            players[i] = new Player(this,i,0);
         }
 
         addKeyListener(new KeyListener() {

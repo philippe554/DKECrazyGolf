@@ -26,9 +26,6 @@ public class WorldContainer implements World {
         editMode=true;
         initContainer();
         loadWorldApi2(input);
-
-        //addPool(-100,-400,0,400,200,12,40);
-
         if(DEBUG)System.out.println("WorldContainer: World file loaded: "+sides.size()+" sides");
         editMode=false;
     }
@@ -161,7 +158,10 @@ public class WorldContainer implements World {
                     sort = 5;
                 } else if (field.get(i).equals("colors")) {
                     sort = 6;
-                } else {
+                } else if (field.get(i).equals("water")) {
+                    sort = 7;
+                }
+                else {
                     if (sort == 0) {
                     } else if (sort == 1) {
                         String[] data = field.get(i).split(";");
@@ -196,6 +196,12 @@ public class WorldContainer implements World {
                         String[] data = field.get(i).split(";");
                         if (data.length == 4) {
                             colors.add(new Color3f(Float.parseFloat(data[0]), Float.parseFloat(data[1]), Float.parseFloat(data[2])));
+                        }
+                    } else if (sort == 7) {
+                        String[] data = field.get(i).split(";");
+                        if (data.length == 7) {
+                            waters.add(new Water(new Point3D[]{new Point3D(Double.parseDouble(data[0]),Double.parseDouble(data[1]),Double.parseDouble(data[2])),
+                                    new Point3D(Double.parseDouble(data[3]),Double.parseDouble(data[4]),Double.parseDouble(data[5]))},Integer.parseInt(data[6])));
                         }
                     }
                 }
@@ -308,6 +314,18 @@ public class WorldContainer implements World {
                                     }
                                 }
                             }
+                        }else if(data[i][j].equals("P"))
+                        {
+                            addPool(i*gs,j*gs,Z,280,150,12,25);
+                            for(int k=0;k<14;k++)
+                            {
+                                for(int l=0;l<14;l++)
+                                {
+                                    if((i+k)<data.length && (j+l)<data[i+k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -343,6 +361,13 @@ public class WorldContainer implements World {
         {
             output.add(sides.get(i).points[0]+";"+sides.get(i).points[1]+";"+sides.get(i).points[2]+";"+sides.get(i).color+";"+sides.get(i).friction);
         }
+        output.add("water");
+        for(int i=0;i<waters.size();i++)
+        {
+            output.add(waters.get(i).place[0].getX()+";"+waters.get(i).place[0].getY()+";"+waters.get(i).place[0].getZ()
+                    +";"+waters.get(i).place[1].getX()+";"+waters.get(i).place[1].getY()+";"+waters.get(i).place[1].getZ()
+                    +";"+waters.get(i).color);
+        }
         return output;
     }
     private void loadDefaultColors() {
@@ -353,6 +378,7 @@ public class WorldContainer implements World {
         colors.add(new Color3f(0.2f, 0.2f, 0.2f));//4
         colors.add(new Color3f(0.4f, 0.4f, 0.4f));//5
         colors.add(new Color3f(0.0f, 0.8f, 1.0f));//6
+        colors.add(new Color3f(1.0f, 0.5f, 0.0f));//7
     }
 
     public void addSquare(Point3D p1, Point3D p2, Point3D p3, Point3D p4, int c, double f) {
@@ -403,7 +429,7 @@ public class WorldContainer implements World {
                 new Point3D(i*gs+iCounter*gs,j*gs,Z),
                 new Point3D(i*gs+iCounter*gs,j*gs+jCounter*gs,Z),
                 new Point3D(i*gs,j*gs+jCounter*gs,Z),
-                2,1);
+                2,0.1);
         for(int k=i;k<(i+iCounter);k++) {
             for(int l=j;l<(j+jCounter);l++) {
                 alreadyConverted[k][l] = true;
@@ -439,27 +465,27 @@ public class WorldContainer implements World {
                 new Point3D(i*gs+gs*iCounter,j*gs,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight+Z),
                 new Point3D(i*gs,j*gs+gs*jCounter,borderHeight+Z),
-                0,1);
+                0,0.1);
         addSquare(new Point3D(i*gs,j*gs,borderHeight+Z),
                 new Point3D(i*gs,j*gs+gs*jCounter,borderHeight+Z),
                 new Point3D(i*gs,j*gs+gs*jCounter,0+Z),
                 new Point3D(i*gs,j*gs,0+Z),
-                1,1);
+                1,0.1);
         addSquare(new Point3D(i*gs,j*gs,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs,0+Z),
                 new Point3D(i*gs,j*gs,0+Z),
-                1,1);
+                1,0.1);
         addSquare(new Point3D(i*gs+gs*iCounter,j*gs,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs,0+Z),
-                1,1);
+                1,0.1);
         addSquare(new Point3D(i*gs,j*gs+gs*jCounter,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,0+Z),
                 new Point3D(i*gs,j*gs+gs*jCounter,0+Z),
-                1,1);
+                1,0.1);
         for(int k=i;k<(i+iCounter);k++) {
             for(int l=j;l<(j+jCounter);l++) {
                 alreadyConverted[k][l] = true;
@@ -495,7 +521,7 @@ public class WorldContainer implements World {
                 new Point3D(i*gs+gs*iCounter,j*gs,Z),
                 new Point3D(i*gs+gs*iCounter,j*gs+gs*jCounter,Z),
                 new Point3D(i*gs,j*gs+gs*jCounter,Z),
-                0,2);
+                7,0.5);
         for(int k=i;k<(i+iCounter);k++) {
             for(int l=j;l<(j+jCounter);l++) {
                 alreadyConverted[k][l] = true;
@@ -526,13 +552,13 @@ public class WorldContainer implements World {
             Point3D p2 = new Point3D(x + Math.sin(angle + angleGrowSize) * size, y - width / 2 + widthCounter + widthIncrrement, z - Math.cos(angle + angleGrowSize) * size);
             Point3D p3 = new Point3D(x + Math.sin(angle) * size, y + width / 2 + widthCounter, z - Math.cos(angle) * size);
             Point3D p4 = new Point3D(x + Math.sin(angle + angleGrowSize) * size, y + width / 2 + widthCounter + widthIncrrement, z - Math.cos(angle + angleGrowSize) * size);
-            addSquare(p1, p2, p4, p3, 0,1);
+            addSquare(p1, p2, p4, p3, 0,0.1);
             Point3D p1in = new Point3D(x + Math.sin(angle) * (size - wallSize), y - width / 2 + widthCounter, z - Math.cos(angle) * (size - wallSize));
             Point3D p2in = new Point3D(x + Math.sin(angle + angleGrowSize) * (size - wallSize), y - width / 2 + widthCounter + widthIncrrement, z - Math.cos(angle + angleGrowSize) * (size - wallSize));
             Point3D p3in = new Point3D(x + Math.sin(angle) * (size - wallSize), y + width / 2 + widthCounter, z - Math.cos(angle) * (size - wallSize));
             Point3D p4in = new Point3D(x + Math.sin(angle + angleGrowSize) * (size - wallSize), y + width / 2 + widthCounter + widthIncrrement, z - Math.cos(angle + angleGrowSize) * (size - wallSize));
-            addSquare(p1, p2, p2in, p1in, 1,1);
-            addSquare(p3, p4, p4in, p3in, 1,1);
+            addSquare(p1, p2, p2in, p1in, 1,0.1);
+            addSquare(p3, p4, p4in, p3in, 1,0.1);
             widthCounter += widthIncrrement;
         }
     }
@@ -551,9 +577,9 @@ public class WorldContainer implements World {
                 Point3D p2 = new Point3D(x + Math.cos(angle + angleGrowSize) * radius, y + Math.sin(angle + angleGrowSize) * radius, z);
                 Point3D p3 = new Point3D(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius, z - depth);
                 Point3D p4 = new Point3D(x + Math.cos(angle + angleGrowSize) * radius, y + Math.sin(angle + angleGrowSize) * radius, z - depth);
-                addSquare(p1, p2, p4, p3, 0,1);
-                addTriangle(p3,p4,center,1,1);
-                addTriangle(p1, p2, cornerPoints[i], 2,1);
+                addSquare(p1, p2, p4, p3, 0,0.1);
+                addTriangle(p3,p4,center,1,0.1);
+                addTriangle(p1, p2, cornerPoints[i], 2,0.1);
             }
         }
     }
@@ -573,10 +599,10 @@ public class WorldContainer implements World {
                 Point3D p3 = new Point3D(x + Math.cos(angle) * maxRadius, y + Math.sin(angle) * maxRadius, maxHeight);
                 Point3D p4 = new Point3D(x + Math.cos(angle + angleGrowSize) * maxRadius, y + Math.sin(angle + angleGrowSize) * maxRadius, maxHeight);
                 if (color) {
-                    addSquare(p1, p2, p4, p3,0,1);
+                    addSquare(p1, p2, p4, p3,0,0.1);
                     color = false;
                 } else {
-                    addSquare(p1, p2, p4, p3, 1,1);
+                    addSquare(p1, p2, p4, p3, 1,0.1);
                     color = true;
                 }
             }
@@ -590,25 +616,25 @@ public class WorldContainer implements World {
                 Point3D p2 = new Point3D(j * towerHeight + x + Math.cos(angle) * towerSize, y + Math.sin(angle) * towerSize, z + towerHeight);
                 Point3D p3 = new Point3D(j * towerHeight + x + Math.cos(angle + angleGrowSize) * towerSize, y + Math.sin(angle + angleGrowSize) * towerSize, z + towerHeight);
                 Point3D p4 = new Point3D(j * towerHeight + x + Math.cos(angle + angleGrowSize) * towerSize, y + Math.sin(angle + angleGrowSize) * towerSize, z);
-                addSquare(p1, p2, p3, p4, 3,1);
+                addSquare(p1, p2, p3, p4, 3,0.1);
                 Point3D top = new Point3D(j * towerHeight + x, y, z + towerHeight * 1.5);
                 Point3D tp1 = new Point3D(j * towerHeight + x + Math.cos(angle) * towerSize * 1.2, y + Math.sin(angle) * towerSize * 1.2, z + towerHeight);
                 Point3D tp2 = new Point3D(j * towerHeight + x + Math.cos(angle + angleGrowSize) * towerSize * 1.2, y + Math.sin(angle + angleGrowSize) * towerSize * 1.2, z + towerHeight);
-                addTriangle(tp1, tp2, top, 4,1);
+                addTriangle(tp1, tp2, top, 4,0.1);
             }
         }
         Point3D b1 = new Point3D(x, y + 20, z + towerHeight * 0.5);
         Point3D b2 = new Point3D(x, y - 20, z + towerHeight * 0.5);
         Point3D b3 = new Point3D(x + towerHeight, y - 20, z + towerHeight * 0.5);
         Point3D b4 = new Point3D(x + towerHeight, y + 20, z + towerHeight * 0.5);
-        addSquare(b1, b2, b3, b4, 5,1 );//?? color ??
+        addSquare(b1, b2, b3, b4, 5,0.1 );//?? color ??
         Point3D t1 = new Point3D(x, y + 20, z + towerHeight * 0.7);
         Point3D t2 = new Point3D(x, y - 20, z + towerHeight * 0.7);
         Point3D t3 = new Point3D(x + towerHeight, y - 20, z + towerHeight * 0.7);
         Point3D t4 = new Point3D(x + towerHeight, y + 20, z + towerHeight * 0.7);
-        addSquare(t1, t2, t3, t4, 5,1);
-        addSquare(b1, t1, t4, b4, 5,1);
-        addSquare(b2, t2, t3, b3, 5,1);
+        addSquare(t1, t2, t3, t4, 5,0.1);
+        addSquare(b1, t1, t4, b4, 5,0.1);
+        addSquare(b2, t2, t3, b3, 5,0.1);
     }
     public void addBridge(double x, double y, double z, double length, double height, double borderHeight, double width, int parts) {
         for (int j = 0; j < 2; j++) {
@@ -618,58 +644,30 @@ public class WorldContainer implements World {
                 Point3D p2 = new Point3D(x + Math.cos(angle) * (width * 0.25), j * length + y + Math.sin(angle) * (width * 0.25), z + height);
                 Point3D p3 = new Point3D(x + Math.cos(angle + angleGrowSize) * (width * 0.25), j * length + y + Math.sin(angle + angleGrowSize) * (width * 0.25), z + height);
                 Point3D p4 = new Point3D(x + Math.cos(angle + angleGrowSize) * (width * 0.25), j * length + y + Math.sin(angle + angleGrowSize) * (width * 0.25), z);
-                addSquare(p1, p2, p3, p4, 4,1);
+                addSquare(p1, p2, p3, p4, 4,0.1);
             }
         }
         Point3D p1 = new Point3D(x - width * 0.5, y - width * 0.5, z + height);
         Point3D p2 = new Point3D(x + width * 0.5, y - width * 0.5, z + height);
         Point3D p3 = new Point3D(x + width * 0.5, y + width * 0.5 + length, z + height);
         Point3D p4 = new Point3D(x - width * 0.5, y + width * 0.5 + length, z + height);
-        addSquare(p1, p2, p3, p4, 0,1);
+        addSquare(p1, p2, p3, p4, 0,0.1);
         Point3D p1d = new Point3D(x - width * 0.5, y - width * 0.5 - length / 2, z);
         Point3D p2d = new Point3D(x + width * 0.5, y - width * 0.5 - length / 2, z);
         Point3D p3d = new Point3D(x + width * 0.5, y + width * 0.5 + 1.5 * length, z);
         Point3D p4d = new Point3D(x - width * 0.5, y + width * 0.5 + 1.5 * length, z);
-        addSquare(p1, p2, p2d, p1d, 0,1);
-        addSquare(p3, p4, p4d, p3d, 0,1);
-        addSquare(p1, p4, p4.add(0, 0, borderHeight), p1.add(0, 0, borderHeight), 1,1);
-        addSquare(p2, p3, p3.add(0, 0, borderHeight), p2.add(0, 0, borderHeight), 1,1);
+        addSquare(p1, p2, p2d, p1d, 0,0.1);
+        addSquare(p3, p4, p4d, p3d, 0,0.1);
+        addSquare(p1, p4, p4.add(0, 0, borderHeight), p1.add(0, 0, borderHeight), 1,0.1);
+        addSquare(p2, p3, p3.add(0, 0, borderHeight), p2.add(0, 0, borderHeight), 1,0.1);
 
-        addSquare(p1, p1d, p1d.add(0, 0, borderHeight), p1.add(0, 0, borderHeight), 1,1);
-        addSquare(p2, p2d, p2d.add(0, 0, borderHeight), p2.add(0, 0, borderHeight), 1,1);
-        addSquare(p3, p3d, p3d.add(0, 0, borderHeight), p3.add(0, 0, borderHeight), 1,1);
-        addSquare(p4, p4d, p4d.add(0, 0, borderHeight), p4.add(0, 0, borderHeight), 1,1);
-    }
-    public void addWater(Point3D[] points){
-        waters.add(new Water(points,6));
-        addSquare(new Point3D(points[0].getX(),points[0].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[0].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[1].getY(),points[0].getZ()),
-                new Point3D(points[0].getX(),points[1].getY(),points[0].getZ()),
-                2,1);
-        addSquare(new Point3D(points[0].getX(),points[0].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[0].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[0].getY(),points[1].getZ()),
-                new Point3D(points[0].getX(),points[0].getY(),points[1].getZ()),
-                2,1);
-        addSquare(new Point3D(points[0].getX(),points[0].getY(),points[0].getZ()),
-                new Point3D(points[0].getX(),points[1].getY(),points[0].getZ()),
-                new Point3D(points[0].getX(),points[1].getY(),points[1].getZ()),
-                new Point3D(points[0].getX(),points[0].getY(),points[1].getZ()),
-                2,1);
-        addSquare(new Point3D(points[0].getX(),points[1].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[1].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[1].getY(),points[1].getZ()),
-                new Point3D(points[0].getX(),points[1].getY(),points[1].getZ()),
-                2,1);
-        addSquare(new Point3D(points[1].getX(),points[0].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[1].getY(),points[0].getZ()),
-                new Point3D(points[1].getX(),points[1].getY(),points[1].getZ()),
-                new Point3D(points[1].getX(),points[0].getY(),points[1].getZ()),
-                2,1);
+        addSquare(p1, p1d, p1d.add(0, 0, borderHeight), p1.add(0, 0, borderHeight), 1,0.1);
+        addSquare(p2, p2d, p2d.add(0, 0, borderHeight), p2.add(0, 0, borderHeight), 1,0.1);
+        addSquare(p3, p3d, p3d.add(0, 0, borderHeight), p3.add(0, 0, borderHeight), 1,0.1);
+        addSquare(p4, p4d, p4d.add(0, 0, borderHeight), p4.add(0, 0, borderHeight), 1,0.1);
     }
     public void addPool(double x,double y,double z,double size,double debt,int parts,double waterDebt){
-        addWater(new Point3D[]{new Point3D(x,y,z-debt),new Point3D(x+size,y+size,z-waterDebt)});
+        waters.add(new Water(new Point3D[]{new Point3D(x,y,z-debt),new Point3D(x+size,y+size,z-waterDebt)},6));
         double xStep=size/parts;
         double yStep=size/parts;
         for(double i=0;i<parts;i++)
@@ -679,7 +677,7 @@ public class WorldContainer implements World {
                 Point3D p2=new Point3D(x+(i+1)*xStep,y+j*yStep,z+((Math.max((Math.cos((i+1.0)/parts*Math.PI*2)-1),(Math.cos(j/parts*Math.PI*2)-1))))/4*debt);
                 Point3D p3=new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+((Math.max((Math.cos((i+1.0)/parts*Math.PI*2)-1),(Math.cos((j+1.0)/parts*Math.PI*2)-1))))/4*debt);
                 Point3D p4=new Point3D(x+i*xStep,y+(j+1)*yStep,z+((Math.max((Math.cos(i/parts*Math.PI*2)-1),(Math.cos((j+1.0)/parts*Math.PI*2)-1))))/4*debt);
-                addSquare(p1,p2,p3,p4,2,1);
+                addSquare(p1,p2,p3,p4,2,0.1);
             }
         }
     }
