@@ -31,6 +31,7 @@ public class StartMenu {
 
 	private JFrame frame;
 	private EditorPanel editor;
+//	private Game game ;
 
 	private BackgroundPanel main;
 	private JPanel startMenu;
@@ -59,20 +60,19 @@ public class StartMenu {
 	private JButton	level3b;
 	private JButton level4b;
 
-	private static JButton resumeb;
+	//	private static JButton resumeb;
 	private JButton playp;
 	private JButton exitp;
 	private JButton backb;
+	private JButton backbP;
 	private JButton backEd;
+	private JButton backEdP;
 
 	private File f1;
 	private File f2;
 	private File f3;
 	private File f4;
 
-
-	private boolean pauseVisible=false;
-	private boolean gameVisible=false;
 
 	private ActionListener listener;
 
@@ -90,7 +90,7 @@ public class StartMenu {
 
 		java.awt.Image background = new ImageIcon("game.jpg").getImage();
 
-		BackgroundPanel main =new BackgroundPanel(background, BackgroundPanel.SCALED, 0.0f,0.0f);
+		main =new BackgroundPanel(background, BackgroundPanel.SCALED, 0.0f,0.0f);
 		main.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
 
 		main.addKeyListener(new KeyListener() {
@@ -98,11 +98,30 @@ public class StartMenu {
 
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
-					System.out.println("ESCAPE main");
-					if(editorPanel!= null)
+					System.out.println("ESCAPE editor");
+
+					if(editorPanel!= null && editorPanel.isVisible()){
 						editorPanel.setVisible(false);
-					createBackMenu(main);
+						if(backPanel==null)
+							createBackMenu(main);
+						else
+							backPanel.setVisible(true);
+					}
+					else if (editorPanel!= null && !editorPanel.isVisible()){
+						editorPanel.setVisible(true);
+						backPanel.setVisible(false);
+					}
+
+					if(levelMenu!= null && levelMenu.isVisible())
+						levelMenu.setVisible(false);
+
+					if(pausePanel==null)
+						createPauseMenu(main);
+
+
 				}
+
+
 			}
 
 			public void keyTyped(KeyEvent e) {
@@ -114,29 +133,28 @@ public class StartMenu {
 		main.setLayout(new BorderLayout());
 
 		class ButtonListener implements ActionListener {
+
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() == level1b){
-					if(f1.exists() && !f1.isDirectory()) {
-					}
-//					 editor.writeItDown(editor.getDataForFileWriting(),1);
-//					 levelMenu.setVisible(false);
-//					createLevelMenu(main);
+					editor.writeItDown(editor.getDataForFileWriting(),1);
+					level1b.setText("LEVEL 1");
+					main.repaint();
 				}
 
 				if(e.getSource() == level2b){
-//		             editor.writeItDown(editor.getDataForFileWriting(),2);
-//		             levelMenu.setVisible(false);
-//						createLevelMenu(main);
+					editor.writeItDown(editor.getDataForFileWriting(),2);
+					level2b.setText("LEVEL 2");
+					main.repaint();;
 				}
 				if(e.getSource() == level3b){
-//		            	 editor.writeItDown(editor.getDataForFileWriting(),3);
-//		            	 levelMenu.setVisible(false);
-//							createLevelMenu(main);
+					editor.writeItDown(editor.getDataForFileWriting(),3);
+					level3b.setText("LEVEL 3");
+					main.repaint();
 				}
 				if(e.getSource() == level4b){
-//		            	editor.writeItDown(editor.getDataForFileWriting(),4);
-//		            	 levelMenu.setVisible(false);
-//							createLevelMenu(main);
+					editor.writeItDown(editor.getDataForFileWriting(),4);
+					level4b.setText("LEVEL 4");
+					main.repaint();
 				}
 				if(e.getSource() == button3 || e.getSource() == exitp){
 					System.exit(0);
@@ -149,9 +167,9 @@ public class StartMenu {
 					if(startMenu.isVisible() == true){
 						startMenu.setVisible(false);
 					}
-					if(pauseVisible == true){
-						pauseMenu.setVisible(false);
-					}
+//					if(pauseVisible == true){
+//						pauseMenu.setVisible(false);
+//					}
 					createPlayerMenu(main);
 				}
 				if(e.getSource() == playp){
@@ -164,29 +182,41 @@ public class StartMenu {
 
 				}
 				if(e.getSource() ==oneP){
-					main.removeAll();
-					createGame(main);
+					if(f1.exists() && !f1.isDirectory()) {
+						main.removeAll();
+						createGame(main,f1.getAbsolutePath());
+					}
 				}
 				if(e.getSource() ==twoP){
-					main.removeAll();
-					createGame(main);
+					if(f2.exists() && !f2.isDirectory()) {
+						main.removeAll();
+						createGame(main,f2.getAbsolutePath());
+					}
 				}
 				if(e.getSource() ==threeP){
-					main.removeAll();
-					createGame(main);
+					if(f3.exists() && !f3.isDirectory()) {
+						main.removeAll();
+						createGame(main,f3.getAbsolutePath());
+					}
 				}
 				if(e.getSource() ==fourP){
-					main.removeAll();
-					createGame(main);
+					if(f4.exists() && !f4.isDirectory()) {
+						main.removeAll();
+						createGame(main,f4.getAbsolutePath());
+					}
 				}
 
-				if(e.getSource() == getResumeb()){
-					main.remove(pausePanel);
-					main.revalidate();
-					main.repaint();
-					gamePanel.setVisible(true);
-
-				}
+//				if(e.getSource() == resumeb){
+//
+//					editorPanel.setVisible(true);
+////					game.pause=true;
+//					gamePanel.setVisible(true);
+//					pausePanel.setVisible(false);
+//					if(backPanel!=null)
+//						main.remove(pausePanel);
+////					main.remove(pausePanel);
+//					main.repaint();
+//			}
 
 				if(e.getSource() == backb){
 					if(editorPanel!= null)
@@ -203,12 +233,35 @@ public class StartMenu {
 
 					startMenu.setVisible(true);
 				}
-				if(e.getSource() == backEd){
+				if(e.getSource() == backbP){
+					if(editorPanel!= null)
+						main.remove(editorPanel);
+
+					if(playerMenu!=null)
+						playerMenu.setVisible(false);
+
 					if(backPanel!=null)
 						main.remove(backPanel);
-//						if(levelMenu!=null)
-					main.remove(levelMenu);
 
+					if(pausePanel!=null){
+						pausePanel.setVisible(false);
+						createMainMenu(main);
+					}
+
+					startMenu.setVisible(true);
+				}
+				if(e.getSource() == backEdP){
+					if(backPanel!=null)
+						main.remove(backPanel);
+
+					editorPanel.setVisible(true);
+				}
+
+				if(e.getSource() == backEd){
+					if(backPanel!=null)
+						backPanel.setVisible(false);
+					if(levelMenu!=null)
+						levelMenu.setVisible(false);
 					editorPanel.setVisible(true);
 				}
 				if(saveButton!=null){
@@ -296,7 +349,8 @@ public class StartMenu {
 	}
 
 	public void createPauseMenu(BackgroundPanel panel){
-		pausePanel = new JPanel(new FlowLayout());
+		pausePanel = new JPanel();
+		pausePanel.setBackground(new Color(0,0,0,125));
 
 		pauseMenu = new JPanel();
 		pauseMenu.setPreferredSize(new Dimension((int)(FRAME_WIDTH*0.30),400));
@@ -307,13 +361,21 @@ public class StartMenu {
 		pauseMenu.setLayout(new GridLayout(7,10,0,vGap));
 
 
-		//RESUME button
-		resumeb= new JButton("RESUME");
-		resumeb.setBackground(new Color(0,0,0,210));
-		resumeb.setForeground(Color.WHITE);
-		resumeb.setFont(new Font("Calibri",Font.PLAIN, 23));
-		resumeb.setUI(new StyledButtonUI());
-		resumeb.addActionListener(listener);
+//		//RESUME button
+//		resumeb= new JButton("RESUME");
+//		resumeb.setBackground(new Color(0,0,0,210));
+//		resumeb.setForeground(Color.WHITE);
+//		resumeb.setFont(new Font("Calibri",Font.PLAIN, 23));
+//		resumeb.setUI(new StyledButtonUI());
+//		resumeb.addActionListener(listener);
+
+		//back Menu button
+		backbP = new JButton("BACK TO MENU");
+		backbP.setBackground(new Color(0,0,0,200));
+		backbP.setForeground(Color.WHITE);
+		backbP.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backbP.setUI(new StyledButtonUI());
+		backbP.addActionListener(listener);
 
 
 		//EXIT button
@@ -325,7 +387,8 @@ public class StartMenu {
 		exitp.setUI(new StyledButtonUI());
 		exitp.addActionListener(listener);
 
-		pauseMenu.add(resumeb);
+//		pauseMenu.add(resumeb);
+		pauseMenu.add(backbP);
 		pauseMenu.add(exitp);
 
 		pausePanel.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
@@ -355,20 +418,20 @@ public class StartMenu {
 		backMenu.setLayout(new GridLayout(7,10,0,vGap));
 
 		//back Menu button
-		backb = new JButton("BACK TO MENU");
-		backb.setBackground(new Color(0,0,0,200));
-		backb.setForeground(Color.WHITE);
-		backb.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backb.setUI(new StyledButtonUI());
-		backb.addActionListener(listener);
+		backbP = new JButton("BACK TO MENU");
+		backbP.setBackground(new Color(0,0,0,200));
+		backbP.setForeground(Color.WHITE);
+		backbP.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backbP.setUI(new StyledButtonUI());
+		backbP.addActionListener(listener);
 
 		//back Editor button
-		backEd = new JButton("BACK TO EDITOR");
-		backEd.setBackground(new Color(0,0,0,200));
-		backEd.setForeground(Color.WHITE);
-		backEd.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backEd.setUI(new StyledButtonUI());
-		backEd.addActionListener(listener);
+		backEdP = new JButton("BACK TO EDITOR");
+		backEdP.setBackground(new Color(0,0,0,200));
+		backEdP.setForeground(Color.WHITE);
+		backEdP.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backEdP.setUI(new StyledButtonUI());
+		backEdP.addActionListener(listener);
 
 		//EXIT button
 		exitp = new JButton("EXIT");
@@ -379,8 +442,8 @@ public class StartMenu {
 		exitp.setUI(new StyledButtonUI());
 		exitp.addActionListener(listener);
 
-		backMenu.add(backb);
-		backMenu.add(backEd);
+		backMenu.add(backbP);
+		backMenu.add(backEdP);
 		backMenu.add(exitp);
 
 		backPanel.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
@@ -408,6 +471,7 @@ public class StartMenu {
 		}
 		else
 			oneP = new JButton("EMPTY SLOT");
+
 		oneP.setBackground(new Color(0,0,0,210));
 		oneP.setForeground(Color.WHITE);
 		oneP.setFont(new Font("Calibri",Font.PLAIN, 22));
@@ -415,7 +479,7 @@ public class StartMenu {
 		oneP.addActionListener(listener);
 
 		//2 Play
-		if(f1.exists() && !f1.isDirectory()) {
+		if(f2.exists() && !f2.isDirectory()) {
 			twoP = new JButton("LEVEL 2");
 		}
 		else
@@ -427,7 +491,7 @@ public class StartMenu {
 		twoP.addActionListener(listener);
 
 		//3Play
-		if(f1.exists() && !f1.isDirectory()) {
+		if(f3.exists() && !f3.isDirectory()) {
 			threeP = new JButton("LEVEL 3");
 		}
 		else
@@ -441,7 +505,7 @@ public class StartMenu {
 		threeP.addActionListener(listener);
 
 		//4 Play
-		if(f1.exists() && !f1.isDirectory()) {
+		if(f4.exists() && !f4.isDirectory()) {
 			fourP = new JButton("LEVEL 4");
 		}
 		else
@@ -584,7 +648,6 @@ public class StartMenu {
 		editorPanel.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
 		RadioButtons radio = new RadioButtons();
 
-
 		editor = new EditorPanel(radio);
 		saveButton = editor.getSaveButton();
 		saveButton.addActionListener(listener);
@@ -595,13 +658,13 @@ public class StartMenu {
 		panel.add(editorPanel);
 
 	}
-	public void createGame(BackgroundPanel panel){
+	public void createGame(BackgroundPanel panel, String filePath){
 
 		gamePanel = new JPanel();
 		gamePanel.setLayout(new BorderLayout());
 		gamePanel.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
 
-		Game game = new Game(FileLocations.level1);
+		Game game = new Game(filePath);
 		new Thread(game).start();
 
 		//You can pause the game with this var:
@@ -610,31 +673,16 @@ public class StartMenu {
 		gamePanel.add(game);
 		panel.add(gamePanel);
 
-		/*gamePanel = new JPanel();
-		gamePanel.setLayout(new BorderLayout());
-
-		gamePanel.setPreferredSize(new Dimension(frame.getWidth(),frame.getHeight()));
-
-
-		FrameGolf game = new FrameGolf(1);
-
-		gameVisible = true;
-
-		gamePanel.add(game);
-//        panel.add(game);
-		panel.add(gamePanel);
-//
-		game.golf3D.addKeyListener(new KeyListener() {
+		game.addKeyListener(new KeyListener() {
 
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
 					System.out.println("ESCAPE game");
-					if(gameVisible){
+					if(gamePanel.isVisible()){
 						gamePanel.setVisible(false);
-
 						createPauseMenu(panel);
-						frame.pack();
 					}
+
 				}
 
 			}
@@ -643,12 +691,12 @@ public class StartMenu {
 			}
 			public void keyReleased(KeyEvent arg0) {
 			}
-		});*/
+		});
 
 	}
 
-	public static JButton getResumeb() {
-		return resumeb;
-	}
+//	public static JButton getResumeb() {
+//		return resumeb;
+//	}
 
 }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class GolfPanel extends JPanel{
 
     private static final int PWIDTH = 1200;
-    private static final int PHEIGHT = 800;
+    private static final int PHEIGHT = 900;
     private static final float scale=0.1f;
 
     private SimpleUniverse su=null;
@@ -45,7 +45,7 @@ public class GolfPanel extends JPanel{
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 
         canvas3D = new Canvas3D(config);
-        canvas3D.setSize(3*PWIDTH/4,PHEIGHT);
+        canvas3D.setSize(PWIDTH,PHEIGHT);
         add(canvas3D);
         canvas3D.setFocusable(true);     // give focus to the canvas
         canvas3D.requestFocus();

@@ -239,7 +239,7 @@ public class EditorPanel extends JPanel{
         class SaveListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 //write into file
-                writeItDown(getDataForFileWriting());
+                //writeItDown(getDataForFileWriting());
             }
         }
 
@@ -351,12 +351,12 @@ public class EditorPanel extends JPanel{
         }
         LinkedList<String> worldData = world.outputWorldApi2();
 
-        /*World worldWithPhysics = new WorldCPU(worldData);
+        World worldWithPhysics = new WorldGPUBotOpti(worldData);
         Brutefinder brutefinder = new Brutefinder();
         brutefinder.init(worldWithPhysics);
         brutefinder.makeDatabase();
         LinkedList<String> brutefinderData = brutefinder.ouputDatabase();
-*/
+
         LinkedList<String> returnData = new LinkedList<>();
         returnData.add("Master:World");
         for(int i=0;i<worldData.size();i++)
@@ -364,11 +364,11 @@ public class EditorPanel extends JPanel{
             returnData.add(worldData.get(i));
         }
 
-        /*returnData.add("Master:Brutefinder");
+        returnData.add("Master:Brutefinder");
         for(int i=0;i<brutefinderData.size();i++)
         {
             returnData.add(brutefinderData.get(i));
-        }*/
+        }
 
         return returnData;
     }
@@ -426,5 +426,35 @@ public class EditorPanel extends JPanel{
 
     public void setSaveButton(JButton saveButton) {
         this.saveButton = saveButton;
+    }
+
+    public void writeItDown(LinkedList<String> list,int slotNum ){
+        File field= new File("Slot"+slotNum+".txt");
+        FileWriter writeFile = null;
+
+        // allows us to write the file
+
+        PrintWriter writer = null;
+        Scanner inWriteDown = null;
+        try {
+            writeFile = new FileWriter(field);
+            writer = new PrintWriter(writeFile);
+            inWriteDown = new Scanner(field);
+
+            for (String str : list) {
+                writer.write(str+ "\r\n");
+            }
+        } catch (Exception e) {
+            // errors
+        } finally // closes the writer
+        {
+            try {
+                if (writer != null)
+                    writer.close();
+                if (inWriteDown != null)
+                    inWriteDown.close();
+            } catch (Exception e) {
+            }
+        }
     }
 }

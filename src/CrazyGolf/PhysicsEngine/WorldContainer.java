@@ -27,7 +27,7 @@ public class WorldContainer implements World {
         initContainer();
         loadWorldApi2(input);
 
-        addPool(-100,-400,0,400,200,12,40);
+        //addPool(-100,-400,0,400,200,12,40);
 
         if(DEBUG)System.out.println("WorldContainer: World file loaded: "+sides.size()+" sides");
         editMode=false;

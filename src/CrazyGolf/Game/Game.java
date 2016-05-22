@@ -71,7 +71,7 @@ public class Game extends GolfPanel implements Runnable{
         players = new Player[world.getAmountBalls()];
         currentPlayer = 0;
         for(int i=0;i<world.getAmountBalls();i++) {
-            players[i] = new Player(this,i,i);
+            players[i] = new Player(this,i,1);
         }
 
         addKeyListener(new KeyListener() {
@@ -149,7 +149,7 @@ public class Game extends GolfPanel implements Runnable{
                             if (world.checkBallInHole(i)) {
                                 keepPlaying = false;
                                 i=0;
-                                if (World.DEBUG) System.out.println("Game: Player " + i + " Won!");
+                                if (World.DEBUG) System.out.println("Game: Player " + i + " Won with "+players[i].turns+" turns!");
                             }
                         }
                         if(keepPlaying) {
