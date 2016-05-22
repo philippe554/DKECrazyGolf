@@ -40,7 +40,7 @@ public class EditorPanel extends JPanel{
     private final String[] layerStrings = {"Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"};
     private JLayeredPane layeredPane;
     private JComboBox layerList;
-    private Grid[] grid = new Grid[layerStrings.length];
+    private final Grid[] grid = new Grid[layerStrings.length];
     private JLabel label;
     private static String LAYER_COMMAND = "layer";
 
@@ -422,11 +422,13 @@ public class EditorPanel extends JPanel{
         return calculationCheckbox;
     }
 
-    public boolean isPlaced(String s){
-        for(int i=0; i<rectangleGrid.length; i++) {
-            for (int j = 0; j < rectangleGrid[0].length; j++) {
-                if (stringGrid[i][j].equals(s)) {
-                    return true;
+    public boolean isPlaced(String s) {
+        for (int h = 0; h < grid.length; h++) {
+            for (int i = 0; i < grid[h].getRectanglegGrid().length; i++) {
+                for (int j = 0; j < grid[h].getRectanglegGrid()[0].length; j++) {
+                    if (grid[h].getStringGrid()[i][j].equals(s)) {
+                        return true;
+                    }
                 }
             }
         }
