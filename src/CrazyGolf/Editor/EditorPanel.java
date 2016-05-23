@@ -1,15 +1,11 @@
 package CrazyGolf.Editor;
 
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
-import CrazyGolf.FileLocations;
 import CrazyGolf.PhysicsEngine.*;
-import javafx.geometry.Point3D;
 
 import javax.swing.*;
-import javax.vecmath.Color3f;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;

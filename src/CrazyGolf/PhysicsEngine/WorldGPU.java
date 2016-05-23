@@ -1,13 +1,8 @@
 package CrazyGolf.PhysicsEngine;
 
-import CrazyGolf.FileLocations;
 import javafx.geometry.Point3D;
 import org.jocl.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.jocl.CL.*;

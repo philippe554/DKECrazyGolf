@@ -18,7 +18,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.border.EmptyBorder;
 
-import CrazyGolf.FileLocations;
 import CrazyGolf.Game.Game;
 
 import CrazyGolf.Editor.EditorPanel;
