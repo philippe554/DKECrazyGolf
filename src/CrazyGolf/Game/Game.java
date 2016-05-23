@@ -2,7 +2,6 @@ package CrazyGolf.Game;
 
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
-import CrazyGolf.FileLocations;
 import CrazyGolf.PhysicsEngine.*;
 import javafx.geometry.Point3D;
 

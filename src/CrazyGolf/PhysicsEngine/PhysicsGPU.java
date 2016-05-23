@@ -1,6 +1,5 @@
 package CrazyGolf.PhysicsEngine;
 
-import CrazyGolf.FileLocations;
 import org.jocl.*;
 
 import java.io.BufferedReader;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import static org.jocl.CL.*;
-import static org.jocl.CL.clCreateKernel;
 
 /**
  * Created by pmmde on 5/16/2016.
