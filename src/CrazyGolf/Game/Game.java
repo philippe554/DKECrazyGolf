@@ -2,6 +2,7 @@ package CrazyGolf.Game;
 
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
+import CrazyGolf.Menu.StartMenu;
 import CrazyGolf.PhysicsEngine.*;
 import javafx.geometry.Point3D;
 
@@ -12,9 +13,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-/**
- * Created by pmmde on 4/22/2016.
- */
+import javax.swing.JOptionPane;
+
 public class Game extends GolfPanel implements Runnable{
 
     public boolean keepPlaying;
@@ -24,8 +24,12 @@ public class Game extends GolfPanel implements Runnable{
     public BotInterface brutefinder;
     public World world;
     public boolean enterPressed=false;
+    private int slot;
+    private StartMenu menu;
 
-    public Game(String fileName) {
+    public Game(StartMenu menu,String fileName,int slot) {
+        this.menu=menu;
+        this.slot=slot;
         keepPlaying=true;
         pause=false;
 
@@ -36,7 +40,7 @@ public class Game extends GolfPanel implements Runnable{
                 file.add(s.nextLine());
             }
         } catch (IOException e) {
-                        System.out.println("Error reading field plan from " + fileName);
+            System.out.println("Error reading field plan from " + fileName);
             System.exit(0);
         }
 
@@ -104,6 +108,7 @@ public class Game extends GolfPanel implements Runnable{
         loadWorld(world);
     }
     public void run(){
+        int nextSlot;
         if(World.DEBUG)System.out.println("Game: Start game with player "+currentPlayer);
         int stopCounter=0;
         boolean inputFlag=true;
@@ -117,6 +122,7 @@ public class Game extends GolfPanel implements Runnable{
                 if(inputFlag) {
                     world.step(true);
                     updateBall();
+                    UpdateView();
                     players[currentPlayer].updatePushParameters();
                     if(enterPressed) {
                         backupBallLocations();
@@ -128,6 +134,7 @@ public class Game extends GolfPanel implements Runnable{
                 }else{
                     world.step(true);
                     updateBall();
+                    UpdateView();
                     boolean allBallsStop = true;
                     for (int i = 0; i < world.getAmountBalls(); i++) {
                         if (world.getBallPosition(i).getZ() > -100) {
@@ -148,7 +155,10 @@ public class Game extends GolfPanel implements Runnable{
                             if (world.checkBallInHole(i)) {
                                 keepPlaying = false;
                                 i=0;
-                                if (World.DEBUG) System.out.println("Game: Player " + i + " Won with "+players[i].turns+" turns!");
+                                if (World.DEBUG){
+                                    JOptionPane.showMessageDialog(null, "Player " + i + " Won with "+players[i].turns+" turns!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    System.out.println("Game: Player " + i + " Won with "+players[i].turns+" turns!");
+                                }
                             }
                         }
                         if(keepPlaying) {
@@ -161,9 +171,21 @@ public class Game extends GolfPanel implements Runnable{
                             inputFlag = true;
                         }
                         updateBall();
+                        UpdateView();
                     }
                 }
             }
+        }
+
+
+        if(slot!=4){
+            nextSlot = slot+1;
+            menu.createGame(nextSlot,"Slot"+nextSlot+".txt");
+        }
+        else{
+            menu.gamePanel.setVisible(false);
+            menu.createMainMenu();
+
         }
         world.cleanUp();
     }

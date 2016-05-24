@@ -30,14 +30,14 @@ public class StartMenu {
 
 	private JFrame frame;
 	private EditorPanel editor;
-//	private Game game ;
+	private Game game ;
 
-	private BackgroundPanel main;
+	public  BackgroundPanel main;
 	private JPanel startMenu;
 	private JPanel playerMenu;
 	private JPanel pauseMenu;
 	private JPanel editorPanel;
-	private JPanel gamePanel;
+	public JPanel gamePanel;
 	private JPanel pausePanel;
 	private JPanel backPanel;
 	private JPanel backMenu;
@@ -72,13 +72,9 @@ public class StartMenu {
 	private File f3;
 	private File f4;
 
+	private int slot;
 
 	private ActionListener listener;
-
-	public static void main(String[] args){
-		new StartMenu();
-
-	}
 
 	public StartMenu() {
 
@@ -90,7 +86,8 @@ public class StartMenu {
 		java.awt.Image background = new ImageIcon("game.jpg").getImage();
 
 		main =new BackgroundPanel(background, BackgroundPanel.SCALED, 0.0f,0.0f);
-		main.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
+//		main.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
+
 
 		main.addKeyListener(new KeyListener() {
 
@@ -182,26 +179,30 @@ public class StartMenu {
 				}
 				if(e.getSource() ==oneP){
 					if(f1.exists() && !f1.isDirectory()) {
+						slot =1;
 						main.removeAll();
-						createGame(main,f1.getAbsolutePath());
+						createGame(slot,f1.getAbsolutePath());
 					}
 				}
 				if(e.getSource() ==twoP){
 					if(f2.exists() && !f2.isDirectory()) {
+						slot=2;
 						main.removeAll();
-						createGame(main,f2.getAbsolutePath());
+						createGame(slot,f2.getAbsolutePath());
 					}
 				}
 				if(e.getSource() ==threeP){
 					if(f3.exists() && !f3.isDirectory()) {
+						slot=3;
 						main.removeAll();
-						createGame(main,f3.getAbsolutePath());
+						createGame(slot,f3.getAbsolutePath());
 					}
 				}
 				if(e.getSource() ==fourP){
 					if(f4.exists() && !f4.isDirectory()) {
+						slot=4;
 						main.removeAll();
-						createGame(main,f4.getAbsolutePath());
+						createGame(slot,f4.getAbsolutePath());
 					}
 				}
 
@@ -244,7 +245,7 @@ public class StartMenu {
 
 					if(pausePanel!=null){
 						pausePanel.setVisible(false);
-						createMainMenu(main);
+						createMainMenu();
 					}
 
 					startMenu.setVisible(true);
@@ -279,22 +280,24 @@ public class StartMenu {
 
 		listener = new ButtonListener();
 
-		createMainMenu(main);
+		createMainMenu();
 		frame = new JFrame();
 
 		frame.add(main);
 
-		frame.setSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
+//		frame.setSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setResizable(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
 
 		frame.setVisible(true);
 
 
 	}
 
-	public void createMainMenu(BackgroundPanel panel){
-		JPanel tmp = new JPanel(new FlowLayout());
+	public void createMainMenu(){
+		JPanel tmp = new JPanel();
 
 		startMenu = new JPanel();
 		startMenu.setPreferredSize(new Dimension((int)(FRAME_WIDTH*0.30),400));
@@ -342,7 +345,7 @@ public class StartMenu {
 
 		tmp.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
 		tmp.add(startMenu);
-		panel.add(tmp);
+		main.add(tmp);
 //		panel.add(startMenu);
 
 	}
@@ -657,20 +660,22 @@ public class StartMenu {
 		panel.add(editorPanel);
 
 	}
-	public void createGame(BackgroundPanel panel, String filePath){
+	public void createGame(int fileNum,String filePath){
 
 		gamePanel = new JPanel();
 		gamePanel.setLayout(new BorderLayout());
-		gamePanel.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
 
-		Game game = new Game(filePath);
+
+		game = new Game(this,filePath,fileNum);
+		game.getCanvas3D().setSize(new Dimension(main.getWidth(),main.getHeight()));
+
 		new Thread(game).start();
 
 		//You can pause the game with this var:
 		//game.pause=true;
 
 		gamePanel.add(game);
-		panel.add(gamePanel);
+		main.add(gamePanel);
 
 		game.addKeyListener(new KeyListener() {
 
@@ -679,7 +684,7 @@ public class StartMenu {
 					System.out.println("ESCAPE game");
 					if(gamePanel.isVisible()){
 						gamePanel.setVisible(false);
-						createPauseMenu(panel);
+						createPauseMenu(main);
 					}
 
 				}
