@@ -15,9 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-/**
- * Created by pmmde on 5/15/2016.
- */
+
 public class GolfPanel extends JPanel{
 
     private static final int PWIDTH = 1200;
@@ -35,22 +33,22 @@ public class GolfPanel extends JPanel{
     private BoundingSphere bounds;
 
     private World world;
-    Canvas3D canvas3D;
+    private Canvas3D canvas3D;
 
     public GolfPanel(){
         setLayout( new BorderLayout() );
         setOpaque( false );
-        setPreferredSize( new Dimension(PWIDTH, PHEIGHT));
+
 
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 
-        canvas3D = new Canvas3D(config);
-        canvas3D.setSize(PWIDTH,PHEIGHT);
-        add(canvas3D);
-        canvas3D.setFocusable(true);     // give focus to the canvas
-        canvas3D.requestFocus();
+        setCanvas3D(new Canvas3D(config));
+        getCanvas3D().setSize(PWIDTH,PHEIGHT);
+        add(getCanvas3D());
+        getCanvas3D().setFocusable(true);     // give focus to the canvas
+        getCanvas3D().requestFocus();
 
-        su = new SimpleUniverse(canvas3D);
+        su = new SimpleUniverse(getCanvas3D());
 
         su.getViewer().getView().setBackClipDistance(100000000);
     }
@@ -64,7 +62,7 @@ public class GolfPanel extends JPanel{
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
-        orbitControls(canvas3D);   // controls for moving the viewpoint
+        orbitControls(getCanvas3D());   // controls for moving the viewpoint
         su.addBranchGraph( sceneBG );
 
         createBall();
@@ -124,14 +122,33 @@ public class GolfPanel extends JPanel{
         Transform3D t3d = new Transform3D();
         steerTG.getTransform(t3d);
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt(new Point3d((float)world.getBallPosition(0).getX()*scale+50,(float)world.getBallPosition(0).getY()*scale+50,(float)world.getBallPosition(0).getZ()*scale+50),
+        t3d.lookAt(new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale-50,(float)world.getBallPosition(0).getZ()*scale+60),
                 new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale,(float)world.getBallPosition(0).getZ()*scale)
                 , new Vector3d(0,0,1));
 
         t3d.invert();
 
         steerTG.setTransform(t3d);
+
     }
+    protected void UpdateView() {
+
+        ViewingPlatform vp = su.getViewingPlatform();
+
+        TransformGroup steerTG = vp.getViewPlatformTransform();
+        Transform3D t3d = new Transform3D();
+        steerTG.getTransform(t3d);
+        // args are: viewer posn, where looking, up direction
+        t3d.lookAt(new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale-50,(float)world.getBallPosition(0).getZ()*scale+60),
+                new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale,(float)world.getBallPosition(0).getZ()*scale)
+                , new Vector3d(0,0,1));
+
+        t3d.invert();
+
+        steerTG.setTransform(t3d);
+
+    }
+
     public void createBall(){
         // located at start
         // Create the blue appearance node
@@ -235,5 +252,13 @@ public class GolfPanel extends JPanel{
             sceneArrow.detach();
             sceneArrow = null;
         }
+    }
+
+    public Canvas3D getCanvas3D() {
+        return canvas3D;
+    }
+
+    public void setCanvas3D(Canvas3D canvas3d) {
+        canvas3D = canvas3d;
     }
 }
