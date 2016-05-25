@@ -46,18 +46,25 @@ public class Game extends GolfPanel implements Runnable{
 
         int sort=0;
         LinkedList<String> worldData = new LinkedList<>();
+        LinkedList<String> gamemodeData = new LinkedList<>();
         LinkedList<String> brutefinderData = new LinkedList<>();
 
         for(int i=0;i<file.size();i++)
         {
             if(file.get(i).equals("Master:World")){
                 sort=0;
-            }else if(file.get(i).equals("Master:Brutefinder")){
+            }else if(file.get(i).equals("Master:Gamemode")){
                 sort=1;
+            }
+            else if(file.get(i).equals("Master:Brutefinder")){
+                sort=2;
             }else if(sort==0)
             {
                 worldData.add(file.get(i));
             }else if(sort==1)
+            {
+                gamemodeData.add(file.get(i));
+            }else if(sort==2)
             {
                 brutefinderData.add(file.get(i));
             }
@@ -71,10 +78,10 @@ public class Game extends GolfPanel implements Runnable{
             brutefinder.loadDatabase(brutefinderData);
         }
 
-        players = new Player[world.getAmountBalls()];
+        players = new Player[gamemodeData.size()];
         currentPlayer = 0;
-        for(int i=0;i<world.getAmountBalls();i++) {
-            players[i] = new Player(this,i,0);
+        for(int i=0;i<gamemodeData.size();i++) {
+            players[i] = new Player(this,i,Integer.parseInt(gamemodeData.get(i)));
         }
 
         addKeyListener(new KeyListener() {
@@ -105,7 +112,7 @@ public class Game extends GolfPanel implements Runnable{
             }
         });
 
-        loadWorld(world);
+        loadWorld(world,players.length);
     }
     public void run(){
         int nextSlot;
@@ -119,10 +126,14 @@ public class Game extends GolfPanel implements Runnable{
             if(lastTime+1000.0/30.0<currentTime && !pause) {
                 lastTime=currentTime;
                 requestFocus();
+                if(!players[currentPlayer].createdInWorld){
+                    world.addNewBall();
+                    players[currentPlayer].createdInWorld=true;
+                }
+                world.step(true);
+                updateBall();
+                UpdateView(currentPlayer);
                 if(inputFlag) {
-                    world.step(true);
-                    updateBall();
-                    UpdateView();
                     players[currentPlayer].updatePushParameters();
                     if(enterPressed) {
                         backupBallLocations();
@@ -132,9 +143,6 @@ public class Game extends GolfPanel implements Runnable{
                         inputFlag=false;
                     }
                 }else{
-                    world.step(true);
-                    updateBall();
-                    UpdateView();
                     boolean allBallsStop = true;
                     for (int i = 0; i < world.getAmountBalls(); i++) {
                         if (world.getBallPosition(i).getZ() > -100) {
@@ -170,8 +178,8 @@ public class Game extends GolfPanel implements Runnable{
                             if (World.DEBUG) System.out.println("Game: Switched to player " + currentPlayer);
                             inputFlag = true;
                         }
-                        updateBall();
-                        UpdateView();
+                        //updateBall();
+                        //UpdateView(Cu);
                     }
                 }
             }

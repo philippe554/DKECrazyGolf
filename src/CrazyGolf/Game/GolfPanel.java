@@ -53,7 +53,7 @@ public class GolfPanel extends JPanel{
         su.getViewer().getView().setBackClipDistance(100000000);
     }
 
-    public void loadWorld(World tworld) {
+    public void loadWorld(World tworld,int amountOfBalls) {
         if(sceneBG!=null)sceneBG.detach();
         if(sceneBall!=null)sceneBall.detach();
         if(sceneArrow!=null)sceneArrow.detach();
@@ -62,10 +62,10 @@ public class GolfPanel extends JPanel{
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
-        orbitControls(getCanvas3D());   // controls for moving the viewpoint
+        //orbitControls(getCanvas3D());   // controls for moving the viewpoint
         su.addBranchGraph( sceneBG );
 
-        createBall();
+        createBall(amountOfBalls);
     }
     private void createSceneGraph() {
         sceneBG = new BranchGroup();
@@ -122,8 +122,8 @@ public class GolfPanel extends JPanel{
         Transform3D t3d = new Transform3D();
         steerTG.getTransform(t3d);
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt(new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale-50,(float)world.getBallPosition(0).getZ()*scale+60),
-                new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale,(float)world.getBallPosition(0).getZ()*scale)
+        t3d.lookAt(new Point3d((float)world.getStartPosition().getX()*scale,(float)world.getStartPosition().getY()*scale-50,(float)world.getStartPosition().getZ()*scale+60),
+                new Point3d((float)world.getStartPosition().getX()*scale,(float)world.getStartPosition().getY()*scale,(float)world.getStartPosition().getZ()*scale)
                 , new Vector3d(0,0,1));
 
         t3d.invert();
@@ -131,7 +131,7 @@ public class GolfPanel extends JPanel{
         steerTG.setTransform(t3d);
 
     }
-    protected void UpdateView() {
+    protected void UpdateView(int currentPlayer) {
 
         ViewingPlatform vp = su.getViewingPlatform();
 
@@ -139,8 +139,12 @@ public class GolfPanel extends JPanel{
         Transform3D t3d = new Transform3D();
         steerTG.getTransform(t3d);
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt(new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale-50,(float)world.getBallPosition(0).getZ()*scale+60),
-                new Point3d((float)world.getBallPosition(0).getX()*scale,(float)world.getBallPosition(0).getY()*scale,(float)world.getBallPosition(0).getZ()*scale)
+        t3d.lookAt(new Point3d((float)world.getBallPosition(currentPlayer).getX()*scale,
+                (float)world.getBallPosition(currentPlayer).getY()*scale-50,
+                (float)world.getBallPosition(currentPlayer).getZ()*scale+60),
+                new Point3d((float)world.getBallPosition(currentPlayer).getX()*scale,
+                        (float)world.getBallPosition(currentPlayer).getY()*scale,
+                        (float)world.getBallPosition(currentPlayer).getZ()*scale)
                 , new Vector3d(0,0,1));
 
         t3d.invert();
@@ -149,7 +153,7 @@ public class GolfPanel extends JPanel{
 
     }
 
-    public void createBall(){
+    public void createBall(int amountOfBalls){
         // located at start
         // Create the blue appearance node
         Color3f black = new Color3f(0.0f, 0.0f, 0.0f);
@@ -164,17 +168,16 @@ public class GolfPanel extends JPanel{
         Appearance blueApp = new Appearance();
         blueApp.setMaterial(blueMat);
 
-        tgBall = new TransformGroup[world.getAmountBalls()];
-        t3dBall = new Transform3D[world.getAmountBalls()];
+        tgBall = new TransformGroup[amountOfBalls];
+        t3dBall = new Transform3D[amountOfBalls];
         sceneBall = new BranchGroup();
 
-        for(int i=0;i<world.getAmountBalls();i++) {
+        for(int i=0;i<amountOfBalls;i++) {
             // position the sphere
             t3dBall[i] = new Transform3D();
-            t3dBall[i].set(new Vector3f((float) world.getBallPosition(i).getX() * scale, (float) world.getBallPosition(i).getY() * scale,
-                    (float) world.getBallPosition(i).getZ() * scale));
+            t3dBall[i].set(new Vector3f(100000000,0,0));
             tgBall[i] = new TransformGroup(t3dBall[i]);
-            Sphere ball = new Sphere((float) world.getBallSize(i) * scale, blueApp);// set its radius and appearance
+            Sphere ball = new Sphere((float)  20 * scale, blueApp);// set its radius and appearance
             ball.setPickable(true);
 
             tgBall[i].setCapability(TransformGroup.ALLOW_TRANSFORM_READ);

@@ -27,10 +27,13 @@ public class Player {
 
     public Point3D oldLocation;
 
+    public boolean createdInWorld;
+
     public Player(Game tGame,int tballId, int tLaunchSort) {
         ballId=tballId;
         launchSort=tLaunchSort;
         game=tGame;
+        createdInWorld=false;
     }
     public void launch() {
         if(launchSort==0){
