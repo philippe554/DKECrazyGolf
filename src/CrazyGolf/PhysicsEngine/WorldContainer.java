@@ -441,7 +441,7 @@ public class WorldContainer implements World {
             }
         }
 
-        double borderHeight=60;
+        double borderHeight=50;
 
         addSquare(new Point3D(i*gs,j*gs,borderHeight+Z),
                 new Point3D(i*gs+gs*iCounter,j*gs,borderHeight+Z),
@@ -660,6 +660,70 @@ public class WorldContainer implements World {
                 Point3D p3=new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+((Math.max((Math.cos((i+1.0)/parts*Math.PI*2)-1),(Math.cos((j+1.0)/parts*Math.PI*2)-1))))/4*debt);
                 Point3D p4=new Point3D(x+i*xStep,y+(j+1)*yStep,z+((Math.max((Math.cos(i/parts*Math.PI*2)-1),(Math.cos((j+1.0)/parts*Math.PI*2)-1))))/4*debt);
                 addSquare(p1,p2,p3,p4,2,0.1);
+            }
+        }
+    }
+    public void addHillX(double x,double y,double z,double xSize,double ySize,double zSize,int parts){
+        double xStep = xSize/parts;
+        double yStep = ySize/parts;
+        double zStep = zSize/parts;
+        for(double i=0;i<(parts);i++)
+        {
+            for(double j=0;j<(parts);j++)
+            {
+                Point3D p1= new Point3D(x+i*xStep,y+j*yStep,z+(-Math.cos(i/parts*Math.PI)+1)*zSize/2);
+                Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos((i+1)/parts*Math.PI)+1)*zSize/2);
+                Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos((i+1)/parts*Math.PI)+1)*zSize/2);
+                Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos(i/parts*Math.PI)+1)*zSize/2);
+                addSquare(p1,p2,p3,p4,1,0.1);
+            }
+        }
+    }
+    public void addHillx(double x,double y,double z,double xSize,double ySize,double zSize,int parts){
+        double xStep = xSize/parts;
+        double yStep = ySize/parts;
+        double zStep = zSize/parts;
+        for(double i=0;i<(parts);i++)
+        {
+            for(double j=0;j<(parts);j++)
+            {
+                Point3D p1= new Point3D(x+i*xStep,y+j*yStep,z+(-Math.cos(Math.PI-i/parts*Math.PI)+1)*zSize/2);
+                Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos(Math.PI-(i+1)/parts*Math.PI)+1)*zSize/2);
+                Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-(i+1)/parts*Math.PI)+1)*zSize/2);
+                Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-i/parts*Math.PI)+1)*zSize/2);
+                addSquare(p1,p2,p3,p4,1,0.1);
+            }
+        }
+    }
+    public void addHillY(double x,double y,double z,double xSize,double ySize,double zSize,int parts){
+        double xStep = xSize/parts;
+        double yStep = ySize/parts;
+        double zStep = zSize/parts;
+        for(double i=0;i<(parts);i++)
+        {
+            for(double j=0;j<(parts);j++)
+            {
+                Point3D p1= new Point3D(x+i*xStep,y+j*yStep,z+(-Math.cos(j/parts*Math.PI)+1)*zSize/2);
+                Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos(j/parts*Math.PI)+1)*zSize/2);
+                Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos((j+1)/parts*Math.PI)+1)*zSize/2);
+                Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos((j+1)/parts*Math.PI)+1)*zSize/2);
+                addSquare(p1,p2,p3,p4,1,0.1);
+            }
+        }
+    }
+    public void addHilly(double x,double y,double z,double xSize,double ySize,double zSize,int parts){
+        double xStep = xSize/parts;
+        double yStep = ySize/parts;
+        double zStep = zSize/parts;
+        for(double i=0;i<(parts);i++)
+        {
+            for(double j=0;j<(parts);j++)
+            {
+                Point3D p1= new Point3D(x+i*xStep,y+j*yStep,z+(-Math.cos(Math.PI-j/parts*Math.PI)+1)*zSize/2);
+                Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos(Math.PI-j/parts*Math.PI)+1)*zSize/2);
+                Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-(j+1)/parts*Math.PI)+1)*zSize/2);
+                Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-(j+1)/parts*Math.PI)+1)*zSize/2);
+                addSquare(p1,p2,p3,p4,1,0.1);
             }
         }
     }
