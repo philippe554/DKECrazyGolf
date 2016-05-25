@@ -34,6 +34,8 @@ public class EditorPanel extends JPanel{
     private boolean DataBaseCalculation;
 
     private final String[] layerStrings = {"Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"};
+    private final String[] playerStrings = {"Human", "Brutefinder bot", "One-Shooter bot", "Nobody"};
+    private String[] playerChoice = {"0", "3", "3", "3"};
     private JLayeredPane layeredPane;
     private JComboBox layerList;
     private final Grid[] grid = new Grid[layerStrings.length];
@@ -49,10 +51,12 @@ public class EditorPanel extends JPanel{
         settingPanel.setLayout(new BorderLayout());
 
         JPanel settings = new JPanel();
-        settings.setLayout(new GridLayout(3,1));
+        settings.setLayout(new GridLayout(6,1));
 
         buttons = someButtons;
 
+        layeredPane = makeLayeredPane();
+        layerList = makeLayerList();
 
         setSaveButton(new JButton("SAVE"));
         getSaveButton().setBackground(Color.lightGray);
@@ -71,14 +75,12 @@ public class EditorPanel extends JPanel{
         getSaveButton().setSize(new Dimension(20,20));
 
 
-        layeredPane = makeLayeredPane();
-        layerList = makeLayerList();
-
-        JCheckBox hardCodedLevel = makeHardCodedLevel();
 
         settings.add(layerList);
         settings.add(makeCalculationCheckbox());
-        settings.add(hardCodedLevel);
+        for (int i=0; i<playerStrings.length; i++){
+            settings.add(makePlayerList()[i]);
+        }
         settingPanel.add(settings, BorderLayout.NORTH);
         settingPanel.add(getSaveButton());
         add(settingPanel, BorderLayout.EAST);
@@ -107,12 +109,42 @@ public class EditorPanel extends JPanel{
                 rectangleGrid = currentGrid.getRectanglegGrid();
                 revalidate();
                 repaint();
+
             }
         }
 
         list.addActionListener(new LayeredActionListener());
 
         return list;
+    }
+
+    public JComboBox[] makePlayerList(){
+
+        JComboBox[] listArray = new JComboBox[playerStrings.length];
+
+        class PlayerActionListener implements ActionListener{
+
+            public void actionPerformed(ActionEvent e) {
+
+                for (int i=0; i<listArray.length; i++){
+                    if (e.getSource()==listArray[i]){
+                        playerChoice[i]= Integer.toString(listArray[i].getSelectedIndex());
+                    }
+                }
+
+            }
+        }
+
+        for (int i=0; i<playerStrings.length; i++){
+            JComboBox list = new JComboBox(playerStrings);
+            list.setSelectedIndex(3);    //last value >> Nobody
+            list.setFont(new Font("Century Gothic", Font.PLAIN, 12));
+            list.addActionListener(new PlayerActionListener());
+            listArray[i] = list;
+        }
+        listArray[0].setSelectedIndex(0); //first value >> Human (so at least one player is playing)
+
+        return listArray;
     }
 
     public JLayeredPane makeLayeredPane(){
@@ -292,9 +324,7 @@ public class EditorPanel extends JPanel{
 
         class ObjectPreviewListener implements MouseMotionListener {
 
-            public void mouseDragged(MouseEvent e) {
-
-            }
+            public void mouseDragged(MouseEvent e) {}
 
             public void mouseMoved(MouseEvent e) {
                 chosenOption = buttons.getChosenOption();
@@ -305,15 +335,12 @@ public class EditorPanel extends JPanel{
                     if (chosenOption.equals("W")) {
                         label.setBounds(0, 0, pixelSIZE, pixelSIZE);
                         label.setBackground(Color.red);
-                        // label.setOpaque(true);
                     } else if (chosenOption.equals("S")) {
                         label.setBounds(0, 0, pixelSIZE, pixelSIZE);
                         label.setBackground(Color.orange);
-                        //  label.setOpaque(true);
                     } else if (chosenOption.equals("F")) {
                         label.setBounds(0, 0, pixelSIZE, pixelSIZE);
                         label.setBackground(Color.green);
-                        //   label.setOpaque(true);
                     } else if (chosenOption.equals("B")) {
                         label.setBounds(0, 0, pixelSIZE * 2, pixelSIZE * 2);
                         label.setBackground(Color.gray);
@@ -369,36 +396,6 @@ public class EditorPanel extends JPanel{
         return pane;
     }
 
-    public JCheckBox makeHardCodedLevel(){
-        JCheckBox box = new JCheckBox("Hardcoded?");
-        box.setFont(new Font("Century Gothic", Font.PLAIN, 11));
-
-        class CheckBoxListener implements ItemListener{
-
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() == box){
-                    if (box.isSelected()){
-                        grid[layerList.getSelectedIndex()] = new Grid(1);
-                        Grid currentGrid = grid[layerList.getSelectedIndex()];
-                        stringGrid = currentGrid.getStringGrid();
-                        rectangleGrid = currentGrid.getRectanglegGrid();
-                        revalidate();
-                        repaint();
-                    } else {
-                        grid[layerList.getSelectedIndex()] = new Grid();
-                        Grid currentGrid = grid[layerList.getSelectedIndex()];
-                        stringGrid = currentGrid.getStringGrid();
-                        rectangleGrid = currentGrid.getRectanglegGrid();
-                        revalidate();
-                        repaint(); }
-                }
-            }
-        }
-        box.addItemListener(new CheckBoxListener());
-
-        return box;
-    }
-
     public Component makeCalculationCheckbox(){
         JCheckBox calculationCheckbox = new JCheckBox("Database?");
         calculationCheckbox.setFont(new Font("Century Gothic", Font.PLAIN, 13));
@@ -409,6 +406,57 @@ public class EditorPanel extends JPanel{
                 if (e.getSource() == calculationCheckbox){
                     if (calculationCheckbox.isSelected()){
                         DataBaseCalculation = true;
+
+
+                            Frame f = new Frame();
+                            JLabel l = new JLabel(new ImageIcon("CalculatingWhite"));
+                            l.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
+                            f.add(l, BorderLayout.CENTER);
+                            f.pack();
+                            Dimension screenSize =
+                                    Toolkit.getDefaultToolkit().getScreenSize();
+                            Dimension labelSize = l.getPreferredSize();
+                            // setLocation(screenSize.width/2 - (labelSize.width/2),
+                            //        screenSize.height/2 - (labelSize.height/2));
+                            addMouseListener(new MouseAdapter()
+                            {
+                                public void mousePressed(MouseEvent e)
+                                {
+                                    f.setVisible(false);
+                                    f.dispose();
+                                }
+                            });
+                            final int pause = 9999;
+                            final Runnable closerRunner = new Runnable()
+                            {
+                                public void run()
+                                {
+                                    f.setVisible(false);
+                                    f.dispose();
+                                }
+                            };
+                            Runnable waitRunner = new Runnable()
+                            {
+                                public void run()
+                                {
+                                    try
+                                    {
+                                        Thread.sleep(pause);
+                                        SwingUtilities.invokeAndWait(closerRunner);
+                                    }
+                                    catch(Exception e)
+                                    {
+                                        e.printStackTrace();
+                                        // can catch InvocationTargetException
+                                        // can catch InterruptedException
+                                    }
+                                }
+                            };
+                            f.setVisible(true);
+                            Thread splashThread = new Thread(waitRunner, "SplashThread");
+                            splashThread.start();
+
+
                     } else { DataBaseCalculation = false; }
                 }
             }
@@ -485,8 +533,9 @@ public class EditorPanel extends JPanel{
             returnData.add(worldData.get(i));
         }
         returnData.add("Master:Gamemode");
-        returnData.add("0");
-        returnData.add("0");
+        for (int i=0; i<playerChoice.length; i++){
+            returnData.add(playerChoice[i]);
+        }
 
 
         if (DataBaseCalculation == true){
@@ -503,9 +552,10 @@ public class EditorPanel extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        if (layerList.getSelectedIndex()==-1)
-            g2.drawString("Please select a layer, thank you!", 150,200);
-
+        if (layerList.getSelectedIndex()==-1) {
+            g2.setFont(new Font("Century Gothic", Font.BOLD, 21));
+            g2.drawString("Please select a layer, thank you!", 150, 200);
+        }
         else {
 
             for (int i = 0; i < rectangleGrid.length; i++) {
@@ -547,10 +597,10 @@ public class EditorPanel extends JPanel{
                         g2.setPaint(Color.BLUE);
                         g2.fill(rectangleGrid[i][j]);
                     }
-                    if (stringGrid[i][j].equals("K")) {
+                  /*  if (stringGrid[i][j].equals("K")) {
                         g2.setPaint(Color.cyan);
                         g2.fill(rectangleGrid[i][j]);
-                    }
+                    } */
                     g2.setPaint(Color.lightGray);
                     g2.draw(rectangleGrid[i][j]);
                 }

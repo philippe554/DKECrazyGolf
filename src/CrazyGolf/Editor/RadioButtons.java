@@ -95,9 +95,9 @@ public class RadioButtons extends JPanel {
         if (s.equals("Pool")){
             g2.setColor(Color.blue);
         }
-        if (s.equals("Croco")){
+        /*if (s.equals("Croco")){
             g2.setColor(Color.cyan);
-        }
+        }*/
         if (s.equals("REMOVE")){
             g2.setColor(Color.lightGray);
         }
@@ -113,16 +113,6 @@ public class RadioButtons extends JPanel {
 
     public void createControlPanel() {
         JPanel choicePanel = createButtons();
-        JPanel controlPanel = new JPanel();
-
-
-       /* controlPanel.setLayout(new BorderLayout());
-        controlPanel.setLayout(new GridLayout(3,1));
-        choicePanel.setBackground(Color.GREEN);
-        controlPanel.add(choicePanel, BorderLayout.CENTER);
-        controlPanel.setBackground(Color.GRAY);
-        this.setLayout(new GridLayout(1,1));
-        add(controlPanel);*/
         add(choicePanel);
     }
 
@@ -172,10 +162,10 @@ public class RadioButtons extends JPanel {
                     chosenOption = "P";
                     System.out.println(chosenOption);
                 }
-                if (crocoButton.isSelected()) {
+                /*if (crocoButton.isSelected()) {
                     chosenOption = "K";
                     System.out.println(chosenOption);
-                }
+                }*/
                 if (removeButton.isSelected()) {
                     chosenOption = "D";
                     System.out.println("remove");
@@ -215,9 +205,9 @@ public class RadioButtons extends JPanel {
         poolButton = new JRadioButton("Pool", getEmptyIcon());
         buttonSettings(poolButton);
 
-        crocoButton = new JRadioButton("Croco", getEmptyIcon());
+       /* crocoButton = new JRadioButton("Croco", getEmptyIcon());
         buttonSettings(crocoButton);
-
+*/
         removeButton = new JRadioButton("REMOVE", getEmptyIcon());
         buttonSettings(removeButton);
 
@@ -226,16 +216,16 @@ public class RadioButtons extends JPanel {
         group.add(wallButton); group.add(ballButton);
         group.add(holeButton); group.add(loopButton);
         group.add(castleButton); group.add(bridgeButton);
-        group.add(poolButton); group.add(crocoButton);
+        group.add(poolButton); //group.add(crocoButton);
         group.add(removeButton);
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(11,1));
+        panel.setLayout(new GridLayout(10,1));
 
         panel.add(floorButton); panel.add(sandButton);
         panel.add(wallButton); panel.add(ballButton);
         panel.add(holeButton); panel.add(loopButton);
         panel.add(castleButton); panel.add(bridgeButton);
-        panel.add(poolButton); panel.add(crocoButton);
+        panel.add(poolButton); //panel.add(crocoButton);
         panel.add(removeButton);
         return panel;
     }
