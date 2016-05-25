@@ -311,6 +311,17 @@ public class WorldContainer implements World {
                                     }
                                 }
                             }
+                        }else if(data[i][j].equals("M")){
+                            addHill(data,i,j,gs,Z,"FBS");
+                            for(int k=0;k<4;k++)
+                            {
+                                for(int l=0;l<4;l++)
+                                {
+                                    if((i+k)<data.length && (j+l)<data[i+k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -661,6 +672,18 @@ public class WorldContainer implements World {
                 Point3D p4=new Point3D(x+i*xStep,y+(j+1)*yStep,z+((Math.max((Math.cos(i/parts*Math.PI*2)-1),(Math.cos((j+1.0)/parts*Math.PI*2)-1))))/4*debt);
                 addSquare(p1,p2,p3,p4,2,0.1);
             }
+        }
+    }
+
+    public void addHill(String[][]data,int i,int j,double gs,double Z,String link){
+        if(i>0 && link.contains(data[i-1][j])){
+            addHillX(i*gs,j*gs,Z,4*gs,4*gs,50,8);
+        }else if(j>0 && link.contains(data[i][j-1])){
+            addHillY(i*gs,j*gs,Z,4*gs,4*gs,50,8);
+        }else if(i<(data.length-1) && link.contains(data[i+1][j])){
+            addHillx(i*gs,j*gs,Z,4*gs,4*gs,50,8);
+        }else{
+            addHilly(i*gs,j*gs,Z,4*gs,4*gs,50,8);
         }
     }
     public void addHillX(double x,double y,double z,double xSize,double ySize,double zSize,int parts){

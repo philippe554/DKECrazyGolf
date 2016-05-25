@@ -27,7 +27,7 @@ public class RadioButtons extends JPanel {
     public JRadioButton castleButton;
     public JRadioButton bridgeButton;
     public JRadioButton poolButton;
-    public JRadioButton crocoButton;
+    public JRadioButton hillButton;
     public JRadioButton removeButton;
     private String chosenOption;
 
@@ -95,8 +95,8 @@ public class RadioButtons extends JPanel {
         if (s.equals("Pool")){
             g2.setColor(Color.blue);
         }
-        if (s.equals("Croco")){
-            g2.setColor(Color.cyan);
+        if (s.equals("Hill")){
+            g2.setColor(new Color(0xB7FF56));
         }
         if (s.equals("REMOVE")){
             g2.setColor(Color.lightGray);
@@ -113,16 +113,6 @@ public class RadioButtons extends JPanel {
 
     public void createControlPanel() {
         JPanel choicePanel = createButtons();
-        JPanel controlPanel = new JPanel();
-
-
-       /* controlPanel.setLayout(new BorderLayout());
-        controlPanel.setLayout(new GridLayout(3,1));
-        choicePanel.setBackground(Color.GREEN);
-        controlPanel.add(choicePanel, BorderLayout.CENTER);
-        controlPanel.setBackground(Color.GRAY);
-        this.setLayout(new GridLayout(1,1));
-        add(controlPanel);*/
         add(choicePanel);
     }
 
@@ -135,50 +125,38 @@ public class RadioButtons extends JPanel {
         class ChoiceListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 //save chosen option in order to get printed on other panel
-                System.out.println("works");
                 if (wallButton.isSelected()) {
                     chosenOption = "W";
-                    System.out.println(chosenOption);
                 }
                 if (sandButton.isSelected()) {
                     chosenOption = "S";
-                    System.out.println(chosenOption);
                 }
                 if (floorButton.isSelected()) {
                     chosenOption = "F";
-                    System.out.println(chosenOption);
                 }
                 if (ballButton.isSelected()) {
                     chosenOption = "B";
-                    System.out.println(chosenOption);
                 }
                 if (holeButton.isSelected()) {
                     chosenOption = "H";
-                    System.out.println(chosenOption);
                 }
                 if (loopButton.isSelected()) {
                     chosenOption = "L";
-                    System.out.println(chosenOption);
                 }
                 if (castleButton.isSelected()) {
                     chosenOption = "C";
-                    System.out.println(chosenOption);
                 }
                 if (bridgeButton.isSelected()) {
                     chosenOption = "R";
-                    System.out.println(chosenOption);
                 }
                 if (poolButton.isSelected()) {
                     chosenOption = "P";
-                    System.out.println(chosenOption);
                 }
-                if (crocoButton.isSelected()) {
-                    chosenOption = "K";
-                    System.out.println(chosenOption);
+                if (hillButton.isSelected()) {
+                    chosenOption = "M";
                 }
                 if (removeButton.isSelected()) {
                     chosenOption = "D";
-                    System.out.println("remove");
                 }
             }
         }
@@ -215,8 +193,8 @@ public class RadioButtons extends JPanel {
         poolButton = new JRadioButton("Pool", getEmptyIcon());
         buttonSettings(poolButton);
 
-        crocoButton = new JRadioButton("Croco", getEmptyIcon());
-        buttonSettings(crocoButton);
+        hillButton = new JRadioButton("Hill", getEmptyIcon());
+        buttonSettings(hillButton);
 
         removeButton = new JRadioButton("REMOVE", getEmptyIcon());
         buttonSettings(removeButton);
@@ -226,7 +204,7 @@ public class RadioButtons extends JPanel {
         group.add(wallButton); group.add(ballButton);
         group.add(holeButton); group.add(loopButton);
         group.add(castleButton); group.add(bridgeButton);
-        group.add(poolButton); group.add(crocoButton);
+        group.add(poolButton); group.add(hillButton);
         group.add(removeButton);
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(11,1));
@@ -235,7 +213,7 @@ public class RadioButtons extends JPanel {
         panel.add(wallButton); panel.add(ballButton);
         panel.add(holeButton); panel.add(loopButton);
         panel.add(castleButton); panel.add(bridgeButton);
-        panel.add(poolButton); panel.add(crocoButton);
+        panel.add(poolButton); panel.add(hillButton);
         panel.add(removeButton);
         return panel;
     }
