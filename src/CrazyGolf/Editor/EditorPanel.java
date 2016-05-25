@@ -550,7 +550,9 @@ public class EditorPanel extends JPanel{
 
         returnData.add("Master:Gamemode");
         for (int i=0; i<playerChoice.length; i++){
-            returnData.add(playerChoice[i]);
+            if(playerChoice[i]!="3") {
+                returnData.add(playerChoice[i]);
+            }
         }
 
 

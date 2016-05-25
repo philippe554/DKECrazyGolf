@@ -680,7 +680,7 @@ public class WorldContainer implements World {
             addHillX(i*gs,j*gs,Z,4*gs,4*gs,50,8);
         }else if(j>0 && link.contains(data[i][j-1])){
             addHillY(i*gs,j*gs,Z,4*gs,4*gs,50,8);
-        }else if(i<(data.length-1) && link.contains(data[i+1][j])){
+        }else if(i<(data.length-4) && link.contains(data[i+4][j])){
             addHillx(i*gs,j*gs,Z,4*gs,4*gs,50,8);
         }else{
             addHilly(i*gs,j*gs,Z,4*gs,4*gs,50,8);
@@ -698,7 +698,7 @@ public class WorldContainer implements World {
                 Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos((i+1)/parts*Math.PI)+1)*zSize/2);
                 Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos((i+1)/parts*Math.PI)+1)*zSize/2);
                 Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos(i/parts*Math.PI)+1)*zSize/2);
-                addSquare(p1,p2,p3,p4,1,0.1);
+                addSquare(p1,p2,p3,p4,2,0.1);
             }
         }
     }
@@ -714,7 +714,7 @@ public class WorldContainer implements World {
                 Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos(Math.PI-(i+1)/parts*Math.PI)+1)*zSize/2);
                 Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-(i+1)/parts*Math.PI)+1)*zSize/2);
                 Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-i/parts*Math.PI)+1)*zSize/2);
-                addSquare(p1,p2,p3,p4,1,0.1);
+                addSquare(p1,p2,p3,p4,2,0.1);
             }
         }
     }
@@ -730,7 +730,7 @@ public class WorldContainer implements World {
                 Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos(j/parts*Math.PI)+1)*zSize/2);
                 Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos((j+1)/parts*Math.PI)+1)*zSize/2);
                 Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos((j+1)/parts*Math.PI)+1)*zSize/2);
-                addSquare(p1,p2,p3,p4,1,0.1);
+                addSquare(p1,p2,p3,p4,2,0.1);
             }
         }
     }
@@ -746,7 +746,7 @@ public class WorldContainer implements World {
                 Point3D p2= new Point3D(x+(i+1)*xStep,y+j*yStep,z+(-Math.cos(Math.PI-j/parts*Math.PI)+1)*zSize/2);
                 Point3D p3= new Point3D(x+(i+1)*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-(j+1)/parts*Math.PI)+1)*zSize/2);
                 Point3D p4= new Point3D(x+i*xStep,y+(j+1)*yStep,z+(-Math.cos(Math.PI-(j+1)/parts*Math.PI)+1)*zSize/2);
-                addSquare(p1,p2,p3,p4,1,0.1);
+                addSquare(p1,p2,p3,p4,2,0.1);
             }
         }
     }
