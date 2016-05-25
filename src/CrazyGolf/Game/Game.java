@@ -132,7 +132,7 @@ public class Game extends GolfPanel implements Runnable{
                 }
                 world.step(true);
                 updateBall();
-                UpdateView();
+                UpdateView(currentPlayer);
                 if(inputFlag) {
                     players[currentPlayer].updatePushParameters();
                     if(enterPressed) {
@@ -178,8 +178,8 @@ public class Game extends GolfPanel implements Runnable{
                             if (World.DEBUG) System.out.println("Game: Switched to player " + currentPlayer);
                             inputFlag = true;
                         }
-                        updateBall();
-                        UpdateView();
+                        //updateBall();
+                        //UpdateView(Cu);
                     }
                 }
             }

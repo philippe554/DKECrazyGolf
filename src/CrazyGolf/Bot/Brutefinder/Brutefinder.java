@@ -36,12 +36,10 @@ public class Brutefinder implements BotInterface{
     private int amountNodes=0;
     private int amountConnections=0;
 
-    @Override
-    public void init(World w) {
+    @Override public void init(World w) {
         world=w;
     }
-    @Override
-    public void calcNextShot(int playerNumber) {
+    @Override public void calcNextShot(int playerNumber) {
         double bestPlace=-1;
         int bestDir=0;
         int bestPow=0;
@@ -122,8 +120,7 @@ public class Brutefinder implements BotInterface{
 
         world.pushBall(playerNumber,push);
     }
-    @Override
-    public void makeDatabase(){
+    @Override public void makeDatabase(){
         nodes=new Node[100][100][40];
 
         if(World.DEBUG)System.out.println("Brutefinder: Start calculating bruteforce...");
@@ -138,8 +135,7 @@ public class Brutefinder implements BotInterface{
 
         if(World.DEBUG)System.out.println("Brutefinder: Done initializing");
     }
-    @Override
-    public LinkedList<String> ouputDatabase(){
+    @Override public LinkedList<String> ouputDatabase(){
         LinkedList<String> output = new LinkedList<>();
 
         output.add(Integer.toString(GS));
@@ -161,8 +157,7 @@ public class Brutefinder implements BotInterface{
 
         return output;
     }
-    @Override
-    public void loadDatabase(LinkedList<String> input){
+    @Override public void loadDatabase(LinkedList<String> input){
         GS=Integer.parseInt(input.get(0));
         String[] data = input.get(1).split(";");
         nodes = new Node[Integer.parseInt(data[0])][Integer.parseInt(data[1])][Integer.parseInt(data[2])];
@@ -196,22 +191,21 @@ public class Brutefinder implements BotInterface{
         ArrayList<Ball> balls = new ArrayList<>();
         double dirStep = 2 * Math.PI / (double) amountDirections;
         double powStep = World.maxPower / (double) amountPowers;
-        for(int i=0;i<world.getAmountBalls();i++)
-        {
-            int xGrid=(int)(world.getBallPosition(i).getX()/GS)+xOffset;
-            int yGrid=(int)(world.getBallPosition(i).getY()/GS)+yOffset;
-            int zGrid=(int)(world.getBallPosition(i).getZ()/GS)+zOffset;
-            if(nodes[xGrid][yGrid][zGrid]==null) {
-                nodes[xGrid][yGrid][zGrid] = new Node(amountDirections,amountPowers);
-                amountNodes++;
-                for (int l = 0; l < amountDirections; l++) {
-                    for (int m = 0; m < amountPowers; m++) {
-                        balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid - zOffset) * GS), xGrid, yGrid, zGrid, l, m));
-                        balls.get(balls.size() - 1).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
-                    }
+
+        int xg=(int)(world.getStartPosition().getX()/GS)+xOffset;
+        int yg=(int)(world.getStartPosition().getY()/GS)+yOffset;
+        int zg=(int)(world.getStartPosition().getZ()/GS)+zOffset;
+        if(nodes[xg][yg][zg]==null) {
+            nodes[xg][yg][zg] = new Node(amountDirections,amountPowers);
+            amountNodes++;
+            for (int l = 0; l < amountDirections; l++) {
+                for (int m = 0; m < amountPowers; m++) {
+                    balls.add(new BrutefinderBall(World.ballSize, new Point3D((xg - xOffset) * GS, (yg - yOffset) * GS, (zg - zOffset) * GS), xg, yg, zg, l, m));
+                    balls.get(balls.size() - 1).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
                 }
             }
         }
+
         int frameCounter=0;
         while(balls.size()>0) {
             long t1 = System.currentTimeMillis();
