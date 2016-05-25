@@ -18,6 +18,8 @@ public interface World {
     void pushBall(int i, Point3D dir);
     boolean checkBallInHole(int i);
     Point3D getHolePosition();
+    Point3D getStartPosition();
+    void addNewBall();
     Point3D getBallPosition(int i);
     Point3D getBallVelocity(int i);
     void setBallPosition(int i,Point3D pos);

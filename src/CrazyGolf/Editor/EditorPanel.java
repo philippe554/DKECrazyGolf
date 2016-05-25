@@ -484,6 +484,11 @@ public class EditorPanel extends JPanel{
         {
             returnData.add(worldData.get(i));
         }
+        returnData.add("Master:Gamemode");
+        for(int i=0;i<3;i++)
+        {
+            returnData.add("0");
+        }
 
 
         if (DataBaseCalculation == true){

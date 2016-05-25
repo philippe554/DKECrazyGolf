@@ -18,6 +18,7 @@ public class WorldContainer implements World {
     protected ArrayList<Edge> edges;
     protected ArrayList<Ball> balls;
     protected ArrayList<Water> waters;
+    protected Ball start;
     protected Point3D hole;
 
     protected boolean editMode;
@@ -43,34 +44,27 @@ public class WorldContainer implements World {
         loadDefaultColors();
         hole = new Point3D(0,0,0);
     }
-    @Override
-    public void step(boolean useBallBallCollision) {
+    @Override public void step(boolean useBallBallCollision) {
 
     }
-    @Override
-    public void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision) {
+    @Override public void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision) {
 
     }
-    @Override
-    public void cleanUp() {
+    @Override public void cleanUp() {
     }
 
-    @Override
-    public int getAmountBalls() {
+    @Override public int getAmountBalls() {
         return balls.size();
     }
-    @Override
-    public double getBallSize(int i) {
+    @Override public double getBallSize(int i) {
         return balls.get(i).size;
     }
-    @Override
-    public void pushBall(int i, Point3D dir) {
+    @Override public void pushBall(int i, Point3D dir) {
         if(!editMode) {
             balls.get(i).velocity= balls.get(i).velocity.add(dir);
         }
     }
-    @Override
-    public boolean checkBallInHole(int i) {
+    @Override public boolean checkBallInHole(int i) {
         if(!editMode) {
             if (hole.distance(balls.get(i).place) < (balls.get(i).size)) {
                 return true;
@@ -78,63 +72,56 @@ public class WorldContainer implements World {
         }
         return false;
     }
-    @Override
-    public Point3D getHolePosition() {
+    @Override public Point3D getHolePosition() {
         return hole;
     }
-    @Override
-    public Point3D getBallVelocity(int i) {
+    @Override public Point3D getStartPosition() {
+        return start.place;
+    }
+    @Override public void addNewBall() {
+        balls.add(new Ball(start.size,start.place.add(0,0,0)));
+    }
+    @Override public Point3D getBallVelocity(int i) {
         if(!editMode) {
             return balls.get(i).velocity;
         }
         return new Point3D(0,0,0);
     }
-    @Override
-    public void setBallPosition(int i, Point3D pos) {
+    @Override public void setBallPosition(int i, Point3D pos) {
         balls.get(i).place=pos;
     }
-    @Override
-    public void setBallVelocity(int i, Point3D vel) {
+    @Override public void setBallVelocity(int i, Point3D vel) {
         balls.get(i).velocity=vel;
     }
-    @Override
-    public int getAmountTriangles() {
+    @Override public int getAmountTriangles() {
         return sides.size();
     }
-    @Override
-    public Point3D[] getTriangle(int i) {
+    @Override public Point3D[] getTriangle(int i) {
         Point3D[] triangle = new Point3D[3];
         triangle[0]=points.get(sides.get(i).points[0]);
         triangle[1]=points.get(sides.get(i).points[1]);
         triangle[2]=points.get(sides.get(i).points[2]);
         return triangle;
     }
-    @Override
-    public Color3f getTriangleColor(int i) {
+    @Override public Color3f getTriangleColor(int i) {
         return colors.get(sides.get(i).color);
     }
-    @Override
-    public int getAmountPoints() {
+    @Override public int getAmountPoints() {
         return points.size();
     }
-    @Override
-    public Point3D getPoint(int i) {
+    @Override public Point3D getPoint(int i) {
         return points.get(i);
     }
-    @Override
-    public int getAmountOfWater() {
+    @Override public int getAmountOfWater() {
         return waters.size();
     }
-    @Override
-    public Point3D[] getWaterPoints(int i) {
+    @Override public Point3D[] getWaterPoints(int i) {
         return waters.get(i).place;
     }
-    @Override
-    public Color3f getWaterColor(int i) {
+    @Override public Color3f getWaterColor(int i) {
         return colors.get(waters.get(i).color);
     }
-    @Override
-    public Point3D getBallPosition(int i) {
+    @Override public Point3D getBallPosition(int i) {
         return balls.get(i).place;
     }
 
@@ -166,10 +153,8 @@ public class WorldContainer implements World {
                     } else if (sort == 1) {
                         String[] data = field.get(i).split(";");
                         if (data.length == 5) {
-                            balls.add(new Ball(20, new Point3D(
-                                    Double.parseDouble(data[0]),
-                                    Double.parseDouble(data[1]),
-                                    Double.parseDouble(data[2]))));
+                            start = new Ball(20, new Point3D(Double.parseDouble(data[0]), Double.parseDouble(data[1]), Double.parseDouble(data[2])));
+                            System.out.println("added");
                         }
                     } else if (sort == 2) {
                         String[] data = field.get(i).split(";");
@@ -224,7 +209,7 @@ public class WorldContainer implements World {
                 for (int j = 0; j < data[i].length; j++) {
                     if (!alreadyConverted[i][j]) {
                         if (data[i][j].equals("B")) {
-                            balls.add(new Ball(20, new Point3D(i * gs + gs, j * gs + gs, Z + 20)));
+                            start = new Ball(20, new Point3D(i * gs + gs, j * gs + gs, Z + 20));
                             for (int k = 0; k < 2; k++) {
                                 for (int l = 0; l < 2; l++) {
                                     if ((i + k) < data.length && (j + l) < data[i + k].length) {
@@ -335,10 +320,7 @@ public class WorldContainer implements World {
     public LinkedList<String> outputWorldApi2(){
         LinkedList<String> output = new LinkedList<>();
         output.add("balls");
-        for(int i=0;i<balls.size();i++)
-        {
-            output.add(balls.get(i).place.getX()+";"+balls.get(i).place.getY()+";"+balls.get(i).place.getZ()+";"+balls.get(i).size+";"+balls.get(i).mass);
-        }
+        output.add(start.place.getX()+";"+start.place.getY()+";"+start.place.getZ()+";"+start.size+";"+start.mass);
         output.add("holes");
         output.add(hole.getX() + ";" + hole.getY() + ";" + hole.getZ());
         output.add("points");
