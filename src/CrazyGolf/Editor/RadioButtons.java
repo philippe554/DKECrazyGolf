@@ -95,8 +95,8 @@ public class RadioButtons extends JPanel {
         if (s.equals("Pool")){
             g2.setColor(Color.blue);
         }
-        if (s.equals("Hill")){
-            g2.setColor(new Color(0xB7FF56));
+        if (s.equals("Croco")){
+            g2.setColor(Color.cyan);
         }
         if (s.equals("REMOVE")){
             g2.setColor(Color.lightGray);
@@ -113,6 +113,16 @@ public class RadioButtons extends JPanel {
 
     public void createControlPanel() {
         JPanel choicePanel = createButtons();
+        JPanel controlPanel = new JPanel();
+
+
+       /* controlPanel.setLayout(new BorderLayout());
+        controlPanel.setLayout(new GridLayout(3,1));
+        choicePanel.setBackground(Color.GREEN);
+        controlPanel.add(choicePanel, BorderLayout.CENTER);
+        controlPanel.setBackground(Color.GRAY);
+        this.setLayout(new GridLayout(1,1));
+        add(controlPanel);*/
         add(choicePanel);
     }
 
@@ -125,38 +135,50 @@ public class RadioButtons extends JPanel {
         class ChoiceListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 //save chosen option in order to get printed on other panel
+                System.out.println("works");
                 if (wallButton.isSelected()) {
                     chosenOption = "W";
+                    System.out.println(chosenOption);
                 }
                 if (sandButton.isSelected()) {
                     chosenOption = "S";
+                    System.out.println(chosenOption);
                 }
                 if (floorButton.isSelected()) {
                     chosenOption = "F";
+                    System.out.println(chosenOption);
                 }
                 if (ballButton.isSelected()) {
                     chosenOption = "B";
+                    System.out.println(chosenOption);
                 }
                 if (holeButton.isSelected()) {
                     chosenOption = "H";
+                    System.out.println(chosenOption);
                 }
                 if (loopButton.isSelected()) {
                     chosenOption = "L";
+                    System.out.println(chosenOption);
                 }
                 if (castleButton.isSelected()) {
                     chosenOption = "C";
+                    System.out.println(chosenOption);
                 }
                 if (bridgeButton.isSelected()) {
                     chosenOption = "R";
+                    System.out.println(chosenOption);
                 }
                 if (poolButton.isSelected()) {
                     chosenOption = "P";
+                    System.out.println(chosenOption);
                 }
                 if (hillButton.isSelected()) {
                     chosenOption = "M";
+                    System.out.println(chosenOption);
                 }
                 if (removeButton.isSelected()) {
                     chosenOption = "D";
+                    System.out.println("remove");
                 }
             }
         }

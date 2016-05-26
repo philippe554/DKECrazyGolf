@@ -153,9 +153,7 @@ public class EditorPanel extends JPanel{
             Point startDrag;
 
             public void mouseClicked(MouseEvent e) {
-                if(buttons.ballButton.isEnabled() || buttons.wallButton.isEnabled() || buttons.floorButton.isEnabled()|| buttons.holeButton.isEnabled()
-                        || buttons.sandButton.isEnabled() || buttons.loopButton.isEnabled() || buttons.castleButton.isEnabled() || buttons.bridgeButton.isEnabled()
-                        || buttons.poolButton.isEnabled() || buttons.hillButton.isEnabled()){
+                if(layerList.getSelectedIndex() != -1){
                     chosenOption = buttons.getChosenOption();
                     int x = e.getX();
                     int y = e.getY();
@@ -288,7 +286,7 @@ public class EditorPanel extends JPanel{
             }
 
             public void mouseReleased(MouseEvent e) {
-                if(buttons.ballButton.isSelected() || buttons.wallButton.isSelected() || buttons.floorButton.isEnabled()|| buttons.holeButton.isEnabled()){
+                if(layerList.getSelectedIndex() != -1){
                     chosenOption = buttons.getChosenOption();
 
                     Rectangle dragQueen = new Rectangle(startDrag.x, startDrag.y,e.getX()-startDrag.x,e.getY()-startDrag.y);
@@ -411,57 +409,6 @@ public class EditorPanel extends JPanel{
                 if (e.getSource() == calculationCheckbox){
                     if (calculationCheckbox.isSelected()){
                         DataBaseCalculation = true;
-
-
-                        Frame f = new Frame();
-                        JLabel l = new JLabel(new ImageIcon("CalculatingWhite"));
-                        l.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
-                        f.add(l, BorderLayout.CENTER);
-                        f.pack();
-                        Dimension screenSize =
-                                Toolkit.getDefaultToolkit().getScreenSize();
-                        Dimension labelSize = l.getPreferredSize();
-                        // setLocation(screenSize.width/2 - (labelSize.width/2),
-                        //        screenSize.height/2 - (labelSize.height/2));
-                        addMouseListener(new MouseAdapter()
-                        {
-                            public void mousePressed(MouseEvent e)
-                            {
-                                f.setVisible(false);
-                                f.dispose();
-                            }
-                        });
-                        final int pause = 9999;
-                        final Runnable closerRunner = new Runnable()
-                        {
-                            public void run()
-                            {
-                                f.setVisible(false);
-                                f.dispose();
-                            }
-                        };
-                        Runnable waitRunner = new Runnable()
-                        {
-                            public void run()
-                            {
-                                try
-                                {
-                                    Thread.sleep(pause);
-                                    SwingUtilities.invokeAndWait(closerRunner);
-                                }
-                                catch(Exception e)
-                                {
-                                    e.printStackTrace();
-                                    // can catch InvocationTargetException
-                                    // can catch InterruptedException
-                                }
-                            }
-                        };
-                        f.setVisible(true);
-                        Thread splashThread = new Thread(waitRunner, "SplashThread");
-                        splashThread.start();
-
-
                     } else { DataBaseCalculation = false; }
                 }
             }
@@ -550,6 +497,7 @@ public class EditorPanel extends JPanel{
 
         returnData.add("Master:Gamemode");
         for (int i=0; i<playerChoice.length; i++){
+            returnData.add(playerChoice[i]);
             if(playerChoice[i]!="3") {
                 returnData.add(playerChoice[i]);
             }
@@ -614,6 +562,9 @@ public class EditorPanel extends JPanel{
                     if (stringGrid[i][j].equals("P")) {
                         g2.setPaint(Color.BLUE);
                         g2.fill(rectangleGrid[i][j]);
+                    }
+                    if (stringGrid[i][j].equals("K")) {
+                        g2.setPaint(Color.cyan);
                     }
                     if (stringGrid[i][j].equals("M") || stringGrid[i][j].equals("MM")) {
                         g2.setPaint(new Color(0xB7FF56));
