@@ -10,6 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -95,6 +96,8 @@ public class StartMenu {
 	private JButton load2;
 	private JButton load3;
 	private JButton load4;
+	private JButton backEdLoading;
+	private JButton backMenuLoading;
 
 	public StartMenu() {
 
@@ -116,7 +119,6 @@ public class StartMenu {
 
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
-					System.out.println("ESCAPE editor");
 
 					if(editorPanel!= null && editorPanel.isVisible()){
 						editorPanel.setVisible(false);
@@ -124,15 +126,14 @@ public class StartMenu {
 							createBackMenu(main);
 						else
 							backPanel.setVisible(true);
+						main.repaint();
 					}
 
 					else if (editorPanel!= null && !editorPanel.isVisible()){
 						editorPanel.setVisible(true);
-						backPanel.setVisible(false);
+						main.remove(backPanel);
 					}
 
-					if(saveMenu!= null && saveMenu.isVisible())
-						saveMenu.setVisible(false);
 
 				}
 
@@ -189,14 +190,14 @@ public class StartMenu {
 				}
 
 				if(e.getSource() == load2){
-					LinkedList<String> f2List= fileToList(f1);
+					LinkedList<String> f2List= fileToList(f2);
 					Import impy= new Import(f2List);
 					editor.setGrid(impy.getGrid());
 					editor.setPlayerChoice(impy.getPlayerChoice());
 					editor.pixelSIZE = (int) impy.getGridSize();
 				}
 				if(e.getSource() == load3){
-					LinkedList<String> f3List= fileToList(f1);
+					LinkedList<String> f3List= fileToList(f3);
 					Import impy = new Import(f3List);
 					editor.setGrid(impy.getGrid());
 					editor.setPlayerChoice(impy.getPlayerChoice());
@@ -218,9 +219,6 @@ public class StartMenu {
 					if(startMenu.isVisible() == true){
 						startMenu.setVisible(false);
 					}
-//					if(pauseVisible == true){
-//						pauseMenu.setVisible(false);
-//					}
 					createPlayerMenu(main);
 				}
 				if(e.getSource() == playp){
@@ -283,19 +281,47 @@ public class StartMenu {
 					if(backPanel!=null)
 						main.remove(backPanel);
 
-					if(saveMenu!=null)
+					if(saveMenu!=null){
 						saveMenu.setVisible(false);
+					}
+
+//					if(loadMenu!=null){
+//						main.remove(loadMenu);
+//						main.repaint();
+//					}
 
 					startMenu.setVisible(true);
 				}
 				if(e.getSource() == backEd){
 					if(backPanel!=null)
 						backPanel.setVisible(false);
-
-					if(saveMenu!=null)
+					if(saveMenu!=null){
 						saveMenu.setVisible(false);
+					}
 
 					editorPanel.setVisible(true);
+				}
+				if(e.getSource() == backMenuLoading){
+					if(editorPanel!= null)
+						main.remove(editorPanel);
+
+					if(loadMenu!=null){
+						loadMenu.setVisible(false);
+					}
+					startMenu.setVisible(true);
+				}
+				if(e.getSource() == backEdLoading){
+					if(backPanel!=null)
+						backPanel.setVisible(false);
+					if(saveMenu!=null){
+						saveMenu.setVisible(false);
+					}
+					if(loadMenu!=null){
+						loadMenu.setVisible(false);
+					}
+
+					editorPanel.setVisible(true);
+					editor.layerList.setSelectedIndex(0);
 				}
 
 				if(e.getSource() == PauseMBackToM){
@@ -338,8 +364,25 @@ public class StartMenu {
 					if (e.getSource() == loadButton) {
 						editorPanel.setVisible(false);
 						System.out.println("Load works");
-						if (loadMenu != null)
+						if (loadMenu != null){
+							if(f4.exists() && !f4.isDirectory()) {
+								load4.setText("LEVEL 4");
+							}
+							if(f3.exists() && !f3.isDirectory()) {
+								load3.setText("LEVEL 3");
+							}
+							if(f2.exists() && !f2.isDirectory()) {
+								load2.setText("LEVEL 2");
+							}
+							if(f3.exists() && !f3.isDirectory()) {
+								load2.setText("LEVEL 2");
+							}
+							if(f1.exists() && !f1.isDirectory()) {
+								load1.setText("LEVEL 1");
+							}
 							loadMenu.setVisible(true);
+
+						}
 						else
 							createLoadMenu(main);
 					}
@@ -691,27 +734,27 @@ public class StartMenu {
 		load4.addActionListener(listener);
 
 //		Back to Editor
-		backEd = new JButton("BACK TO EDITOR");
-		backEd.setBackground(new Color(0,0,0,200));
-		backEd.setForeground(Color.WHITE);
-		backEd.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backEd.setUI(new StyledButtonUI());
-		backEd.addActionListener(listener);
+		backEdLoading = new JButton("BACK TO EDITOR");
+		backEdLoading.setBackground(new Color(0,0,0,200));
+		backEdLoading.setForeground(Color.WHITE);
+		backEdLoading.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backEdLoading.setUI(new StyledButtonUI());
+		backEdLoading.addActionListener(listener);
 
 		//back Menu button
-		backToMenu = new JButton("BACK TO MENU");
-		backToMenu.setBackground(new Color(0,0,0,200));
-		backToMenu.setForeground(Color.WHITE);
-		backToMenu.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backToMenu.setUI(new StyledButtonUI());
-		backToMenu.addActionListener(listener);
+		backMenuLoading = new JButton("BACK TO MENU");
+		backMenuLoading.setBackground(new Color(0,0,0,200));
+		backMenuLoading.setForeground(Color.WHITE);
+		backMenuLoading.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backMenuLoading.setUI(new StyledButtonUI());
+		backMenuLoading.addActionListener(listener);
 
 		loadMenu.add(load1);
 		loadMenu.add(load2);
 		loadMenu.add(load3);
 		loadMenu.add(load4 );
-		loadMenu.add(backEd);
-		loadMenu.add(backToMenu);
+		loadMenu.add(backEdLoading);
+		loadMenu.add(backMenuLoading);
 
 
 		tmp.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));

@@ -36,7 +36,7 @@ public class Export implements Runnable {
 
         for(int i=0;i<playerChoice.length;i++)
         {
-            if(playerChoice[i]=="1")
+            if(playerChoice[i].equals("1"))
             {
                 calcDatabase=true;
             }

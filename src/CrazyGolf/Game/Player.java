@@ -1,5 +1,7 @@
 package CrazyGolf.Game;
 
+import CrazyGolf.Bot.BotInterface;
+import CrazyGolf.Bot.RandomBot.RandomBot;
 import CrazyGolf.PhysicsEngine.World;
 import javafx.geometry.Point3D;
 
@@ -42,6 +44,14 @@ public class Player {
         }else if(launchSort==1 && game.brutefinder!=null)
         {
             game.brutefinder.calcNextShot(ballId);
+        }else if(launchSort==2)
+        {
+            if(World.DEBUG)System.out.println("One shot bot still in development");
+        }else if(launchSort==3 && game.brutefinder!=null)
+        {
+            BotInterface bot = new RandomBot();
+            bot.init(game.world);
+            bot.calcNextShot(ballId);
         }else{
             if(World.DEBUG)System.out.println("No bot found to push ball "+ballId);
         }

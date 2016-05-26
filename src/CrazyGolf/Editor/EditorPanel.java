@@ -36,7 +36,8 @@ public class EditorPanel extends JPanel{
     private final String[] playerStrings = {"Human", "Brutefinder bot", "One-Shooter bot", "Random bot", "Nobody"};
     private String[] playerChoice = {"0", "3", "3", "3", "3"};
     private JLayeredPane layeredPane;
-    private JComboBox layerList;
+    public JComboBox layerList;
+    public JComboBox[] playerList;
     private Grid[] grid = new Grid[layerStrings.length];
     private JLabel label;
     private static String LAYER_COMMAND = "layer";
@@ -74,8 +75,9 @@ public class EditorPanel extends JPanel{
         getLoadButton().setFont(new Font("Century Gothic",Font.BOLD,30));
 
         settings.add(layerList);
+        playerList= makePlayerList();
         for (int i=0; i<playerStrings.length; i++){
-            settings.add(makePlayerList()[i]);
+            settings.add(playerList[i]);
         }
         settingPanel.add(settings, BorderLayout.NORTH);
         loadSave.add(getLoadButton());
@@ -113,7 +115,7 @@ public class EditorPanel extends JPanel{
 
         list.addActionListener(new LayeredActionListener());
 
-        list.setSelectedIndex(0);
+        list.setSelectedIndex(2);
 
         return list;
     }
@@ -178,7 +180,7 @@ public class EditorPanel extends JPanel{
                                     stringGrid[i][j] = "F";
                                 }
                                 if (chosenOption.equals("B")){
-                                    if(isPlaced("B")== true){
+                                    /*if(isPlaced("B")== true){
                                         JOptionPane.showMessageDialog(null, "You can only place one ball!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                     else {
@@ -191,10 +193,28 @@ public class EditorPanel extends JPanel{
                                         else {
                                             JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                         }
+                                    }*/
+                                    if(i<stringGrid.length-1 && j<stringGrid[0].length-1) {
+                                        for (int h = 0; h < grid.length; h++) {
+                                            for (int l = 0; l < grid[h].getRectanglegGrid().length; l++) {
+                                                for (int k = 0; k < grid[h].getRectanglegGrid()[0].length; k++) {
+                                                    if (grid[h].getStringGrid()[l][k].equals("B")) {
+                                                        grid[h].getStringGrid()[l][k]="F";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        stringGrid[i][j] = "B";
+                                        stringGrid[i][j + 1] = "B";
+                                        stringGrid[i + 1][j]= "B";
+                                        stringGrid[i + 1][j + 1]="B";
+                                    }
+                                    else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
                                 if (chosenOption.equals("H")) {
-                                    if (isPlaced("H")==true) {
+                                    /*if (isPlaced("H")==true) {
                                         JOptionPane.showMessageDialog(null, "You can only place one hole!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     } else {
                                         if (i < stringGrid.length - 2 && j < stringGrid[0].length - 2) {
@@ -207,6 +227,25 @@ public class EditorPanel extends JPanel{
                                         } else {
                                             JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                         }
+                                    }*/
+                                    if(i<stringGrid.length-2 && j<stringGrid[0].length-2) {
+                                        for (int h = 0; h < grid.length; h++) {
+                                            for (int l = 0; l < grid[h].getRectanglegGrid().length; l++) {
+                                                for (int k = 0; k < grid[h].getRectanglegGrid()[0].length; k++) {
+                                                    if (grid[h].getStringGrid()[l][k].equals("H")) {
+                                                        grid[h].getStringGrid()[l][k]="F";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        for (int m=0;m<3;m++){
+                                            for(int k=0;k<3;k++){
+                                                stringGrid[i+m][j+k] = "H";
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
                                 if (chosenOption.equals("L")){
@@ -572,7 +611,10 @@ public class EditorPanel extends JPanel{
         return playerChoice;
     }
 
-    public void setPlayerChoice(String[]i){
-        playerChoice=i;
+    public void setPlayerChoice(String[]pc){
+        playerChoice=pc;
+        for(int i=0;i<pc.length;i++){
+            playerList[i].setSelectedIndex(Integer.parseInt(pc[i]));
+        }
     }
 }
