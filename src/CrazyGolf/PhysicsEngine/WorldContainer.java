@@ -79,7 +79,20 @@ public class WorldContainer implements World {
         return start.place;
     }
     @Override public void addNewBall() {
-        balls.add(new Ball(start.size,start.place.add(0,0,0)));
+        double moveup=0;
+        boolean noCollision=false;
+        while(!noCollision){
+            noCollision=true;
+            for(int i=0;i<balls.size();i++){
+                if(start.place.add(0,0,moveup).distance(balls.get(i).place)<start.size+balls.get(i).size){
+                    noCollision=false;
+                }
+            }
+            if(!noCollision){
+                moveup++;
+            }
+        }
+        balls.add(new Ball(start.size,start.place.add(0,0,moveup)));
     }
     @Override public Point3D getBallVelocity(int i) {
         if(!editMode) {
