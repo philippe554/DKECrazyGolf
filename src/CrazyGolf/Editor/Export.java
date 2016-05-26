@@ -52,8 +52,7 @@ public class Export implements Runnable {
 
         returnData = new LinkedList<>();
         returnData.add("Master:World");
-        for(int i=0;i<worldData.size();i++)
-        {
+        for(int i=0;i<worldData.size();i++) {
             returnData.add(worldData.get(i));
         }
 
@@ -61,6 +60,19 @@ public class Export implements Runnable {
         for (int i=0; i<playerChoice.length; i++){
             if(playerChoice[i]!="3") {
                 returnData.add(playerChoice[i]);
+            }
+        }
+
+        returnData.add("Master:Editdata");
+        returnData.add(grid.length+";"+grid[0].getStringGrid().length+";"+grid[0].getStringGrid()[0].length+";"+gridSize);
+        for(int i=0;i<grid.length;i++)
+        {
+            String[][] data = grid[i].getStringGrid();
+            for(int j=0;j<data.length;j++)
+            {
+                for(int k=0;k<data[j].length;k++){
+                    returnData.add(i+";"+j+";"+k+";"+data[j][k]);
+                }
             }
         }
 
