@@ -5,17 +5,24 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.io.File;
+
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import CrazyGolf.Game.Game;
@@ -41,7 +48,7 @@ public class StartMenu {
 	private JPanel pausePanel;
 	private JPanel backPanel;
 	private JPanel backMenu;
-	private JPanel levelMenu;
+	private JPanel saveMenu;
 
 	private JButton button3;
 
@@ -62,10 +69,10 @@ public class StartMenu {
 	//	private static JButton resumeb;
 	private JButton playp;
 	private JButton exitp;
-	private JButton backb;
-	private JButton backbP;
+	private JButton backToMenu;
+	private JButton PauseMBackToM;
 	private JButton backEd;
-	private JButton backEdP;
+	private JButton PauseMbackEd;
 
 	private File f1;
 	private File f2;
@@ -75,6 +82,12 @@ public class StartMenu {
 	private int slot;
 
 	private ActionListener listener;
+
+	private JButton load1;
+	private JPanel loadMenu;
+	private JButton load2;
+	private JButton load3;
+	private JButton load4;
 
 	public StartMenu() {
 
@@ -103,17 +116,14 @@ public class StartMenu {
 						else
 							backPanel.setVisible(true);
 					}
+
 					else if (editorPanel!= null && !editorPanel.isVisible()){
 						editorPanel.setVisible(true);
 						backPanel.setVisible(false);
 					}
 
-					if(levelMenu!= null && levelMenu.isVisible())
-						levelMenu.setVisible(false);
-
-					if(pausePanel==null)
-						createPauseMenu(main);
-
+					if(saveMenu!= null && saveMenu.isVisible())
+						saveMenu.setVisible(false);
 
 				}
 
@@ -131,6 +141,7 @@ public class StartMenu {
 		class ButtonListener implements ActionListener {
 
 			public void actionPerformed(ActionEvent e) {
+
 				if(e.getSource() == level1b){
 					editor.writeItDown(editor.getDataForFileWriting(),1);
 					level1b.setText("LEVEL 1");
@@ -152,9 +163,7 @@ public class StartMenu {
 					level4b.setText("LEVEL 4");
 					main.repaint();
 				}
-				if(e.getSource() == button3 || e.getSource() == exitp){
-					System.exit(0);
-				}
+
 				if(e.getSource() == button2){
 					startMenu.setVisible(false);
 					createEditor(main);
@@ -218,7 +227,7 @@ public class StartMenu {
 //					main.repaint();
 //			}
 
-				if(e.getSource() == backb){
+				if(e.getSource() == backToMenu){
 					if(editorPanel!= null)
 						main.remove(editorPanel);
 
@@ -228,12 +237,22 @@ public class StartMenu {
 					if(backPanel!=null)
 						main.remove(backPanel);
 
-					if(levelMenu!=null)
-						levelMenu.setVisible(false);
+					if(saveMenu!=null)
+						saveMenu.setVisible(false);
 
 					startMenu.setVisible(true);
 				}
-				if(e.getSource() == backbP){
+				if(e.getSource() == backEd){
+					if(backPanel!=null)
+						backPanel.setVisible(false);
+
+					if(saveMenu!=null)
+						saveMenu.setVisible(false);
+
+					editorPanel.setVisible(true);
+				}
+
+				if(e.getSource() == PauseMBackToM){
 					if(editorPanel!= null)
 						main.remove(editorPanel);
 
@@ -250,28 +269,27 @@ public class StartMenu {
 
 					startMenu.setVisible(true);
 				}
-				if(e.getSource() == backEdP){
+
+				if(e.getSource() == PauseMbackEd){
 					if(backPanel!=null)
 						main.remove(backPanel);
 
 					editorPanel.setVisible(true);
 				}
 
-				if(e.getSource() == backEd){
-					if(backPanel!=null)
-						backPanel.setVisible(false);
-					if(levelMenu!=null)
-						levelMenu.setVisible(false);
-					editorPanel.setVisible(true);
-				}
 				if(saveButton!=null){
 					if(e.getSource() == saveButton){
 						editorPanel.setVisible(false);
-						if(levelMenu!= null)
-							levelMenu.setVisible(true);
+						if(saveMenu!= null)
+							saveMenu.setVisible(true);
 						else
-							createLevelMenu(main);
+							createSaveMenu(main);
+
 					}
+					if(e.getSource() == button3 || e.getSource() == exitp){
+						System.exit(0);
+					}
+
 				}
 			}
 		}
@@ -372,12 +390,12 @@ public class StartMenu {
 //		resumeb.addActionListener(listener);
 
 		//back Menu button
-		backbP = new JButton("BACK TO MENU");
-		backbP.setBackground(new Color(0,0,0,200));
-		backbP.setForeground(Color.WHITE);
-		backbP.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backbP.setUI(new StyledButtonUI());
-		backbP.addActionListener(listener);
+		PauseMBackToM = new JButton("BACK TO MENU");
+		PauseMBackToM.setBackground(new Color(0,0,0,200));
+		PauseMBackToM.setForeground(Color.WHITE);
+		PauseMBackToM.setFont(new Font("Calibri",Font.PLAIN, 23));
+		PauseMBackToM.setUI(new StyledButtonUI());
+		PauseMBackToM.addActionListener(listener);
 
 
 		//EXIT button
@@ -390,7 +408,7 @@ public class StartMenu {
 		exitp.addActionListener(listener);
 
 //		pauseMenu.add(resumeb);
-		pauseMenu.add(backbP);
+		pauseMenu.add(PauseMBackToM);
 		pauseMenu.add(exitp);
 
 		pausePanel.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
@@ -398,11 +416,6 @@ public class StartMenu {
 		panel.add(pausePanel);
 
 //		panel.add(pauseMenu);
-
-	}
-
-	private void setResumeb(JButton jButton) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -420,20 +433,20 @@ public class StartMenu {
 		backMenu.setLayout(new GridLayout(7,10,0,vGap));
 
 		//back Menu button
-		backbP = new JButton("BACK TO MENU");
-		backbP.setBackground(new Color(0,0,0,200));
-		backbP.setForeground(Color.WHITE);
-		backbP.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backbP.setUI(new StyledButtonUI());
-		backbP.addActionListener(listener);
+		PauseMBackToM = new JButton("BACK TO MENU");
+		PauseMBackToM.setBackground(new Color(0,0,0,200));
+		PauseMBackToM.setForeground(Color.WHITE);
+		PauseMBackToM.setFont(new Font("Calibri",Font.PLAIN, 23));
+		PauseMBackToM.setUI(new StyledButtonUI());
+		PauseMBackToM.addActionListener(listener);
 
 		//back Editor button
-		backEdP = new JButton("BACK TO EDITOR");
-		backEdP.setBackground(new Color(0,0,0,200));
-		backEdP.setForeground(Color.WHITE);
-		backEdP.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backEdP.setUI(new StyledButtonUI());
-		backEdP.addActionListener(listener);
+		PauseMbackEd = new JButton("BACK TO EDITOR");
+		PauseMbackEd.setBackground(new Color(0,0,0,200));
+		PauseMbackEd.setForeground(Color.WHITE);
+		PauseMbackEd.setFont(new Font("Calibri",Font.PLAIN, 23));
+		PauseMbackEd.setUI(new StyledButtonUI());
+		PauseMbackEd.addActionListener(listener);
 
 		//EXIT button
 		exitp = new JButton("EXIT");
@@ -444,8 +457,8 @@ public class StartMenu {
 		exitp.setUI(new StyledButtonUI());
 		exitp.addActionListener(listener);
 
-		backMenu.add(backbP);
-		backMenu.add(backEdP);
+		backMenu.add(PauseMBackToM);
+		backMenu.add(PauseMbackEd);
 		backMenu.add(exitp);
 
 		backPanel.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
@@ -523,18 +536,18 @@ public class StartMenu {
 
 
 		//back Menu button
-		backb = new JButton("BACK");
-		backb.setBackground(new Color(0,0,0,200));
-		backb.setForeground(Color.WHITE);
-		backb.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backb.setUI(new StyledButtonUI());
-		backb.addActionListener(listener);
+		backToMenu = new JButton("BACK");
+		backToMenu.setBackground(new Color(0,0,0,200));
+		backToMenu.setForeground(Color.WHITE);
+		backToMenu.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backToMenu.setUI(new StyledButtonUI());
+		backToMenu.addActionListener(listener);
 
 		playerMenu.add(oneP);
 		playerMenu.add(twoP);
 		playerMenu.add(threeP);
 		playerMenu.add(fourP);
-		playerMenu.add(backb);
+		playerMenu.add(backToMenu);
 
 		tmp.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
 		tmp.add(playerMenu);
@@ -543,17 +556,138 @@ public class StartMenu {
 //		panel.add(playerMenu);
 
 	}
-	public void createLevelMenu(BackgroundPanel panel){
+	public void createLoadMenu(BackgroundPanel panel){
 
 		JPanel tmp = new JPanel(new FlowLayout());
 
-		levelMenu = new JPanel();
-		levelMenu.setPreferredSize(new Dimension((int)(FRAME_WIDTH*0.30),400));
-		levelMenu.setOpaque(false);
+		loadMenu = new JPanel();
+		loadMenu.setPreferredSize(new Dimension((int)(FRAME_WIDTH*0.30),400));
+		loadMenu.setOpaque(false);
 
 //		change the height of the button here
 		int vGap = 25;
-		levelMenu.setLayout(new GridLayout(7,10,0,vGap));
+		loadMenu.setLayout(new GridLayout(7,10,0,vGap));
+
+
+		//Title
+		JLabel loadTitle =new JLabel();
+		loadMenu.add(loadTitle);
+		loadTitle.setText("LOAD GAME");
+		loadTitle.setFont(new Font("Calibri",Font.PLAIN, 36));
+		loadTitle.setForeground(Color.BLACK);
+//		Border border = BorderFactory.createLineBorder(Color.GRAY, 5);
+//		loadTitle.setBorder(border);
+		loadTitle.setHorizontalAlignment(SwingConstants.CENTER);
+
+
+		//Load1
+		if(f1.exists() && !f1.isDirectory()) {
+			load1 = new JButton("LEVEL 1");
+		}
+		else
+			load1 = new JButton("EMPTY SLOT");
+
+		load1.setBackground(new Color(0,0,0,210));
+		load1.setForeground(Color.WHITE);
+		load1.setFont(new Font("Calibri",Font.PLAIN, 22));
+		load1.setUI(new StyledButtonUI());
+		load1.addActionListener(listener);
+
+		//Load2
+		if(f2.exists() && !f2.isDirectory()) {
+			load2 = new JButton("LEVEL 2");
+		}
+		else
+			load2 = new JButton("EMPTY SLOT");
+
+		load2.setBackground(new Color(0,0,0,200));
+		load2.setForeground(Color.WHITE);
+		load2.setFont(new Font("Calibri",Font.PLAIN, 22));
+		load2.setUI(new StyledButtonUI());
+		load2.addActionListener(listener);
+
+		//3Play
+		if(f3.exists() && !f3.isDirectory()) {
+			load3 = new JButton("LEVEL 3");
+		}
+		else
+			load3 = new JButton("EMPTY SLOT");
+
+		load3.setBackground(new Color(0,0,0,200));
+		load3.setForeground(Color.WHITE);
+
+		load3.setFont(new Font("Calibri",Font.PLAIN, 22));
+		load3.setUI(new StyledButtonUI());
+		load3.addActionListener(listener);
+
+		//4 Play
+		if(f4.exists() && !f4.isDirectory()) {
+			load4 = new JButton("LEVEL 4");
+		}
+		else
+			load4 = new JButton("EMPTY SLOT");
+
+		load4.setBackground(new Color(0,0,0,200));
+		load4.setForeground(Color.WHITE);
+
+
+		load4.setFont(new Font("Calibri",Font.PLAIN, 22));
+		load4.setUI(new StyledButtonUI());
+		load4.addActionListener(listener);
+
+//		Back to Editor
+		backEd = new JButton("BACK TO EDITOR");
+		backEd.setBackground(new Color(0,0,0,200));
+		backEd.setForeground(Color.WHITE);
+		backEd.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backEd.setUI(new StyledButtonUI());
+		backEd.addActionListener(listener);
+
+		//back Menu button
+		backToMenu = new JButton("BACK TO MENU");
+		backToMenu.setBackground(new Color(0,0,0,200));
+		backToMenu.setForeground(Color.WHITE);
+		backToMenu.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backToMenu.setUI(new StyledButtonUI());
+		backToMenu.addActionListener(listener);
+
+		loadMenu.add(load1);
+		loadMenu.add(load2);
+		loadMenu.add(load3);
+		loadMenu.add(load4 );
+		loadMenu.add(backEd);
+		loadMenu.add(backToMenu);
+
+
+		tmp.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
+		tmp.add(loadMenu);
+		panel.add(tmp);
+
+//		panel.add(playerMenu);
+
+	}
+	public void createSaveMenu(BackgroundPanel panel){
+
+		JPanel tmp = new JPanel(new FlowLayout());
+
+		saveMenu = new JPanel();
+		saveMenu.setPreferredSize(new Dimension((int)(FRAME_WIDTH*0.30),400));
+		saveMenu.setOpaque(false);
+
+//		change the height of the button here
+		int vGap = 25;
+		saveMenu.setLayout(new GridLayout(7,10,0,vGap));
+
+		//Title
+		JLabel loadTitle =new JLabel();
+		saveMenu.add(loadTitle);
+		loadTitle.setText("SAVE GAME");
+		loadTitle.setFont(new Font("Calibri",Font.PLAIN, 36));
+		loadTitle.setForeground(Color.BLACK);
+//		Border border = BorderFactory.createLineBorder(Color.GRAY, 5);
+//		loadTitle.setBorder(border);
+		loadTitle.setHorizontalAlignment(SwingConstants.CENTER);
+
 
 
 		//One Player button
@@ -620,23 +754,23 @@ public class StartMenu {
 		backEd.addActionListener(listener);
 
 		//back Menu button
-		backb = new JButton("BACK TO MENU");
-		backb.setBackground(new Color(0,0,0,200));
-		backb.setForeground(Color.WHITE);
-		backb.setFont(new Font("Calibri",Font.PLAIN, 23));
-		backb.setUI(new StyledButtonUI());
-		backb.addActionListener(listener);
+		backToMenu = new JButton("BACK TO MENU");
+		backToMenu.setBackground(new Color(0,0,0,200));
+		backToMenu.setForeground(Color.WHITE);
+		backToMenu.setFont(new Font("Calibri",Font.PLAIN, 23));
+		backToMenu.setUI(new StyledButtonUI());
+		backToMenu.addActionListener(listener);
 
-		levelMenu.add(level1b);
-		levelMenu.add(level2b );
-		levelMenu.add(level3b );
-		levelMenu.add(level4b );
-		levelMenu.add(backEd);
-		levelMenu.add(backb);
+		saveMenu.add(level1b);
+		saveMenu.add(level2b );
+		saveMenu.add(level3b );
+		saveMenu.add(level4b );
+		saveMenu.add(backEd);
+		saveMenu.add(backToMenu);
 
 
 		tmp.add(Box.createRigidArea(new Dimension(0,FRAME_HEIGHT)));
-		tmp.add(levelMenu);
+		tmp.add(saveMenu);
 		panel.add(tmp);
 
 //		panel.add(playerMenu);
