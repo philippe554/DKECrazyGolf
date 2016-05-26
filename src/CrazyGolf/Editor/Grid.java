@@ -12,8 +12,6 @@ public class Grid extends JComponent {
 
     private String[][] stringGrid;
     private Rectangle[][] rectangleGrid;
-    private final int pixelSIZE = 20;
-    private final int SIZE = (int)pixelSIZE;
 
     public Grid(){
         stringGrid = new String[82][50];
@@ -21,7 +19,7 @@ public class Grid extends JComponent {
 
         for(int i=0; i<rectangleGrid.length; i++) {
             for (int j=0; j<rectangleGrid[0].length; j++) {
-                rectangleGrid[i][j] = new Rectangle(SIZE*i,SIZE*j, (int)pixelSIZE,(int) pixelSIZE);
+                rectangleGrid[i][j] = new Rectangle(20*i,20*j, 20, 20);
                 stringGrid[i][j] = "E";
             }
         }

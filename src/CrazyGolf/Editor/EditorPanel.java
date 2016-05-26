@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class EditorPanel extends JPanel{
 
     private JButton saveButton;
+    private JButton loadButton;
 
     private Color green = Color.green;
     private Color gray = Color.gray;
@@ -27,16 +28,16 @@ public class EditorPanel extends JPanel{
 
     private String chosenOption;
 
-    private final int pixelSIZE  = 20;
+    public int pixelSIZE  = 20;
 
     private RadioButtons buttons;
 
     private final String[] layerStrings = {"Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"};
     private final String[] playerStrings = {"Human", "Brutefinder bot", "One-Shooter bot", "Random bot", "Nobody"};
-    private String[] playerChoice = {"0", "3", "3", "3"};
+    private String[] playerChoice = {"0", "3", "3", "3", "3"};
     private JLayeredPane layeredPane;
     private JComboBox layerList;
-    private final Grid[] grid = new Grid[layerStrings.length];
+    private Grid[] grid = new Grid[layerStrings.length];
     private JLabel label;
     private static String LAYER_COMMAND = "layer";
 
@@ -65,6 +66,12 @@ public class EditorPanel extends JPanel{
         getSaveButton().setBorderPainted(false);
         getSaveButton().setFont(new Font("Century Gothic",Font.BOLD,30));
         getSaveButton().setSize(new Dimension(20,20));
+
+        setLoadButton(new JButton("LOAD"));
+        getLoadButton().setBackground(Color.lightGray);
+        getLoadButton().setForeground(Color.darkGray);
+        getLoadButton().setBorderPainted(false);
+        getLoadButton().setFont(new Font("Century Gothic",Font.BOLD,30));
 
 
         settings.add(layerList);
@@ -593,21 +600,31 @@ public class EditorPanel extends JPanel{
         }
     }
 
-    public JButton getLoadButton(){
-        JButton button = new JButton("LOAD");
-        button.setBackground(Color.lightGray);
-        button.setForeground(Color.darkGray);
-        button.setBorderPainted(false);
-        button.setFont(new Font("Century Gothic",Font.BOLD,30));
-
-        return button;
-    }
+    public JButton getLoadButton(){ return loadButton; }
 
     public JButton getSaveButton() {
         return saveButton;
     }
 
+    public void setLoadButton(JButton loadbutton){ this.loadButton = loadbutton; }
+
     public void setSaveButton(JButton saveButton) {
         this.saveButton = saveButton;
+    }
+
+    public void setGrid(Grid[] g) {
+        grid= g;
+    }
+
+    public Grid[] getGrid(){
+        return grid;
+    }
+
+    public String[] getPlayerChoice(){
+        return playerChoice;
+    }
+
+    public void setPlayerChoice(String[]i){
+        playerChoice=i;
     }
 }

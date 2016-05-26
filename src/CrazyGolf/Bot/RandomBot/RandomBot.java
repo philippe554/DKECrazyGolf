@@ -16,7 +16,7 @@ import static java.lang.Math.random;
 public class RandomBot implements BotInterface {
 
     World world;
-    double scalar =40;
+    double scalar =80;
 
     @Override
     public void init(World w) {
@@ -25,8 +25,8 @@ public class RandomBot implements BotInterface {
 
     @Override
     public void calcNextShot(int playerNumber) {
-        double i = Math.random() * scalar;
-        double j = Math.random() * scalar;
+        double i = (Math.random() * scalar) - scalar/2;
+        double j = (Math.random() * scalar) - scalar/2;
         Point3D randomShot = new Point3D(i,j,0);
         world.pushBall(playerNumber, randomShot);
     }

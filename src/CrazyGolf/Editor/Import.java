@@ -13,6 +13,7 @@ public class Import {
         int sort=0;
         LinkedList<String> EditData = new LinkedList<>();
         LinkedList<String> gamemodeData = new LinkedList<>();
+        System.out.println("1");
         for(int i=0;i<file.size();i++)
         {
             if(file.get(i).equals("Master:World")){
@@ -32,21 +33,25 @@ public class Import {
                 EditData.add(file.get(i));
             }
         }
+        System.out.println("2");
         playerChoice = new String[gamemodeData.size()];
         for(int i=0;i<gamemodeData.size();i++){
             playerChoice[i]=gamemodeData.get(i);
         }
         String[] size = EditData.get(0).split(";");
         grid = new Grid[Integer.parseInt(size[0])];
-        gridSize = Integer.parseInt(size[3]);
+        gridSize = Double.parseDouble(size[3]);
+        System.out.println("3");
         for(int i=0;i<grid.length;i++)
         {
             grid[i]=new Grid();
         }
+        System.out.println("4");
         for(int i=1;i<EditData.size();i++){
             String[] data = EditData.get(i).split(";");
             grid[Integer.parseInt(data[0])].getStringGrid()[Integer.parseInt(data[1])][Integer.parseInt(data[2])]=data[3];
         }
+        System.out.println("5");
     }
     public Grid[] getGrid(){
         return grid;

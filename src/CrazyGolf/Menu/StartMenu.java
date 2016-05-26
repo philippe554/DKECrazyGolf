@@ -21,10 +21,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import CrazyGolf.Editor.Export;
+import CrazyGolf.Editor.Import;
 import CrazyGolf.Game.Game;
 
 import CrazyGolf.Editor.EditorPanel;
@@ -55,6 +61,7 @@ public class StartMenu {
 	private JButton button2;
 	private JButton button;
 	private JButton saveButton;
+	private JButton loadButton;
 
 	private JButton oneP;
 	private JButton twoP;
@@ -95,6 +102,8 @@ public class StartMenu {
 		f2 = new File("Slot2.txt");
 		f3 = new File("Slot3.txt");
 		f4 = new File("Slot4.txt");
+
+
 
 		java.awt.Image background = new ImageIcon("game.jpg").getImage();
 
@@ -143,25 +152,62 @@ public class StartMenu {
 			public void actionPerformed(ActionEvent e) {
 
 				if(e.getSource() == level1b){
-					editor.writeItDown(editor.getDataForFileWriting(),1);
+					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
+					export.run();
+					editor.writeItDown(export.getData(),1);
 					level1b.setText("LEVEL 1");
 					main.repaint();
 				}
 
 				if(e.getSource() == level2b){
-					editor.writeItDown(editor.getDataForFileWriting(),2);
+					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
+					export.run();
+					editor.writeItDown(export.getData(),2);
 					level2b.setText("LEVEL 2");
 					main.repaint();;
 				}
 				if(e.getSource() == level3b){
-					editor.writeItDown(editor.getDataForFileWriting(),3);
+					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
+					export.run();
+					editor.writeItDown(export.getData(),3);
 					level3b.setText("LEVEL 3");
 					main.repaint();
 				}
 				if(e.getSource() == level4b){
-					editor.writeItDown(editor.getDataForFileWriting(),4);
+					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
+					export.run();
+					editor.writeItDown(export.getData(),4);
 					level4b.setText("LEVEL 4");
 					main.repaint();
+				}
+				if(e.getSource() == load1){
+					LinkedList<String> f1List= fileToList(f1);
+					Import impy = new Import(f1List);
+					editor.setGrid(impy.getGrid());
+					editor.setPlayerChoice(impy.getPlayerChoice());
+					editor.pixelSIZE = (int) impy.getGridSize();
+				}
+
+				if(e.getSource() == load2){
+					LinkedList<String> f2List= fileToList(f1);
+					Import impy= new Import(f2List);
+					editor.setGrid(impy.getGrid());
+					editor.setPlayerChoice(impy.getPlayerChoice());
+					editor.pixelSIZE = (int) impy.getGridSize();
+				}
+				if(e.getSource() == load3){
+					LinkedList<String> f3List= fileToList(f1);
+					Import impy = new Import(f3List);
+					editor.setGrid(impy.getGrid());
+					editor.setPlayerChoice(impy.getPlayerChoice());
+					editor.pixelSIZE = (int) impy.getGridSize();
+				}
+				if(e.getSource() == load4){
+					LinkedList<String> f4List= fileToList(f4);
+					Import impy = new Import(f4List);
+					editor.setGrid(impy.getGrid());
+					editor.setPlayerChoice(impy.getPlayerChoice());
+					editor.pixelSIZE = (int) impy.getGridSize();
 				}
 
 				if(e.getSource() == button2){
@@ -277,19 +323,30 @@ public class StartMenu {
 					editorPanel.setVisible(true);
 				}
 
-				if(saveButton!=null){
-					if(e.getSource() == saveButton){
+				if(saveButton!=null) {
+					if (e.getSource() == saveButton) {
 						editorPanel.setVisible(false);
-						if(saveMenu!= null)
+						if (saveMenu != null)
 							saveMenu.setVisible(true);
 						else
 							createSaveMenu(main);
 
 					}
-					if(e.getSource() == button3 || e.getSource() == exitp){
-						System.exit(0);
-					}
+				}
 
+				if(loadButton!=null) {
+					if (e.getSource() == loadButton) {
+						editorPanel.setVisible(false);
+						System.out.println("Load works");
+						if (loadMenu != null)
+							loadMenu.setVisible(true);
+						else
+							createLoadMenu(main);
+					}
+				}
+
+				if(e.getSource() == button3 || e.getSource() == exitp){
+					System.exit(0);
 				}
 			}
 		}
@@ -568,7 +625,6 @@ public class StartMenu {
 		int vGap = 25;
 		loadMenu.setLayout(new GridLayout(7,10,0,vGap));
 
-
 		//Title
 		JLabel loadTitle =new JLabel();
 		loadMenu.add(loadTitle);
@@ -578,7 +634,6 @@ public class StartMenu {
 //		Border border = BorderFactory.createLineBorder(Color.GRAY, 5);
 //		loadTitle.setBorder(border);
 		loadTitle.setHorizontalAlignment(SwingConstants.CENTER);
-
 
 		//Load1
 		if(f1.exists() && !f1.isDirectory()) {
@@ -786,7 +841,9 @@ public class StartMenu {
 
 		editor = new EditorPanel(radio);
 		saveButton = editor.getSaveButton();
+		loadButton= editor.getLoadButton();
 		saveButton.addActionListener(listener);
+		loadButton.addActionListener(listener);
 		editor.setBackground(Color.WHITE);
 		editorPanel.add(editor);
 		editorPanel.add(radio, BorderLayout.EAST);
@@ -832,7 +889,19 @@ public class StartMenu {
 		});
 
 	}
-
+	public LinkedList<String> fileToList(File fileName){
+		LinkedList<String> file = new LinkedList<>();
+		try {
+			Scanner s = new Scanner(new FileReader(fileName));
+			while (s.hasNextLine()) {
+				file.add(s.nextLine());
+			}
+		} catch (IOException e) {
+			System.out.println("Error reading field plan from " + fileName);
+			System.exit(0);
+		}
+		return file;
+	}
 //	public static JButton getResumeb() {
 //		return resumeb;
 //	}
