@@ -16,10 +16,7 @@ public class FrameEd {
 
         frame.setLayout(new BorderLayout());
 
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        int xSize = ((int) tk.getScreenSize().getWidth());
-        int ySize = ((int) tk.getScreenSize().getHeight());
-        frame.setSize(xSize,ySize);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
 
         frame.setTitle("EDITOR");
