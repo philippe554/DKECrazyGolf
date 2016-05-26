@@ -58,6 +58,8 @@ public class Game extends GolfPanel implements Runnable{
             }
             else if(file.get(i).equals("Master:Brutefinder")){
                 sort=2;
+            }else if(file.get(i).equals("Master:Editdata")){
+                sort=3;
             }else if(sort==0)
             {
                 worldData.add(file.get(i));

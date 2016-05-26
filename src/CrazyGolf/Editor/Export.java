@@ -64,6 +64,19 @@ public class Export implements Runnable {
             }
         }
 
+        returnData.add("Master:Editdata");
+        returnData.add(grid.length+";"+grid[0].getStringGrid().length+";"+grid[0].getStringGrid()[0].length+";"+gridSize);
+        for(int i=0;i<grid.length;i++)
+        {
+            String[][] data = grid[i].getStringGrid();
+            for(int j=0;j<data.length;j++)
+            {
+                for(int k=0;k<data[j].length;k++){
+                    returnData.add(i+";"+j+";"+k+";"+data[j][k]);
+                }
+            }
+        }
+
 
         if (calcDatabase){
             returnData.add("Master:Brutefinder");
