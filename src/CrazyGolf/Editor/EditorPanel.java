@@ -472,59 +472,6 @@ public class EditorPanel extends JPanel{
         }
     }
 
-    public LinkedList<String> getDataForFileWriting(){
-        LinkedList<String> brutefinderData = null;
-
-        WorldContainer world = new WorldContainer();
-        for(int i=0;i<grid.length;i++) {
-            world.loadWorld(grid[i].getStringGrid(), pixelSIZE, 50*i);
-        }
-        LinkedList<String> worldData = world.outputWorldApi2();
-
-        boolean calcDatabase = false;
-
-        for(int i=0;i<playerChoice.length;i++)
-        {
-            if(playerChoice[i]=="1")
-            {
-                calcDatabase=true;
-            }
-        }
-
-        if (calcDatabase){
-            World worldWithPhysics = new WorldGPUBotOpti(worldData);
-            Brutefinder brutefinder = new Brutefinder();
-            brutefinder.init(worldWithPhysics);
-            brutefinder.makeDatabase();
-            brutefinderData = brutefinder.ouputDatabase();
-        }
-
-        LinkedList<String> returnData = new LinkedList<>();
-        returnData.add("Master:World");
-        for(int i=0;i<worldData.size();i++)
-        {
-            returnData.add(worldData.get(i));
-        }
-
-        returnData.add("Master:Gamemode");
-        for (int i=0; i<playerChoice.length; i++){
-            returnData.add(playerChoice[i]);
-            if(playerChoice[i]!="3") {
-                returnData.add(playerChoice[i]);
-            }
-        }
-
-
-        if (calcDatabase){
-            returnData.add("Master:Brutefinder");
-            for(int i=0;i<brutefinderData.size();i++) {
-                returnData.add(brutefinderData.get(i));
-            }
-        }
-
-        return returnData;
-    }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
