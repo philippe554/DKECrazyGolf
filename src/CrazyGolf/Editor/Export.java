@@ -1,9 +1,7 @@
 package CrazyGolf.Editor;
 
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
-import CrazyGolf.PhysicsEngine.World;
-import CrazyGolf.PhysicsEngine.WorldContainer;
-import CrazyGolf.PhysicsEngine.WorldGPUBotOpti;
+import CrazyGolf.PhysicsEngine.*;
 
 import java.util.LinkedList;
 
