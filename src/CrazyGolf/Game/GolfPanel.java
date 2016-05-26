@@ -62,7 +62,7 @@ public class GolfPanel extends JPanel{
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
-        //orbitControls(getCanvas3D());   // controls for moving the viewpoint
+        orbitControls(getCanvas3D());   // controls for moving the viewpoint
         su.addBranchGraph( sceneBG );
 
         createBall(amountOfBalls);
@@ -133,7 +133,7 @@ public class GolfPanel extends JPanel{
     }
     protected void UpdateView(int currentPlayer) {
 
-        ViewingPlatform vp = su.getViewingPlatform();
+        /*ViewingPlatform vp = su.getViewingPlatform();
 
         TransformGroup steerTG = vp.getViewPlatformTransform();
         Transform3D t3d = new Transform3D();
@@ -149,7 +149,7 @@ public class GolfPanel extends JPanel{
 
         t3d.invert();
 
-        steerTG.setTransform(t3d);
+        steerTG.setTransform(t3d);*/
 
     }
 
@@ -175,7 +175,7 @@ public class GolfPanel extends JPanel{
         for(int i=0;i<amountOfBalls;i++) {
             // position the sphere
             t3dBall[i] = new Transform3D();
-            t3dBall[i].set(new Vector3f(100000000,0,0));
+            t3dBall[i].set(new Vector3f(10000,0,0));
             tgBall[i] = new TransformGroup(t3dBall[i]);
             Sphere ball = new Sphere((float)  20 * scale, blueApp);// set its radius and appearance
             ball.setPickable(true);

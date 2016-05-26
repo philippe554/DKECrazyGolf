@@ -267,4 +267,8 @@ public class Brutefinder implements BotInterface{
             }
         }
     }
+
+    public String getProgress(){
+        return "# Nodes: "+amountNodes+" | # Connections: "+amountConnections;
+    }
 }
