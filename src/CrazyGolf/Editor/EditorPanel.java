@@ -73,7 +73,6 @@ public class EditorPanel extends JPanel{
         getLoadButton().setBorderPainted(false);
         getLoadButton().setFont(new Font("Century Gothic",Font.BOLD,30));
 
-
         settings.add(layerList);
         for (int i=0; i<playerStrings.length; i++){
             settings.add(makePlayerList()[i]);
@@ -113,6 +112,8 @@ public class EditorPanel extends JPanel{
         }
 
         list.addActionListener(new LayeredActionListener());
+
+        list.setSelectedIndex(0);
 
         return list;
     }

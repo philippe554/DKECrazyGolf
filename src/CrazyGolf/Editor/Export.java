@@ -71,7 +71,9 @@ public class Export implements Runnable {
             for(int j=0;j<data.length;j++)
             {
                 for(int k=0;k<data[j].length;k++){
-                    returnData.add(i+";"+j+";"+k+";"+data[j][k]);
+                    if(!data[j][k].equals("E")) {
+                        returnData.add(i + ";" + j + ";" + k + ";" + data[j][k]);
+                    }
                 }
             }
         }

@@ -237,6 +237,10 @@ public class RadioButtons extends JPanel {
         panel.add(castleButton); panel.add(bridgeButton);
         panel.add(poolButton); panel.add(hillButton);
         panel.add(removeButton);
+
+        floorButton.setSelected(true);
+        chosenOption = "F";
+
         return panel;
     }
 
