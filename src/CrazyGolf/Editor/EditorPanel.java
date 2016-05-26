@@ -169,7 +169,9 @@ public class EditorPanel extends JPanel{
                                     stringGrid[i][j] = "W";
                                     for (int l=0; l<layerStrings.length; l++) {
                                         if (l != layerList.getSelectedIndex()){
-                                            grid[l].getStringGrid()[i][j]="Q";
+                                            if(grid[l].getStringGrid()[i][j].equals("E")) {
+                                                grid[l].getStringGrid()[i][j] = "Q";
+                                            }
                                         }
                                     }
                                 }
@@ -316,17 +318,35 @@ public class EditorPanel extends JPanel{
                                 }
 
                                 if (chosenOption.equals("D")) {
-                                    stringGrid[i][j] = "D";
+                                    stringGrid[i][j] = "E";
                                 }
 
                             }
-
-                            for (int l = 0; l < layerStrings.length; l++) {
+                            /*for (int l = 0; l < layerStrings.length; l++) {
                                 if (l != layerList.getSelectedIndex()) {
                                     if (!(grid[l].getStringGrid()[i][j].equals("Q")) && stringGrid[i][j].equals("W"))
                                         grid[l].getStringGrid()[i][j] = "Q";
                                     if (grid[l].getStringGrid()[i][j].equals("Q") && !(stringGrid[i][j].equals("W")))
                                         grid[l].getStringGrid()[i][j] = "D";
+                                }
+                            }*/
+                            boolean isWall=false;
+                            for (int l = 0; l < layerStrings.length; l++) {
+                                if(grid[l].getStringGrid()[i][j].equals("W")){
+                                    isWall=true;
+                                }
+                            }
+                            if(isWall){
+                                for (int l = 0; l < layerStrings.length; l++) {
+                                    if(grid[l].getStringGrid()[i][j].equals("E")){
+                                        grid[l].getStringGrid()[i][j] = "Q";
+                                    }
+                                }
+                            }else{
+                                for (int l = 0; l < layerStrings.length; l++) {
+                                    if(grid[l].getStringGrid()[i][j].equals("Q")){
+                                        grid[l].getStringGrid()[i][j] = "E";
+                                    }
                                 }
                             }
 
@@ -344,20 +364,27 @@ public class EditorPanel extends JPanel{
                 if(layerList.getSelectedIndex() != -1){
                     chosenOption = buttons.getChosenOption();
 
-                    Rectangle dragQueen = new Rectangle(startDrag.x, startDrag.y,e.getX()-startDrag.x,e.getY()-startDrag.y);
-                    Rectangle dragQueen2 = new Rectangle(e.getX(), e.getY(), startDrag.x-e.getX(), startDrag.y-e.getY());
-                    dragQueen.setSize((int)dragQueen.getWidth(),(int)dragQueen.getHeight());
+                    Rectangle dragQueen = new Rectangle(Math.min(startDrag.x,e.getX()), Math.min(startDrag.y,e.getY())
+                            ,Math.abs(e.getX()-startDrag.x), Math.abs(e.getY()-startDrag.y));
 
                     for(int i=0; i<rectangleGrid.length; i++) {
                         for (int j=0; j<rectangleGrid[0].length; j++) {
 
-                            if (rectangleGrid[i][j].intersects(dragQueen)|| rectangleGrid[i][j].intersects(dragQueen2) ) {
+                            if (rectangleGrid[i][j].intersects(dragQueen)) {
 
                                 if (chosenOption.equals("W")){
-                                    stringGrid[i][j] = "W";
+                                    /*stringGrid[i][j] = "W";
                                     for (int l=0; l<layerStrings.length; l++) {
                                         if (l != layerList.getSelectedIndex()){
                                             grid[l].getStringGrid()[i][j]="Q";
+                                        }
+                                    }*/
+                                    stringGrid[i][j] = "W";
+                                    for (int l=0; l<layerStrings.length; l++) {
+                                        if (l != layerList.getSelectedIndex()){
+                                            if(grid[l].getStringGrid()[i][j].equals("E")) {
+                                                grid[l].getStringGrid()[i][j] = "Q";
+                                            }
                                         }
                                     }
                                 }
@@ -368,15 +395,35 @@ public class EditorPanel extends JPanel{
                                     stringGrid[i][j] = "F";
                                 }
                                 if (chosenOption.equals("D")){
-                                    stringGrid[i][j] = "D";
+                                    stringGrid[i][j] = "E";
                                 }
 
-                                for (int l = 0; l < layerStrings.length; l++) {
+                                /*for (int l = 0; l < layerStrings.length; l++) {
                                     if (l != layerList.getSelectedIndex()) {
                                         if (!(grid[l].getStringGrid()[i][j].equals("Q")) && stringGrid[i][j].equals("W"))
                                             grid[l].getStringGrid()[i][j] = "Q";
                                         if (grid[l].getStringGrid()[i][j].equals("Q") && !(stringGrid[i][j].equals("W")))
                                             grid[l].getStringGrid()[i][j] = "D";
+                                    }
+                                }*/
+
+                                boolean isWall=false;
+                                for (int l = 0; l < layerStrings.length; l++) {
+                                    if(grid[l].getStringGrid()[i][j].equals("W")){
+                                        isWall=true;
+                                    }
+                                }
+                                if(isWall){
+                                    for (int l = 0; l < layerStrings.length; l++) {
+                                        if(grid[l].getStringGrid()[i][j].equals("E")){
+                                            grid[l].getStringGrid()[i][j] = "Q";
+                                        }
+                                    }
+                                }else{
+                                    for (int l = 0; l < layerStrings.length; l++) {
+                                        if(grid[l].getStringGrid()[i][j].equals("Q")){
+                                            grid[l].getStringGrid()[i][j] = "E";
+                                        }
                                     }
                                 }
 

@@ -321,7 +321,7 @@ public class StartMenu {
 					}
 
 					editorPanel.setVisible(true);
-					editor.layerList.setSelectedIndex(0);
+					editor.layerList.setSelectedIndex(2);
 				}
 
 				if(e.getSource() == PauseMBackToM){

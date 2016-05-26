@@ -42,6 +42,7 @@ public class WorldContainer implements World {
         balls = new ArrayList<>();
         waters=new ArrayList<>();
         loadDefaultColors();
+        start=new Ball(20,new Point3D(0,0,0));
         hole = new Point3D(0,0,0);
     }
     @Override public void step(boolean useBallBallCollision) {
