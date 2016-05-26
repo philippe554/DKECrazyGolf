@@ -32,9 +32,13 @@ public class Import {
                 EditData.add(file.get(i));
             }
         }
-        playerChoice = new String[gamemodeData.size()];
+        //TODO: change the 5
+        playerChoice = new String[5];
         for(int i=0;i<gamemodeData.size();i++){
             playerChoice[i]=gamemodeData.get(i);
+        }
+        for(int i=gamemodeData.size();i<5;i++){
+            playerChoice[i]="4";
         }
         String[] size = EditData.get(0).split(";");
         grid = new Grid[Integer.parseInt(size[0])];

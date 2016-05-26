@@ -135,50 +135,50 @@ public class RadioButtons extends JPanel {
         class ChoiceListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 //save chosen option in order to get printed on other panel
-                System.out.println("works");
+                //System.out.println("works");
                 if (wallButton.isSelected()) {
                     chosenOption = "W";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (sandButton.isSelected()) {
                     chosenOption = "S";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (floorButton.isSelected()) {
                     chosenOption = "F";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (ballButton.isSelected()) {
                     chosenOption = "B";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (holeButton.isSelected()) {
                     chosenOption = "H";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (loopButton.isSelected()) {
                     chosenOption = "L";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (castleButton.isSelected()) {
                     chosenOption = "C";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (bridgeButton.isSelected()) {
                     chosenOption = "R";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (poolButton.isSelected()) {
                     chosenOption = "P";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (hillButton.isSelected()) {
                     chosenOption = "M";
-                    System.out.println(chosenOption);
+                    //System.out.println(chosenOption);
                 }
                 if (removeButton.isSelected()) {
                     chosenOption = "D";
-                    System.out.println("remove");
+                    //System.out.println("remove");
                 }
             }
         }

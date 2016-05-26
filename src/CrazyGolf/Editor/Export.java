@@ -43,11 +43,13 @@ public class Export implements Runnable {
         }
 
         if (calcDatabase){
+            long time=System.currentTimeMillis();
             World worldWithPhysics = new WorldGPUBotOpti(worldData);
             brutefinder = new Brutefinder();
             brutefinder.init(worldWithPhysics);
             brutefinder.makeDatabase();
             brutefinderData = brutefinder.ouputDatabase();
+            System.out.print(System.currentTimeMillis()-time);
         }
 
         returnData = new LinkedList<>();
