@@ -62,7 +62,7 @@ public class GolfPanel extends JPanel{
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
-        orbitControls(getCanvas3D());   // controls for moving the viewpoint
+        //orbitControls(getCanvas3D());   // controls for moving the viewpoint
         su.addBranchGraph( sceneBG );
 
         createBall(amountOfBalls);
@@ -133,15 +133,15 @@ public class GolfPanel extends JPanel{
     }
     protected void UpdateView(int currentPlayer) {
 
-        /*ViewingPlatform vp = su.getViewingPlatform();
+        ViewingPlatform vp = su.getViewingPlatform();
 
         TransformGroup steerTG = vp.getViewPlatformTransform();
         Transform3D t3d = new Transform3D();
         steerTG.getTransform(t3d);
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt(new Point3d((float)world.getBallPosition(currentPlayer).getX()*scale,
-                (float)world.getBallPosition(currentPlayer).getY()*scale-50,
-                (float)world.getBallPosition(currentPlayer).getZ()*scale+60),
+        t3d.lookAt(new Point3d((float)world.getBallPosition(currentPlayer).getX()*scale-70,
+                (float)world.getBallPosition(currentPlayer).getY()*scale-70,
+                (float)world.getBallPosition(currentPlayer).getZ()*scale+70),
                 new Point3d((float)world.getBallPosition(currentPlayer).getX()*scale,
                         (float)world.getBallPosition(currentPlayer).getY()*scale,
                         (float)world.getBallPosition(currentPlayer).getZ()*scale)
@@ -149,7 +149,7 @@ public class GolfPanel extends JPanel{
 
         t3d.invert();
 
-        steerTG.setTransform(t3d);*/
+        steerTG.setTransform(t3d);
 
     }
 
