@@ -58,7 +58,7 @@ public class Export implements Runnable {
 
         returnData.add("Master:Gamemode");
         for (int i=0; i<playerChoice.length; i++){
-            if(playerChoice[i]!="3") {
+            if(playerChoice[i]!="4") {
                 returnData.add(playerChoice[i]);
             }
         }
