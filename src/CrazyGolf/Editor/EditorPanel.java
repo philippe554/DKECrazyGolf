@@ -364,6 +364,8 @@ public class EditorPanel extends JPanel{
                 if(layerList.getSelectedIndex() != -1){
                     chosenOption = buttons.getChosenOption();
 
+
+
                     Rectangle dragQueen = new Rectangle(Math.min(startDrag.x,e.getX()), Math.min(startDrag.y,e.getY())
                             ,Math.abs(e.getX()-startDrag.x), Math.abs(e.getY()-startDrag.y));
 
