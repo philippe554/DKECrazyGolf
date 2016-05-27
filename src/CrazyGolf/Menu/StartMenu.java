@@ -44,7 +44,7 @@ public class StartMenu {
 
 	private JFrame frame;
 	private EditorPanel editor;
-	private Game game ;
+	public Game game ;
 
 	public  BackgroundPanel main;
 	private JPanel startMenu;

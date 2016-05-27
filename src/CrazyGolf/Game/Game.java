@@ -2,6 +2,7 @@ package CrazyGolf.Game;
 
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
+import CrazyGolf.Menu.Popup;
 import CrazyGolf.Menu.StartMenu;
 import CrazyGolf.PhysicsEngine.*;
 import javafx.geometry.Point3D;
@@ -24,8 +25,10 @@ public class Game extends GolfPanel implements Runnable{
     public BotInterface brutefinder;
     public World world;
     public boolean enterPressed=false;
-    private int slot;
+    public int slot;
     private StartMenu menu;
+    public int winner;
+    public int winnerTurns;
 
     public Game(StartMenu menu,String fileName,int slot) {
         this.menu=menu;
@@ -164,11 +167,15 @@ public class Game extends GolfPanel implements Runnable{
                             }
                             if (world.checkBallInHole(i)) {
                                 keepPlaying = false;
-                                i=0;
                                 if (World.DEBUG){
-                                    JOptionPane.showMessageDialog(null, "Player " + i + " Won with "+players[i].turns+" turns!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
+                                    //JOptionPane.showMessageDialog(null, "Player " + i + " Won with "+players[i].turns+" turns!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     System.out.println("Game: Player " + i + " Won with "+players[i].turns+" turns!");
                                 }
+                                winner= i;
+                                winnerTurns= players[i].turns;
+                                Popup pop = new Popup(menu);
+                                pop.setLocationRelativeTo(null);
+                                pop.setVisible(true);
                             }
                         }
                         if(keepPlaying) {
@@ -188,7 +195,7 @@ public class Game extends GolfPanel implements Runnable{
         }
 
 
-        if(slot!=4){
+        /*if(slot!=4){
             nextSlot = slot+1;
             menu.createGame(nextSlot,"Slot"+nextSlot+".txt");
         }
@@ -196,7 +203,7 @@ public class Game extends GolfPanel implements Runnable{
             menu.gamePanel.setVisible(false);
             menu.createMainMenu();
 
-        }
+        }*/
         world.cleanUp();
     }
     public void launch()
