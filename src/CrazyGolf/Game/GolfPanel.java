@@ -141,7 +141,7 @@ public class GolfPanel extends JPanel{
         // args are: viewer posn, where looking, up direction
         t3d.lookAt(new Point3d((float)world.getBallPosition(currentPlayer).getX()*scale-70,
                 (float)world.getBallPosition(currentPlayer).getY()*scale-70,
-                (float)world.getBallPosition(currentPlayer).getZ()*scale+70),
+                (float)world.getBallPosition(currentPlayer).getZ()*scale+70 ),
                 new Point3d((float)world.getBallPosition(currentPlayer).getX()*scale,
                         (float)world.getBallPosition(currentPlayer).getY()*scale,
                         (float)world.getBallPosition(currentPlayer).getZ()*scale)
