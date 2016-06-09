@@ -1,15 +1,18 @@
 package CrazyGolf.PhysicsEngine;
 
-import CrazyGolf.Bot.Brutefinder.Brutefinder;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
+import CrazyGolf.PhysicsEngine.Objects.Terain.SimplexNoise;
+import CrazyGolf.PhysicsEngine.Objects.Terain.TerainChunk;
+import CrazyGolf.PhysicsEngine.Objects.Terain.Terrain;
+import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 public class WorldContainer implements World {
     protected ArrayList<Point3D> points;
@@ -18,6 +21,9 @@ public class WorldContainer implements World {
     protected ArrayList<Edge> edges;
     protected ArrayList<Ball> balls;
     protected ArrayList<Water> waters;
+
+    protected ArrayList<WorldObject> objects;
+    public Terrain terrain;
     protected Ball start;
     protected Point3D hole;
 
@@ -27,12 +33,25 @@ public class WorldContainer implements World {
         editMode=true;
         initContainer();
         loadWorldApi2(input);
+        objects=new ArrayList<>();
+
+        waters.add(new Water(new Point3D[]{new Point3D(-7000,-7000,-100),new Point3D(7000,7000,20)},6));
+
+        /*for(int i=-1;i<1;i++){
+            for(int j=-1;j<1;j++){
+                objects.add(new TerainChunk(sn,i,j));
+            }
+        }*/
+
         if(DEBUG)System.out.println("WorldContainer: World file loaded: "+sides.size()+" sides");
         editMode=false;
     }
     public WorldContainer() {
         editMode=true;
         initContainer();
+        objects=new ArrayList<>();
+        terrain=new Terrain(1631365);
+        editMode=false;
     }
     private void initContainer() {
         points = new ArrayList<>();
@@ -134,6 +153,12 @@ public class WorldContainer implements World {
     }
     @Override public Color3f getWaterColor(int i) {
         return colors.get(waters.get(i).color);
+    }
+    @Override public int getAmountWorldObjects() {
+        return objects.size();
+    }
+    @Override public WorldObject getWorldObject(int i) {
+        return objects.get(i);
     }
     @Override public Point3D getBallPosition(int i) {
         return balls.get(i).place;

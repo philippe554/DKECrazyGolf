@@ -1,4 +1,4 @@
-package CrazyGolf.PhysicsEngine;
+package CrazyGolf.PhysicsEngine.Objects.Parts;
 
 import javafx.geometry.Point3D;
 

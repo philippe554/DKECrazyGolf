@@ -1,6 +1,7 @@
 package CrazyGolf.Game;
 
 import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -11,8 +12,6 @@ import javax.media.j3d.*;
 import javax.swing.*;
 import javax.vecmath.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 
@@ -62,7 +61,7 @@ public class GolfPanel extends JPanel{
 
         createSceneGraph();
         initUserPosition();        // set user's viewpoint
-        //orbitControls(getCanvas3D());   // controls for moving the viewpoint
+        orbitControls(getCanvas3D());   // controls for moving the viewpoint
         su.addBranchGraph( sceneBG );
 
         createBall(amountOfBalls);
@@ -122,8 +121,12 @@ public class GolfPanel extends JPanel{
         Transform3D t3d = new Transform3D();
         steerTG.getTransform(t3d);
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt(new Point3d((float)world.getStartPosition().getX()*scale,(float)world.getStartPosition().getY()*scale-50,(float)world.getStartPosition().getZ()*scale+60),
+        /*t3d.lookAt(new Point3d((float)world.getStartPosition().getX()*scale,(float)world.getStartPosition().getY()*scale-50,(float)world.getStartPosition().getZ()*scale+60),
                 new Point3d((float)world.getStartPosition().getX()*scale,(float)world.getStartPosition().getY()*scale,(float)world.getStartPosition().getZ()*scale)
+                , new Vector3d(0,0,1));*/
+
+        t3d.lookAt(new Point3d(0,500,500),
+                new Point3d(0,0,0)
                 , new Vector3d(0,0,1));
 
         t3d.invert();
@@ -133,7 +136,7 @@ public class GolfPanel extends JPanel{
     }
     protected void UpdateView(int currentPlayer) {
 
-        ViewingPlatform vp = su.getViewingPlatform();
+        /*ViewingPlatform vp = su.getViewingPlatform();
 
         TransformGroup steerTG = vp.getViewPlatformTransform();
         Transform3D t3d = new Transform3D();
@@ -149,7 +152,7 @@ public class GolfPanel extends JPanel{
 
         t3d.invert();
 
-        steerTG.setTransform(t3d);
+        steerTG.setTransform(t3d);*/
 
     }
 
@@ -214,6 +217,10 @@ public class GolfPanel extends JPanel{
             scene.addChild(new Triangle(coords,world.getTriangleColor(i)));
         }
 
+        /*for(int i=0;i<world.getAmountWorldObjects();i++){
+            addObject(scene,world.getWorldObject(i));
+        }*/
+
         for(int i=0;i<world.getAmountOfWater();i++)
         {
             Point3D[] points = world.getWaterPoints(i);
@@ -231,6 +238,21 @@ public class GolfPanel extends JPanel{
 
         sceneBG.addChild(scene);
     }
+    /*public void addObject(BranchGroup scene,WorldObject object){
+        for(int k=0;k<object.getAmountSides();k++) {
+            ArrayList<Point3f> coords = new ArrayList();
+            Point3D[] triangle = object.getTriangle(k);
+            for (int j = 0; j < 3; j++) {
+                coords.add(new Point3f((float) triangle[j].getX() * scale,
+                        (float) triangle[j].getY() * scale,
+                        (float) triangle[j].getZ() * scale));
+            }
+            scene.addChild(new Triangle(coords, object.getTriangleColor(k)));
+        }
+        for(int i=0;i<object.getAmountSubObjects();i++){
+            addObject(scene,object.getSubObject(i));
+        }
+    }*/
     public void createArrow(Point3D ballCoor, Point3D aimVector){
 
         ArrayList<Point3f> arrowCoor = new ArrayList<Point3f>();

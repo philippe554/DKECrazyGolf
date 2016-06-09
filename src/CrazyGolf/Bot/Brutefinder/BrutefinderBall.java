@@ -1,6 +1,6 @@
 package CrazyGolf.Bot.Brutefinder;
 
-import CrazyGolf.PhysicsEngine.Ball;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import javafx.geometry.Point3D;
 
 /**

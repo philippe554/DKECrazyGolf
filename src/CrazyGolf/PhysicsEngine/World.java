@@ -1,5 +1,7 @@
 package CrazyGolf.PhysicsEngine;
 
+import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
+import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
  */
 public interface World {
     void step(boolean useBallBallCollision);
-    void stepSimulated(ArrayList<Ball> simBalls,boolean useBallBallCollision);
+    void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision);
     void cleanUp();
 
     int getAmountBalls();
@@ -32,6 +34,9 @@ public interface World {
     int getAmountOfWater();
     Point3D[] getWaterPoints(int i);
     Color3f getWaterColor(int i);
+
+    int getAmountWorldObjects();
+    WorldObject getWorldObject(int i);
 
     boolean DEBUG = true;
     boolean CPUCHECK = false;

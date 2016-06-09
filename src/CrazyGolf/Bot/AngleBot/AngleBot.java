@@ -1,7 +1,7 @@
 package CrazyGolf.Bot.AngleBot;
 
 import CrazyGolf.Bot.BotInterface;
-import CrazyGolf.PhysicsEngine.Ball;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.World;
 import javafx.geometry.Point3D;
 
