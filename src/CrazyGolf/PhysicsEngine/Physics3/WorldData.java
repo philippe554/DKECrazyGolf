@@ -87,7 +87,7 @@ public class WorldData implements World,Physics{
         return balls.get(i);
     }
     @Override public void pushBall(int i, Point3D dir) {
-
+        balls.get(i).velocity= balls.get(i).velocity.add(dir);
     }
     @Override public boolean checkBallInHole(int i) {
         if (hole.distance(balls.get(i).place) < (balls.get(i).size)) {

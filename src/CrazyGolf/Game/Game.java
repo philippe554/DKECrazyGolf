@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -21,7 +22,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
 
     public boolean keepPlaying;
     public boolean pause;
-    private Player[] players;
+    private ArrayList<Player> players;
     private int currentPlayer;
     public BotInterface brutefinder;
     public WorldData world;
@@ -86,10 +87,13 @@ public class Game extends GolfPanelOpenGL implements Runnable{
             brutefinder.loadDatabase(brutefinderData);
         }
 
-        players = new Player[gamemodeData.size()];
+        players = new ArrayList<>();
         currentPlayer = 0;
         for(int i=0;i<gamemodeData.size();i++) {
-            players[i] = new Player(this,i,Integer.parseInt(gamemodeData.get(i)));
+            int playerSort = Integer.parseInt(gamemodeData.get(i));
+            if(playerSort!=3) {
+                players.add(new Player(this, i, playerSort));
+            }
         }
 
         Game game= this;
@@ -137,18 +141,18 @@ public class Game extends GolfPanelOpenGL implements Runnable{
             if(lastTime+1000.0/30.0<currentTime && !pause) {
                 lastTime=currentTime;
                 requestFocus();
-                if(!players[currentPlayer].createdInWorld){
+                if(!players.get(currentPlayer).createdInWorld){
                     world.addNewBall();
-                    players[currentPlayer].createdInWorld=true;
+                    players.get(currentPlayer).createdInWorld=true;
                 }
                 world.step(true);
                 update();
                 //UpdateView(currentPlayer);
                 if(inputFlag) {
-                    players[currentPlayer].updatePushParameters();
+                    players.get(currentPlayer).updatePushParameters();
                     if(enterPressed) {
                         backupBallLocations();
-                        players[currentPlayer].launch();
+                        players.get(currentPlayer).launch();
                         removeArrow();
                         enterPressed=false;
                         inputFlag=false;
@@ -168,17 +172,17 @@ public class Game extends GolfPanelOpenGL implements Runnable{
                     if (stopCounter > 20) {
                         for (int i = world.getAmountBalls()-1; i >= 0; i--) {
                             if (world.getBall(i).place.getZ() < -100) {
-                                world.getBall(i).place= players[i].oldLocation;
+                                world.getBall(i).place= players.get(i).oldLocation;
                                 world.getBall(i).velocity= new Point3D(0, 0, 0);
                             }
                             if (world.checkBallInHole(i)) {
                                 keepPlaying = false;
                                 if (World.DEBUG){
                                     //JOptionPane.showMessageDialog(null, "Player " + i + " Won with "+players[i].turns+" turns!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                    System.out.println("Game: Player " + i + " Won with "+players[i].turns+" turns!");
+                                    System.out.println("Game: Player " + i + " Won with "+players.get(i).turns+" turns!");
                                 }
                                 winner= i;
-                                winnerTurns= players[i].turns;
+                                winnerTurns= players.get(i).turns;
                                 Popup pop = new Popup(menu);
                                 pop.setLocationRelativeTo(null);
                                 pop.setVisible(true);
@@ -186,31 +190,17 @@ public class Game extends GolfPanelOpenGL implements Runnable{
                         }
                         if(keepPlaying) {
                             currentPlayer++;
-                            if (currentPlayer == players.length) {
+                            if (currentPlayer == players.size()) {
                                 currentPlayer = 0;
                             }
                             stopCounter = 0;
                             if (World.DEBUG) System.out.println("Game: Switched to player " + currentPlayer);
                             inputFlag = true;
                         }
-                        //updateBall();
-                        //UpdateView(Cu);
                     }
                 }
             }
         }
-
-
-        /*if(slot!=4){
-            nextSlot = slot+1;
-            menu.createGame(nextSlot,"Slot"+nextSlot+".txt");
-        }
-        else{
-            menu.gamePanel.setVisible(false);
-            menu.createMainMenu();
-
-        }*/
-        //world.cleanUp();
     }
     public void launch()
     {
@@ -219,7 +209,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
     public void backupBallLocations() {
         for(int i=0;i<world.getAmountBalls();i++)
         {
-            players[i].oldLocation=world.getBall(i).place.add(0,0,0);
+            players.get(i).oldLocation=world.getBall(i).place.add(0,0,0);
         }
     }
 }
