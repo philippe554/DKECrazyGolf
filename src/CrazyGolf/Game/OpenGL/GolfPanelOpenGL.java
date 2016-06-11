@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.swing.*;
 
+import CrazyGolf.PhysicsEngine.Objects.Native.Sphere;
 import CrazyGolf.PhysicsEngine.Physics12.WorldContainer;
 import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics3.World;
@@ -252,6 +253,13 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             gl.glDrawArrays(GL.GL_TRIANGLES, 0, e.vertices.length/4);
         });
 
+        for(int i=0;i<world.getAmountBalls();i++){
+            OpenGLTriangleSet set = new OpenGLTriangleSet(gl, Sphere.getSphere(world.getBall(i).place, (float) world.getBall(i).size,scale), Sphere.getSphereColor(1,0,0), vertexLoc, colorLoc);
+            gl.glBindVertexArray(set.VAO[0]);
+            gl.glDrawArrays(GL.GL_TRIANGLES, 0, set.vertices.length/4);
+            set.cleanUp(gl);
+        }
+
         // Check out error
         int error = gl.glGetError();
         if(error!=0){
@@ -394,7 +402,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
                 this.verticesAxis, this.colorAxis, this.vertexLoc, this.colorLoc);*/
     }
     void addObject(GL3 gl, WorldObject object){
-        if(!object.mergeParent) {
+        if(!object.mergeParent && object.containsNonObjectData()) {
             float[] points = getObjectPoints(object);
             float[] colors = getObjectColors(object);
             triangles.put(object.getID(), new OpenGLTriangleSet(gl, points, colors, vertexLoc, colorLoc));

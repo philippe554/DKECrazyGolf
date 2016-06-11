@@ -35,6 +35,9 @@ public class WorldData implements World,Physics{
         newObjects = new LinkedList<>();
         updatedObjects = new LinkedList<>();
         deletedObjects = new LinkedList<>();
+
+        start = new Ball(20, new Point3D(0,0,0));
+        hole = new Point3D(0,0,0);
     }
 
     @Override public void step(boolean useBallBallCollision) {
@@ -316,8 +319,6 @@ public class WorldData implements World,Physics{
         }
     }
     @Override public void load(String[][] data, double gs, Point3D offset) {
-        start = new Ball(20, new Point3D(0,0,0));
-        hole = new Point3D(0,0,0);
         WorldObject wo = new WorldObject(this);
         boolean[][]alreadyConverted=new boolean[data.length][data[0].length];
         for(int i=0;i<alreadyConverted.length;i++)

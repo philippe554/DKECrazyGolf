@@ -408,6 +408,13 @@ public class WorldObject {
     }
     public int getAmountSubObjects(){return subObjects.size();}
     public WorldObject getSubObject(int i){return subObjects.get(i);}
+    public boolean containsNonObjectData(){
+        if(pointsOriginal!=null && pointsOriginal.length>0)
+        {
+            return true;
+        }
+        return false;
+    }
 
     public int getID(){return ID;}
 }
