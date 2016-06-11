@@ -1,7 +1,7 @@
 package CrazyGolf.Bot;
 
-import CrazyGolf.Game.Player;
-import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.Physics12.World;
+import CrazyGolf.PhysicsEngine.Physics3.Physics;
 
 import java.util.LinkedList;
 
@@ -10,6 +10,7 @@ import java.util.LinkedList;
  */
 public interface BotInterface {
     void init(World w);
+    void init(Physics p);
     void calcNextShot(int playerNumber);
 
     void makeDatabase();

@@ -1,11 +1,9 @@
-package CrazyGolf.PhysicsEngine;
+package CrazyGolf.PhysicsEngine.Physics12;
 
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
-import CrazyGolf.PhysicsEngine.Objects.Terain.SimplexNoise;
-import CrazyGolf.PhysicsEngine.Objects.Terain.TerainChunk;
 import CrazyGolf.PhysicsEngine.Objects.Terain.Terrain;
 import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import javafx.geometry.Point3D;
@@ -21,9 +19,6 @@ public class WorldContainer implements World {
     protected ArrayList<Edge> edges;
     protected ArrayList<Ball> balls;
     protected ArrayList<Water> waters;
-
-    protected ArrayList<WorldObject> objects;
-    public Terrain terrain;
     protected Ball start;
     protected Point3D hole;
 
@@ -33,7 +28,6 @@ public class WorldContainer implements World {
         editMode=true;
         initContainer();
         loadWorldApi2(input);
-        objects=new ArrayList<>();
 
         waters.add(new Water(new Point3D[]{new Point3D(-7000,-7000,-100),new Point3D(7000,7000,20)},6));
 
@@ -49,8 +43,6 @@ public class WorldContainer implements World {
     public WorldContainer() {
         editMode=true;
         initContainer();
-        objects=new ArrayList<>();
-        terrain=new Terrain(1631365);
         editMode=false;
     }
     private void initContainer() {
@@ -153,12 +145,6 @@ public class WorldContainer implements World {
     }
     @Override public Color3f getWaterColor(int i) {
         return colors.get(waters.get(i).color);
-    }
-    @Override public int getAmountWorldObjects() {
-        return objects.size();
-    }
-    @Override public WorldObject getWorldObject(int i) {
-        return objects.get(i);
     }
     @Override public Point3D getBallPosition(int i) {
         return balls.get(i).place;

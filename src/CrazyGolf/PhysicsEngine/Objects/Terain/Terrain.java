@@ -1,6 +1,7 @@
 package CrazyGolf.PhysicsEngine.Objects.Terain;
 
 import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
 import java.util.*;
@@ -18,41 +19,19 @@ public class Terrain implements Runnable{
     private int x;
     private int y;
 
-    private boolean keepUpdating;
+    WorldData world;
 
-    private Queue<TerainChunk> newObjects;
-    private Queue<TerainChunk> updatedObjects;
-    private Queue<Integer> deletedObjects;
-
-    public Terrain(int seed){
-        super();
+    public Terrain(int seed,WorldData w){
+        world=w;
         chunks=new HashMap<>();
         sn = new SimplexNoise(seed);
         x=0;
         y=0;
-        keepUpdating=true;
-        newObjects = new LinkedList<>();
-        updatedObjects = new LinkedList<>();
-        deletedObjects = new LinkedList<>();
     }
 
     public void updateTerain(Point3D center){
         x = (int) (center.getX()/TerainChunk.chunkSize);
         y = (int) (center.getY()/TerainChunk.chunkSize);
-    }
-
-    public WorldObject getNextNewObject(){
-        return newObjects.poll();
-    }
-    public WorldObject getNextUpdateObject(){
-        return updatedObjects.poll();
-    }
-    public Integer getNextRemoveObject(){
-        return deletedObjects.poll();
-    }
-
-    public void stopTerainGeneration(){
-        keepUpdating=false;
     }
 
     @Override public void run() {
@@ -62,8 +41,8 @@ public class Terrain implements Runnable{
                 if(Math.abs(key.x-x)>viewDistance || Math.abs(key.y-y)>viewDistance){
                     if(e.getValue().loaded) {
                         e.getValue().loaded=false;
-                        newObjects.remove(e.getValue());
-                        deletedObjects.add(e.getValue().getID());
+                        world.newObjects.remove(e.getValue());
+                        world.deletedObjects.add(e.getValue().getID());
                     }
                 }
                 if(Math.abs(key.x-x)>loadDistance || Math.abs(key.y-y)>loadDistance){
@@ -79,12 +58,12 @@ public class Terrain implements Runnable{
                     if(!chunks.containsKey(key)){
                         TerainChunk tc = loadObject(key);
                         chunks.put(key,tc);
-                        deletedObjects.remove(chunks.get(key).getID());
-                        newObjects.add(chunks.get(key));
+                        world.deletedObjects.remove(chunks.get(key).getID());
+                        world.newObjects.add(chunks.get(key));
                     }else {
                         if (!chunks.get(key).loaded) {
-                            deletedObjects.remove(chunks.get(key).getID());
-                            newObjects.add(chunks.get(key));
+                            world.deletedObjects.remove(chunks.get(key).getID());
+                            world.newObjects.add(chunks.get(key));
                             chunks.get(key).loaded = true;
                         }
                     }
@@ -103,7 +82,7 @@ public class Terrain implements Runnable{
 
     }
     private TerainChunk loadObject(Key key){
-        return new TerainChunk(sn,key);
+        return new TerainChunk(sn,key,world);
     }
 
     public double getHeight(double tx,double ty){

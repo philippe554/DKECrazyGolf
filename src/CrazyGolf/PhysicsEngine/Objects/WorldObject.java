@@ -4,6 +4,7 @@ import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
+import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
@@ -13,7 +14,9 @@ import java.util.LinkedList;
 /**
  * Created by pmmde on 5/28/2016.
  */
-public abstract class WorldObject {
+public class WorldObject {
+    public static final double gravity=1;
+
     protected Point3D[] points;
     protected Point3D[] pointsOriginal;
     protected Color3f[] colors;
@@ -21,35 +24,193 @@ public abstract class WorldObject {
     protected Edge[] edges;
     protected Water[] waters;
 
-    protected LinkedList<WorldObject> subObjects;
+    public LinkedList<WorldObject> subObjects;
+    public WorldData world;
 
     private int ID;
     private static int nextID=0;
-
     private Point3D center;
     private double[][] rotation;
-
-    private boolean newPlace;
     private Point3D[] boxing;
     private Point3D[] boxingOriginal;
-    public static final double gravity=1;
+
     public boolean mergeParent=false;
 
-    public WorldObject(){
+    public WorldObject(WorldData w){
         ID=nextID;
         nextID++;
-        newPlace=true;
         center=new Point3D(0,0,0);
         subObjects=new LinkedList<>();
+        world=w;
     }
-
-    protected void move(){
-        newPlace=false;
-        for(int i=0;i<pointsOriginal.length;i++){
-            points[i]=pointsOriginal[i].add(center);
-            //TODO add rotation
+    public void load(LinkedList<String> field){
+        int sort=0;
+        int counter=0;
+        String copyEnd="";
+        boolean copyLock=false;
+        Class copyObject = null;
+        boolean nativeClassError=false;
+        LinkedList<String>copyData = null;
+        for (int i = 0; i < field.size(); i++) {
+            if(!copyLock) {
+                if (field.get(i).equals("points")) {
+                    sort = 1;
+                    pointsOriginal = new Point3D[Integer.parseInt(field.get(i + 1))];
+                    i++;
+                    counter = 0;
+                } else if (field.get(i).equals("edges")) {
+                    sort = 2;
+                    edges = new Edge[Integer.parseInt(field.get(i + 1))];
+                    i++;
+                    counter = 0;
+                    setCenter(new Point3D(0,0,0));
+                } else if (field.get(i).equals("triangels")) {
+                    sort = 3;
+                    sides = new Side[Integer.parseInt(field.get(i + 1))];
+                    i++;
+                    counter = 0;
+                    setCenter(new Point3D(0,0,0));
+                } else if (field.get(i).equals("colors")) {
+                    sort = 4;
+                    colors = new Color3f[Integer.parseInt(field.get(i + 1))];
+                    i++;
+                    counter = 0;
+                } else if (field.get(i).equals("water")) {
+                    sort = 5;
+                    waters = new Water[Integer.parseInt(field.get(i + 1))];
+                    i++;
+                    counter = 0;
+                    setCenter(new Point3D(0,0,0));
+                } else if (field.get(i).equals("ObjectStart")) {
+                    sort = 6;
+                    copyLock = true;
+                    copyEnd = "ObjectEnd-" + field.get(i + 1);
+                    copyData = new LinkedList<>();
+                    copyData.add(field.get(i + 1));
+                    i++;
+                } else if (field.get(i).equals("ObjectStartNative")) {
+                    sort = 7;
+                    copyLock = true;
+                    copyEnd = "ObjectEndNative-" + field.get(i + 1);
+                    nativeClassError = false;
+                    copyData = new LinkedList<>();
+                    copyData.add(field.get(i + 1));
+                    try {
+                        copyObject = Class.forName(field.get(i + 2));
+                    } catch (ClassNotFoundException e) {
+                        nativeClassError = true;
+                        System.out.println("Class not found (1): " + field.get(i + 2));
+                    }
+                    i += 2;
+                } else {
+                    if (sort == 1) {
+                        String[] data = field.get(i).split(";");
+                        if (data.length == 3) {
+                            pointsOriginal[counter] = new Point3D(Double.parseDouble(data[0]), Double.parseDouble(data[1]), Double.parseDouble(data[2]));
+                        }
+                    } else if (sort == 2) {
+                        String[] data = field.get(i).split(";");
+                        if (data.length == 2) {
+                            edges[counter] = new Edge(this, Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+                        }
+                    } else if (sort == 3) {
+                        String[] data = field.get(i).split(";");
+                        if (data.length == 5) {
+                            sides[counter] = new Side(this, Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]),
+                                    Integer.parseInt(data[3]), Double.parseDouble(data[4]));
+                        }
+                    } else if (sort == 4) {
+                        String[] data = field.get(i).split(";");
+                        if (data.length == 4) {
+                            colors[counter] = new Color3f(Float.parseFloat(data[0]), Float.parseFloat(data[1]), Float.parseFloat(data[2]));
+                        }
+                    } else if (sort == 5) {
+                        String[] data = field.get(i).split(";");
+                        if (data.length == 7) {
+                            waters[counter] = new Water(new Point3D[]{new Point3D(Double.parseDouble(data[0]), Double.parseDouble(data[1]), Double.parseDouble(data[2])),
+                                    new Point3D(Double.parseDouble(data[3]), Double.parseDouble(data[4]), Double.parseDouble(data[5]))}, Integer.parseInt(data[6]));
+                        }
+                    }
+                    counter++;
+                }
+            }else{
+                if(field.get(i).equals(copyEnd)){
+                    if(sort==6){
+                        copyLock=false;
+                        WorldObject wo = new WorldObject(world);
+                        wo.load(copyData);
+                        subObjects.add(wo);
+                    }else if(sort==7)
+                    {
+                        copyLock=false;
+                        if(!nativeClassError && copyObject!=null){
+                            Object obj=null;
+                            try {
+                                obj = copyObject.newInstance();
+                            } catch (InstantiationException e) {
+                                System.out.println("Class not found (2): "+copyObject.getName());
+                                nativeClassError=true;
+                            } catch (IllegalAccessException e) {
+                                System.out.println("Class not found (3): "+copyObject.getName());
+                                nativeClassError=true;
+                            }
+                            if(!nativeClassError && obj!=null){
+                                if(obj instanceof WorldObject){
+                                    WorldObject wo = (WorldObject)obj;
+                                    wo.load(copyData);
+                                    subObjects.add(wo);
+                                }else{
+                                    System.out.println("Class is not an instance of WorldObject: "+copyObject.getName());
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    copyData.add(field.get(i));
+                }
+            }
         }
     }
+    public LinkedList<String> save(){
+        LinkedList<String> data =new LinkedList<>();
+        data.add("ObjectStart");
+        data.add(String.valueOf(ID));
+        if(pointsOriginal!=null && pointsOriginal.length>0) {
+            data.add("points");
+            data.add(String.valueOf(pointsOriginal.length));
+            for (int i = 0; i < pointsOriginal.length; i++) {
+                data.add(pointsOriginal[i].getX() + ";" + pointsOriginal[i].getY() + ";" + pointsOriginal[i].getZ());
+            }
+            data.add("colors");
+            data.add(String.valueOf(colors.length));
+            for (int i = 0; i < colors.length; i++) {
+                data.add(colors[i].getX() + ";" + colors[i].getY() + ";" + colors[i].getZ() + ";1");
+            }
+            data.add("edges");
+            data.add(String.valueOf(edges.length));
+            for (int i = 0; i < edges.length; i++) {
+                data.add(edges[i].points[0] + ";" + edges[i].points[1]);
+            }
+            data.add("triangels");
+            data.add(String.valueOf(sides.length));
+            for (int i = 0; i < sides.length; i++) {
+                data.add(sides[i].points[0] + ";" + sides[i].points[1] + ";" + sides[i].points[2] + ";" + sides[i].color + ";" + sides[i].friction);
+            }
+            data.add("water");
+            data.add(String.valueOf(waters.length));
+            for (int i = 0; i < waters.length; i++) {
+                data.add(waters[i].place[0].getX() + ";" + waters[i].place[0].getY() + ";" + waters[i].place[0].getZ()
+                        + ";" + waters[i].place[1].getX() + ";" + waters[i].place[1].getY() + ";" + waters[i].place[1].getZ()
+                        + ";" + waters[i].color);
+            }
+        }
+        for(int i=0;i<subObjects.size();i++){
+            data.addAll(subObjects.get(i).save());
+        }
+        data.add("ObjectEnd-"+ID);
+        return data;
+    }
+
     protected void setupBoxing(){
         if(pointsOriginal.length>0) {
             boxing = new Point3D[2];
@@ -79,14 +240,58 @@ public abstract class WorldObject {
         }
     }
     public void setCenter(Point3D p){
-        newPlace=true;
         center=p.add(0,0,0);
+        if(points==null)points=new Point3D[pointsOriginal.length];
+        for(int i=0;i<pointsOriginal.length;i++){
+            points[i]=pointsOriginal[i].add(center);
+            //TODO add rotation
+        }
     }
     public void moveCenter(Point3D p){
-        newPlace=true;
         center=center.add(p);
+        if(points==null)points=new Point3D[pointsOriginal.length];
+        for(int i=0;i<pointsOriginal.length;i++){
+            points[i]=pointsOriginal[i].add(center);
+            //TODO add rotation
+        }
     }
 
+    public float applyCollision(Ball ball,double subframeInv){
+        float f=0.0f;
+        if(pointsOriginal!=null) {
+            if (waters != null) {
+                for (int j = 0; j < waters.length; j++) {
+                    ballWater(waters[j], ball, subframeInv);
+                }
+            }
+            if(sides!=null) {
+                for (int j = 0; j < sides.length; j++) {
+                    if (sideCollision(sides[j], ball)) {
+                        if (sides[j].friction > f) {
+                            f = (float) sides[j].friction;
+                        }
+                    }
+                }
+            }
+            if(edges!=null) {
+                for (int j = 0; j < edges.length; j++) {
+                    edgeCollision(edges[j], ball);
+                }
+            }
+            if(points!=null) {
+                for (int j = 0; j < points.length; j++) {
+                    pointCollision(j, ball);
+
+                }
+            }
+        }
+        for(int i=0;i<subObjects.size();i++)
+        {
+            float t = subObjects.get(i).applyCollision(ball,subframeInv);
+            if(t>f)f=t;
+        }
+        return f;
+    }
     private boolean sideCollision(Side side, Ball ball){
         boolean result=false;
 

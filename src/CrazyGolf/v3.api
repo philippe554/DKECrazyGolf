@@ -1,0 +1,60 @@
+Master:World
+world
+TODO: add world parameters (wind,gravity,...)
+balls
+<x>;<y>;<z>;<radius>;<mass>
+holes
+<x>;<y>;<z>
+ObjectStart
+<ID>
+points
+<Amount of points>
+<x>;<y>;<z>
+...
+<x>;<y>;<z>
+colors
+<Amount of colors>
+<r>;<g>;<b>;<o>
+...
+<r>;<g>;<b>;<o>
+edges
+<Amount of edges>
+<#p1>;<#p2>
+...
+<#p1>;<#p2>
+triangels
+<Amount of triangels>
+<#p1>;<#p2>;<#p3>;<#c>;<friction>
+...
+<#p1>;<#p2>;<#p3>;<#c>;<friction>
+water
+<Amount of waters>
+<x1>;<y1>;<z1>;<x2>;<y2>;<z2>;<#c>
+...
+<x1>;<y1>;<z1>;<x2>;<y2>;<z2>;<#c>
+ObjectEnd-<ID>
+ObjectStartNative
+<ID>
+<ClassName>
+TODO: add native stuf
+ObjectEndNative-<ID>
+//##############################################################// Not in file
+Master:Gamemode
+<player mode>
+...
+<player mode>
+//##############################################################// Not in file
+Master:Editdata
+<#layers>;<xsize>;<ysize>;<gridsize>
+<x>;<y>;<z>;<data>
+...
+<x>;<y>;<z>;<data>
+//##############################################################// Not in file
+Master:Brutefinder
+<Grid Size>
+<# Nodes X>;<# Nodes Y>;<# Nodes Z>
+<Offset nodes X>;<Offset nodes Y>;<Offset nodes Z>
+<Amount of directions>;<Amount of directions>
+<x>;<y>;<z>;<min path>
+...
+<x>;<y>;<z>;<min path>

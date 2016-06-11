@@ -1,7 +1,6 @@
-package CrazyGolf.PhysicsEngine;
+package CrazyGolf.PhysicsEngine.Physics12;
 
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
@@ -15,17 +14,8 @@ public interface World {
     void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision);
     void cleanUp();
 
-    int getAmountBalls();
-    double getBallSize(int i);
-    void pushBall(int i, Point3D dir);
-    boolean checkBallInHole(int i);
-    Point3D getHolePosition();
-    Point3D getStartPosition();
-    void addNewBall();
     Point3D getBallPosition(int i);
     Point3D getBallVelocity(int i);
-    void setBallPosition(int i,Point3D pos);
-    void setBallVelocity(int i,Point3D vel);
     int getAmountTriangles();
     Point3D[] getTriangle(int i);
     Color3f getTriangleColor(int i);
@@ -34,9 +24,15 @@ public interface World {
     int getAmountOfWater();
     Point3D[] getWaterPoints(int i);
     Color3f getWaterColor(int i);
-
-    int getAmountWorldObjects();
-    WorldObject getWorldObject(int i);
+    int getAmountBalls();
+    double getBallSize(int i);
+    void pushBall(int i, Point3D dir);
+    boolean checkBallInHole(int i);
+    Point3D getHolePosition();
+    Point3D getStartPosition();
+    void addNewBall();
+    void setBallPosition(int i,Point3D pos);
+    void setBallVelocity(int i,Point3D vel);
 
     boolean DEBUG = true;
     boolean CPUCHECK = false;

@@ -1,4 +1,4 @@
-package CrazyGolf.PhysicsEngine;
+package CrazyGolf.PhysicsEngine.Physics12;
 
 import javafx.geometry.Point3D;
 import org.jocl.Pointer;
@@ -6,7 +6,6 @@ import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.jocl.CL.*;

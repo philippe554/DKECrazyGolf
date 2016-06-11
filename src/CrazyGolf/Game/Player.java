@@ -2,7 +2,7 @@ package CrazyGolf.Game;
 
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.Bot.RandomBot.RandomBot;
-import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.Physics12.World;
 import javafx.geometry.Point3D;
 
 /**
@@ -67,7 +67,7 @@ public class Player {
             if (powerUpPressed && power < World.maxPower) power++;
             if (powerDownPressed && power > 1) power--;
             pushVector = new Point3D(Math.cos(angle * Math.PI / 180.0), Math.sin(angle * Math.PI / 180.0), Math.tan(angleUp * Math.PI / 180.0)).normalize().multiply(power);
-            game.createArrow(game.world.getBallPosition(ballId), game.world.getBallPosition(ballId).add(pushVector.multiply(10)));
+            game.createArrow(game.world.getBall(ballId).place, game.world.getBall(ballId).place.add(pushVector.multiply(10)));
         }
     }
 }

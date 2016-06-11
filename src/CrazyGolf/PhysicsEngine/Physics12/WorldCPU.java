@@ -1,16 +1,14 @@
-package CrazyGolf.PhysicsEngine;
+package CrazyGolf.PhysicsEngine.Physics12;
 
 import javafx.geometry.Point3D;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class WorldCPU extends Physics {
     public WorldCPU(LinkedList<String> input){
         super(input);
     }
-    @Override
-    protected void stepCalc(int subframes,boolean useBallBallCollision) {
+    @Override protected void stepCalc(int subframes,boolean useBallBallCollision) {
         double subframeInv = 1.0 / (double)(subframes);
         float friction[]=new float[balls.size()];
         for(int i=0;i<balls.size();i++)

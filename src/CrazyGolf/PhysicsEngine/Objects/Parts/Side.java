@@ -1,7 +1,7 @@
 package CrazyGolf.PhysicsEngine.Objects.Parts;
 
 import CrazyGolf.PhysicsEngine.Objects.WorldObject;
-import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.Physics12.World;
 import javafx.geometry.Point3D;
 
 /**

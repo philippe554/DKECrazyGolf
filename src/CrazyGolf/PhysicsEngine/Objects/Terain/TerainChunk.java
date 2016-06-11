@@ -2,9 +2,10 @@ package CrazyGolf.PhysicsEngine.Objects.Terain;
 
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
-import CrazyGolf.PhysicsEngine.Objects.Tree;
+import CrazyGolf.PhysicsEngine.Objects.Native.Tree;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
@@ -21,7 +22,8 @@ public class TerainChunk extends WorldObject {
     public int y;
     public boolean loaded;
 
-    public TerainChunk(SimplexNoise sm, Key key){
+    public TerainChunk(SimplexNoise sm, Key key, WorldData w){
+        super(w);
         points=new Point3D[(chunkParts+1)*(chunkParts+1)+4];
         pointsOriginal=new Point3D[points.length];
         colors=new Color3f[14];
@@ -40,7 +42,7 @@ public class TerainChunk extends WorldObject {
                 pointsOriginal[i*(chunkParts+1)+j]=new Point3D(i*chunkPartSize,j*chunkPartSize, height);
 
                 if(height>40 && height<250 && (sm.noise((x*chunkSize+i*chunkPartSize)*0.001,(y*chunkSize+j*chunkPartSize)*0.001)+1)/2 >0.6 && Math.random()*height<10) {
-                    subObjects.add(new Tree(new Point3D(x * chunkSize + (i+Math.random()) * chunkPartSize, y * chunkSize + (j+Math.random()) * chunkPartSize, height)));
+                    subObjects.add(new Tree(new Point3D(x * chunkSize + (i+Math.random()) * chunkPartSize, y * chunkSize + (j+Math.random()) * chunkPartSize, height),world));
                 }
             }
         }
@@ -57,7 +59,6 @@ public class TerainChunk extends WorldObject {
         colors[13]=new Color3f(0.0f, 0.8f, 1.0f);
 
         setCenter(new Point3D(x*chunkSize,y*chunkSize,0));
-        move();
         setupBoxing();
 
         for(int i=0;i<chunkParts;i++) {

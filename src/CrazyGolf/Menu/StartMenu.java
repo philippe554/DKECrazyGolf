@@ -901,7 +901,7 @@ public class StartMenu {
 
 
 		game = new Game(this,filePath,fileNum);
-		game.getCanvas3D().setSize(new Dimension(main.getWidth(),main.getHeight()));
+		game.glCanvas.setSize(new Dimension(main.getWidth(),main.getHeight()));
 
 		new Thread(game).start();
 

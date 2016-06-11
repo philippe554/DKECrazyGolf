@@ -1,4 +1,4 @@
-package CrazyGolf.PhysicsEngine;
+package CrazyGolf.PhysicsEngine.Physics12;
 
 import org.jocl.*;
 

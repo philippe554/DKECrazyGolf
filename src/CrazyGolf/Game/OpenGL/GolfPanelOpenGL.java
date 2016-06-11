@@ -1,18 +1,17 @@
 package CrazyGolf.Game.OpenGL;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
-import CrazyGolf.PhysicsEngine.WorldContainer;
+import CrazyGolf.PhysicsEngine.Physics12.WorldContainer;
 import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.World;
+import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import javafx.geometry.Point3D;
@@ -21,7 +20,7 @@ import javafx.geometry.Point3D;
  * inspired from http://www.lighthouse3d.com/cg-topics/code-samples/opengl-3-3-glsl-1-5-sample/
  *
  */
-public class GolfPanelOpenGL implements GLEventListener,MouseMotionListener,MouseListener,MouseWheelListener,KeyListener{
+public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMotionListener,MouseListener,MouseWheelListener,KeyListener{
     @Override public void mouseDragged(MouseEvent e) {
         xAngle -= (xAngleStart - e.getX()) * 0.2;
         yAngle += (yAngleStart - e.getY()) * 0.2;
@@ -99,9 +98,10 @@ public class GolfPanelOpenGL implements GLEventListener,MouseMotionListener,Mous
     float projMatrix[] = new float[16];
     float viewMatrix[] = new float[16];
 
-    WorldContainer world;
+    World world;
     Map<Integer,OpenGLTriangleSet> triangles;
     float scale=200;
+    public GLCanvas glCanvas;
 
     public int xAngle=0;
     public int yAngle=0;
@@ -114,10 +114,6 @@ public class GolfPanelOpenGL implements GLEventListener,MouseMotionListener,Mous
     public boolean sPressed=false;
     public boolean dPressed=false;
     public boolean wPressed=false;
-
-    public GolfPanelOpenGL(){
-        world = new WorldContainer();
-    }
 
     void crossProduct(float a[], float b[], float res[]) {
 
@@ -288,21 +284,21 @@ public class GolfPanelOpenGL implements GLEventListener,MouseMotionListener,Mous
 
         GL3 gl = drawable.getGL().getGL3();
 
-        world.terrain.updateTerain(new Point3D(xOffset*scale,yOffset*scale,0));
+        world.updateTerain(new Point3D(xOffset*scale,yOffset*scale,0));
 
-        Integer wo2 = world.terrain.getNextRemoveObject();
+        Integer wo2 = world.getNextRemoveObject();
         while(wo2!=null){
             if(triangles.containsKey(wo2)){
                 triangles.get(wo2).cleanUp(gl);
                 triangles.remove(wo2);
             }
-            wo2 = world.terrain.getNextRemoveObject();
+            wo2 = world.getNextRemoveObject();
         }
 
-        WorldObject wo1 = world.terrain.getNextNewObject();
+        WorldObject wo1 = world.getNextNewObject();
         while(wo1!=null){
             addObject(gl,wo1);
-            wo1 = world.terrain.getNextNewObject();
+            wo1 = world.getNextNewObject();
         }
 
         renderScene(gl);
@@ -498,39 +494,27 @@ public class GolfPanelOpenGL implements GLEventListener,MouseMotionListener,Mous
         return params[0];
     }
 
-    public static void main(String[] args) {
-        // allocate the openGL application
-        GolfPanelOpenGL sample = new GolfPanelOpenGL();
+    public void update(){
+        updateKeys();
+        glCanvas.repaint();
+    }
+    public void createArrow(Point3D start,Point3D dir){
 
-        JFrame frame = new JFrame("OpenGL tester");
-        frame.setBounds(100, 100, 1200, 800);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    public void removeArrow(){
 
+    }
+    public void load(WorldData w){
+        world =w;
         GLProfile glp = GLProfile.get(GLProfile.GL3);
         GLCapabilities glCapabilities = new GLCapabilities(glp);
-        GLCanvas glCanvas = new GLCanvas(glCapabilities);
-
+        glCanvas = new GLCanvas(glCapabilities);
         glCanvas.setFocusable(true);
-        glCanvas.addGLEventListener(sample);
-        glCanvas.addMouseListener(sample);
-        glCanvas.addMouseMotionListener(sample);
-        glCanvas.addMouseWheelListener(sample);
-        glCanvas.addKeyListener(sample);
-
-        frame.add(glCanvas);
-
-        // display it and let's go
-        frame.setVisible(true);
-
-        while(true) {
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            sample.updateKeys();
-            glCanvas.repaint();
-            sample.world.terrain.run();
-        }
+        glCanvas.addGLEventListener(this);
+        glCanvas.addMouseListener(this);
+        glCanvas.addMouseMotionListener(this);
+        glCanvas.addMouseWheelListener(this);
+        glCanvas.addKeyListener(this);
+        this.add(glCanvas);
     }
 }

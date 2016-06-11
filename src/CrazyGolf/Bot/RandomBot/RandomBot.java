@@ -1,14 +1,13 @@
 package CrazyGolf.Bot.RandomBot;
 
 import CrazyGolf.Bot.BotInterface;
-import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.Physics12.World;
+import CrazyGolf.PhysicsEngine.Physics3.Physics;
 import javafx.geometry.Point3D;
 
 import java.util.LinkedList;
 
 import java.lang.Math;
-
-import static java.lang.Math.random;
 
 /**
  * Created by Maxim on 26-5-2016.
@@ -21,6 +20,11 @@ public class RandomBot implements BotInterface {
     @Override
     public void init(World w) {
         world = w;
+    }
+
+    @Override
+    public void init(Physics physics) {
+
     }
 
     @Override

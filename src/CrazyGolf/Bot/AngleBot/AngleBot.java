@@ -2,7 +2,8 @@ package CrazyGolf.Bot.AngleBot;
 
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
-import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.Physics12.World;
+import CrazyGolf.PhysicsEngine.Physics3.Physics;
 import javafx.geometry.Point3D;
 
 import java.util.ArrayList;
@@ -18,6 +19,11 @@ public class AngleBot implements BotInterface {
     @Override
     public void init(World w) {
         world = w;
+    }
+
+    @Override
+    public void init(Physics physics) {
+
     }
 
     @Override

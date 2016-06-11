@@ -1,7 +1,11 @@
 package CrazyGolf.Editor;
 
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
-import CrazyGolf.PhysicsEngine.*;
+import CrazyGolf.PhysicsEngine.Physics12.World;
+import CrazyGolf.PhysicsEngine.Physics12.WorldContainer;
+import CrazyGolf.PhysicsEngine.Physics12.WorldGPUBotOpti;
+import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import javafx.geometry.Point3D;
 
 import java.util.LinkedList;
 
@@ -24,11 +28,11 @@ public class Export implements Runnable {
     }
     @Override public void run() {
         LinkedList<String> brutefinderData = null;
-        WorldContainer world = new WorldContainer();
+        WorldData world = new WorldData();
         for(int i=0;i<grid.length;i++) {
-            world.loadWorld(grid[i].getStringGrid(), gridSize, 50*i);
+            world.load(grid[i].getStringGrid(), gridSize, new Point3D(0,0,i*50));
         }
-        LinkedList<String> worldData = world.outputWorldApi2();
+        LinkedList<String> worldData = world.save();
 
         boolean calcDatabase = false;
 
@@ -42,9 +46,8 @@ public class Export implements Runnable {
 
         if (calcDatabase){
             long time=System.currentTimeMillis();
-            World worldWithPhysics = new WorldGPUBotOpti(worldData);
             brutefinder = new Brutefinder();
-            brutefinder.init(worldWithPhysics);
+            brutefinder.init(world);
             brutefinder.makeDatabase();
             brutefinderData = brutefinder.ouputDatabase();
             System.out.print(System.currentTimeMillis()-time);

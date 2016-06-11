@@ -2,9 +2,12 @@ package CrazyGolf.Game;
 
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
+import CrazyGolf.Game.OpenGL.GolfPanelOpenGL;
 import CrazyGolf.Menu.Popup;
 import CrazyGolf.Menu.StartMenu;
-import CrazyGolf.PhysicsEngine.*;
+import CrazyGolf.PhysicsEngine.Physics12.World;
+import CrazyGolf.PhysicsEngine.Physics12.WorldCPU;
+import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
 import java.awt.event.KeyEvent;
@@ -14,16 +17,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-import javax.swing.JOptionPane;
-
-public class Game extends GolfPanel implements Runnable{
+public class Game extends GolfPanelOpenGL implements Runnable{
 
     public boolean keepPlaying;
     public boolean pause;
     private Player[] players;
     private int currentPlayer;
     public BotInterface brutefinder;
-    public World world;
+    public WorldData world;
     public boolean enterPressed=false;
     public int slot;
     private StartMenu menu;
@@ -75,7 +76,9 @@ public class Game extends GolfPanel implements Runnable{
             }
         }
 
-        world = new WorldCPU(worldData);
+        world = new WorldData();
+        world.load(worldData);
+        load(world);
 
         if(brutefinderData.size()>0) {
             brutefinder = new Brutefinder();
@@ -89,6 +92,7 @@ public class Game extends GolfPanel implements Runnable{
             players[i] = new Player(this,i,Integer.parseInt(gamemodeData.get(i)));
         }
 
+        Game game= this;
         addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -103,6 +107,7 @@ public class Game extends GolfPanel implements Runnable{
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)Player.downPressed=true;
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=true;
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=true;
+                game.keyPressed(e);
             }
 
             @Override
@@ -114,10 +119,11 @@ public class Game extends GolfPanel implements Runnable{
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=false;
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=false;
                 if(e.getKeyChar() == KeyEvent.VK_ENTER)launch();
+                game.keyReleased(e);
             }
         });
 
-        loadWorld(world,players.length);
+        //loadWorld(world,players.length);
     }
     public void run(){
         int nextSlot;
@@ -136,8 +142,8 @@ public class Game extends GolfPanel implements Runnable{
                     players[currentPlayer].createdInWorld=true;
                 }
                 world.step(true);
-                updateBall();
-                UpdateView(currentPlayer);
+                update();
+                //UpdateView(currentPlayer);
                 if(inputFlag) {
                     players[currentPlayer].updatePushParameters();
                     if(enterPressed) {
@@ -150,8 +156,8 @@ public class Game extends GolfPanel implements Runnable{
                 }else{
                     boolean allBallsStop = true;
                     for (int i = 0; i < world.getAmountBalls(); i++) {
-                        if (world.getBallPosition(i).getZ() > -100) {
-                            if (world.getBallVelocity(i).magnitude() > 1.5) {
+                        if (world.getBall(i).place.getZ() > -100) {
+                            if (world.getBall(i).velocity.magnitude() > 1.5) {
                                 allBallsStop = false;
                             }
                         }
@@ -161,9 +167,9 @@ public class Game extends GolfPanel implements Runnable{
                     }
                     if (stopCounter > 20) {
                         for (int i = world.getAmountBalls()-1; i >= 0; i--) {
-                            if (world.getBallPosition(i).getZ() < -100) {
-                                world.setBallPosition(i, players[i].oldLocation);
-                                world.setBallVelocity(i, new Point3D(0, 0, 0));
+                            if (world.getBall(i).place.getZ() < -100) {
+                                world.getBall(i).place= players[i].oldLocation;
+                                world.getBall(i).velocity= new Point3D(0, 0, 0);
                             }
                             if (world.checkBallInHole(i)) {
                                 keepPlaying = false;
@@ -204,7 +210,7 @@ public class Game extends GolfPanel implements Runnable{
             menu.createMainMenu();
 
         }*/
-        world.cleanUp();
+        //world.cleanUp();
     }
     public void launch()
     {
@@ -213,7 +219,7 @@ public class Game extends GolfPanel implements Runnable{
     public void backupBallLocations() {
         for(int i=0;i<world.getAmountBalls();i++)
         {
-            players[i].oldLocation=world.getBallPosition(i).add(0,0,0);
+            players[i].oldLocation=world.getBall(i).place.add(0,0,0);
         }
     }
 }

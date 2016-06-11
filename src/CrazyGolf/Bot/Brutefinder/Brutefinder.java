@@ -2,7 +2,8 @@ package CrazyGolf.Bot.Brutefinder;
 
 import CrazyGolf.Bot.BotInterface;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
-import CrazyGolf.PhysicsEngine.World;
+import CrazyGolf.PhysicsEngine.Physics12.World;
+import CrazyGolf.PhysicsEngine.Physics3.Physics;
 import javafx.geometry.Point3D;
 
 import java.util.ArrayList;
@@ -20,7 +21,8 @@ public class Brutefinder implements BotInterface{
 
     private int GS=20;
 
-    private World world;
+    //private World world;
+    private Physics physics;
 
     private Node[][][] nodes;
 
@@ -36,8 +38,14 @@ public class Brutefinder implements BotInterface{
     private int amountConnections=0;
 
     @Override public void init(World w) {
-        world=w;
+        //world=w;
     }
+
+    @Override
+    public void init(Physics p) {
+        physics=p;
+    }
+
     @Override public void calcNextShot(int playerNumber) {
         double bestPlace=-1;
         int bestDir=0;
@@ -50,17 +58,17 @@ public class Brutefinder implements BotInterface{
         for (int l = 0; l < amountDirectionsHighRes; l++) {
             for (int m = 0; m < amountPowersHighRes; m++) {
                 ArrayList<Ball> balls = new ArrayList<>();
-                for(int i=0;i<world.getAmountBalls();i++) {
-                    balls.add(new Ball(World.ballSize, world.getBallPosition(i)));
+                for(int i=0;i<physics.getAmountBalls();i++) {
+                    balls.add(new Ball(World.ballSize, physics.getBall(i).place));
                 }
-                balls.get(playerNumber).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep).add(world.getBallVelocity(playerNumber));
+                balls.get(playerNumber).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep).add(physics.getBall(playerNumber).velocity);
                 int velocityCounter = 0;
                 int totalCounter=0;
                 boolean outOfWorld = false;
                 if(World.DEBUG)System.out.print("Brutefinder: " + l + ";" + m+" Start ");
                 while (velocityCounter < 20) {
                     totalCounter++;
-                    world.stepSimulated(balls,true);
+                    physics.stepSimulated(balls,true);
                     velocityCounter++;
                     for(int i=0;i<balls.size();i++){
                         if (balls.get(i).velocity.magnitude() > 1.5 && balls.get(i).place.getZ() > -100) {
@@ -117,7 +125,7 @@ public class Brutefinder implements BotInterface{
 
         if(World.DEBUG)System.out.println("Brutefinder: Push "+bestDir+";"+bestPow+": Successful: " + push+" - Expected path to hole: "+ bestPlace);
 
-        world.pushBall(playerNumber,push);
+        physics.pushBall(playerNumber,push);
     }
     @Override public void makeDatabase(){
         nodes=new Node[100][100][40];
@@ -181,9 +189,9 @@ public class Brutefinder implements BotInterface{
     private void calcNodes() {
         nodes=new Node[100][100][20];
 
-        endI=(int)(world.getHolePosition().getX()/GS)+xOffset;
-        endJ=(int)(world.getHolePosition().getY()/GS)+yOffset;
-        endK=(int)(world.getHolePosition().getZ()/GS)+zOffset;
+        endI=(int)(physics.getHolePosition().getX()/GS)+xOffset;
+        endJ=(int)(physics.getHolePosition().getY()/GS)+yOffset;
+        endK=(int)(physics.getHolePosition().getZ()/GS)+zOffset;
         nodes[endI][endJ][endK]=new Node(amountDirections,amountPowers);
         amountNodes++;
 
@@ -191,9 +199,9 @@ public class Brutefinder implements BotInterface{
         double dirStep = 2 * Math.PI / (double) amountDirections;
         double powStep = World.maxPower / (double) amountPowers;
 
-        int xg=(int)(world.getStartPosition().getX()/GS)+xOffset;
-        int yg=(int)(world.getStartPosition().getY()/GS)+yOffset;
-        int zg=(int)(world.getStartPosition().getZ()/GS)+zOffset;
+        int xg=(int)(physics.getStartPosition().getX()/GS)+xOffset;
+        int yg=(int)(physics.getStartPosition().getY()/GS)+yOffset;
+        int zg=(int)(physics.getStartPosition().getZ()/GS)+zOffset;
         if(nodes[xg][yg][zg]==null) {
             nodes[xg][yg][zg] = new Node(amountDirections,amountPowers);
             amountNodes++;
@@ -208,7 +216,7 @@ public class Brutefinder implements BotInterface{
         int frameCounter=0;
         while(balls.size()>0) {
             long t1 = System.currentTimeMillis();
-            world.stepSimulated(balls, false);
+            physics.stepSimulated(balls, false);
             long t2 = System.currentTimeMillis();
             for (int i = 0; i < balls.size(); i++) {
                 BrutefinderBall tBall = (BrutefinderBall) balls.get(i);

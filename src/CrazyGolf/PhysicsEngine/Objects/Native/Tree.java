@@ -1,8 +1,10 @@
-package CrazyGolf.PhysicsEngine.Objects;
+package CrazyGolf.PhysicsEngine.Objects.Native;
 
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
+import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
@@ -10,8 +12,9 @@ import javax.vecmath.Color3f;
 /**
  * Created by pmmde on 5/30/2016.
  */
-public class Tree extends WorldObject{
-    public Tree(Point3D place){
+public class Tree extends WorldObject {
+    public Tree(Point3D place,WorldData w){
+        super(w);
         mergeParent=true;
         final double height = Math.random()*100+100;
         final double leaveDistance = 20;
@@ -44,7 +47,6 @@ public class Tree extends WorldObject{
         }
 
         setCenter(place);
-        move();
         setupBoxing();
 
         sides[0]=new Side(this,0,1,3,0,0);
