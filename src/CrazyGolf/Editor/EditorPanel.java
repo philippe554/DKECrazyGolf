@@ -25,12 +25,18 @@ public class EditorPanel extends JPanel{
 
     private Rectangle[][] rectangleGrid;
     private String[][] stringGrid;
+    private Rectangle[][] startEndRectangleGrid;
+    private String[][] startEndStringGrid;
 
     private String chosenOption;
 
     public int pixelSIZE  = 20;
 
     private RadioButtons buttons;
+
+    private int[] loop;
+    private int[] castle;
+    private int[] bridge;
 
     private final String[] layerStrings = {"Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"};
     private final String[] playerStrings = {"Human", "Brutefinder bot", "One-Shooter bot", "Random bot", "Nobody"};
@@ -40,10 +46,20 @@ public class EditorPanel extends JPanel{
     public JComboBox[] playerList;
     private Grid[] grid = new Grid[layerStrings.length];
     private JLabel label;
+    private JButton rotate;
     private static String LAYER_COMMAND = "layer";
 
     public EditorPanel(RadioButtons someButtons){
         chosenOption = "D";
+        loop = new int[2];
+        loop[0] = 6;
+        loop[1] = 14;
+        castle = new int[2];
+        castle[0] = 4;
+        castle[1] = 13;
+        bridge = new int[2];
+        bridge[0] = 24;
+        bridge[1] = 4;
 
         setLayout(new BorderLayout());
 
@@ -61,6 +77,28 @@ public class EditorPanel extends JPanel{
         layeredPane = makeLayeredPane();
         layerList = makeLayerList();
 
+        // layeredPane.setFocusable(true);
+        // layeredPane.requestFocusInWindow();
+
+     /*   class RotateListener implements KeyListener{
+
+            public void keyTyped(KeyEvent e) {
+                System.out.println("works");
+                if (e.getKeyCode()==KeyEvent.VK_UNDEFINED){
+                    System.out.println("left");
+                }
+                if (e.getKeyCode()==KeyEvent.VK_R){
+                    System.out.println("right");
+                }
+            }
+
+            public void keyPressed(KeyEvent e) {}
+
+            public void keyReleased(KeyEvent e) {}
+        } */
+
+        //   layeredPane.addKeyListener(new RotateListener());
+
         setSaveButton(new JButton("SAVE"));
         getSaveButton().setBackground(Color.lightGray);
         getSaveButton().setForeground(Color.darkGray);
@@ -74,6 +112,8 @@ public class EditorPanel extends JPanel{
         getLoadButton().setBorderPainted(false);
         getLoadButton().setFont(new Font("Century Gothic",Font.BOLD,30));
 
+        rotate = makeRotationButton();
+
         settings.add(layerList);
         playerList= makePlayerList();
         for (int i=0; i<playerStrings.length; i++){
@@ -83,8 +123,42 @@ public class EditorPanel extends JPanel{
         loadSave.add(getLoadButton());
         loadSave.add(getSaveButton());
         settingPanel.add(loadSave);
+        settingPanel.add(rotate, BorderLayout.SOUTH);
+
         add(settingPanel, BorderLayout.EAST);
         add(layeredPane, BorderLayout.CENTER);
+    }
+
+    public JButton makeRotationButton(){
+        JButton button = new JButton("Rotate");
+        button.setFont(new Font("Century Gothic", Font.BOLD, 16));
+        button.setBackground(Color.darkGray);
+        button.setForeground(Color.lightGray);
+
+        class RotateListener implements ActionListener{
+
+            public void actionPerformed(ActionEvent e) {
+                if (chosenOption.equals("L")){
+                    int temp = loop[0];
+                    loop[0] = loop[1];
+                    loop[1] = temp;
+                }
+                if (chosenOption.equals("C")){
+                    int temp = castle[0];
+                    castle[0] = castle[1];
+                    castle[1] = temp;
+                }
+                if (chosenOption.equals("R")){
+                    int temp = bridge[0];
+                    bridge[0] = bridge[1];
+                    bridge[1] = temp;
+                }
+            }
+        }
+
+        button.addActionListener(new RotateListener());
+
+        return button;
     }
 
     public JComboBox makeLayerList(){
@@ -107,6 +181,8 @@ public class EditorPanel extends JPanel{
                 Grid currentGrid = grid[list.getSelectedIndex()];
                 stringGrid = currentGrid.getStringGrid();
                 rectangleGrid = currentGrid.getRectanglegGrid();
+                startEndRectangleGrid = currentGrid.getStartEndRectangleGrid();
+                startEndStringGrid = currentGrid.getStartEndStringGrid();
                 revalidate();
                 repaint();
 
@@ -114,7 +190,6 @@ public class EditorPanel extends JPanel{
         }
 
         list.addActionListener(new LayeredActionListener());
-
         list.setSelectedIndex(2);
 
         return list;
@@ -182,20 +257,6 @@ public class EditorPanel extends JPanel{
                                     stringGrid[i][j] = "F";
                                 }
                                 if (chosenOption.equals("B")){
-                                    /*if(isPlaced("B")== true){
-                                        JOptionPane.showMessageDialog(null, "You can only place one ball!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                    }
-                                    else {
-                                        if(i<stringGrid.length-1 && j<stringGrid[0].length-1) {
-                                            stringGrid[i][j] = "B";
-                                            stringGrid[i][j + 1] = "B";
-                                            stringGrid[i + 1][j]= "B";
-                                            stringGrid[i + 1][j + 1]="B";
-                                        }
-                                        else {
-                                            JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                        }
-                                    }*/
                                     if(i<stringGrid.length-1 && j<stringGrid[0].length-1) {
                                         for (int h = 0; h < grid.length; h++) {
                                             for (int l = 0; l < grid[h].getRectanglegGrid().length; l++) {
@@ -210,26 +271,14 @@ public class EditorPanel extends JPanel{
                                         stringGrid[i][j + 1] = "B";
                                         stringGrid[i + 1][j]= "B";
                                         stringGrid[i + 1][j + 1]="B";
+                                        startEndStringGrid[i][j] = "BS";
+                                        startEndStringGrid[i+1][j+1] = "BE";
                                     }
                                     else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
                                 if (chosenOption.equals("H")) {
-                                    /*if (isPlaced("H")==true) {
-                                        JOptionPane.showMessageDialog(null, "You can only place one hole!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                    } else {
-                                        if (i < stringGrid.length - 2 && j < stringGrid[0].length - 2) {
-                                            stringGrid[i][j] = "H";
-                                            for (int m=0;m<3;m++){
-                                                for(int k=0;k<3;k++){
-                                                    stringGrid[i+m][j+k] = "H";
-                                                }
-                                            }
-                                        } else {
-                                            JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
-                                        }
-                                    }*/
                                     if(i<stringGrid.length-2 && j<stringGrid[0].length-2) {
                                         for (int h = 0; h < grid.length; h++) {
                                             for (int l = 0; l < grid[h].getRectanglegGrid().length; l++) {
@@ -245,43 +294,69 @@ public class EditorPanel extends JPanel{
                                                 stringGrid[i+m][j+k] = "H";
                                             }
                                         }
+                                        startEndStringGrid[i][j] = "HS";
+                                        startEndStringGrid[i+2][j+2] = "HE";
                                     }
                                     else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
                                 if (chosenOption.equals("L")){
-                                    if ( i < stringGrid.length - 13 && j < stringGrid[0].length - 5) {
+                                    if ( i < stringGrid.length - (loop[1]-1) && j < stringGrid[0].length - (loop[0]-1)) {
                                         stringGrid[i][j] = "L";
-                                        for (int m=0;m<14;m++){
-                                            for(int k=0;k<6;k++){
+                                        for (int m=0;m<loop[1];m++){
+                                            for(int k=0;k<loop[0];k++){
                                                 stringGrid[i+m][j+k] = "L";
                                             }
                                         }
+                                        if (loop[0]==6) {
+                                            startEndStringGrid[i][j] = "LS";
+                                            startEndStringGrid[i][j + 1] = "LSS";
+                                            startEndStringGrid[i + 1][j] = "LSS";
+                                            startEndStringGrid[i + 1][j + 1] = "LSS";
+                                            startEndStringGrid[i + (loop[1] - 1)][j + (loop[0] - 1)] = "LE";
+                                            startEndStringGrid[i + (loop[1] - 1)][j + (loop[0] - 1) - 1] = "LEE";
+                                            startEndStringGrid[i + (loop[1] - 1) - 1][j + (loop[0] - 1)] = "LEE";
+                                            startEndStringGrid[i + (loop[1] - 1) - 1][j + (loop[0] - 1) - 1] = "LEE";
+                                        } else{
+                                            startEndStringGrid[i + (loop[1] - 1)][j] = "LS";
+                                            startEndStringGrid[i + (loop[1] - 2)][j] = "LSS";
+                                            startEndStringGrid[i + (loop[1] - 1)][j + 1] = "LSS";
+                                            startEndStringGrid[i + (loop[1] - 2)][j + 1] = "LSS";
+                                            startEndStringGrid[i][j + (loop[0] - 1)] = "LE";
+                                            startEndStringGrid[i][j + (loop[0] - 2)] = "LEE";
+                                            startEndStringGrid[i + 1][j + loop[0] - 1] = "LEE";
+                                            startEndStringGrid[i + 1][j + loop[0] - 2] = "LEE";
+                                        }
+                                        startEndRectangleGrid[i][j] = new Rectangle(i*pixelSIZE, j*pixelSIZE, loop[1]*pixelSIZE, loop[0]*pixelSIZE);
                                     }  else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
                                 if (chosenOption.equals("C")){
-                                    if ( i < stringGrid.length - 12 && j < stringGrid[0].length - 3) {
+                                    if ( i < stringGrid.length - (castle[1]-1) && j < stringGrid[0].length - (castle[0]-1)) {
                                         stringGrid[i][j] = "C";
-                                        for (int m=0;m<13;m++){
-                                            for(int k=0;k<4;k++){
+                                        for (int m=0;m<castle[1];m++){
+                                            for(int k=0;k<castle[0];k++){
                                                 stringGrid[i+m][j+k] = "C";
                                             }
                                         }
+                                        startEndStringGrid[i][j] = "CS";
+                                        startEndStringGrid[i+(castle[1]-1)][j+(castle[0]-1)] = "CE";
                                     }  else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
                                 if (chosenOption.equals("R")){
-                                    if ( i < stringGrid.length - 3 && j < stringGrid[0].length - 23) {
+                                    if ( i < stringGrid.length - (bridge[1]-1) && j < stringGrid[0].length - (bridge[0]-1)) {
                                         stringGrid[i][j] = "R";
-                                        for (int m=0;m<4;m++){
-                                            for(int k=0;k<24;k++){
+                                        for (int m=0;m<bridge[1];m++){
+                                            for(int k=0;k<bridge[0];k++){
                                                 stringGrid[i+m][j+k] = "R";
                                             }
                                         }
+                                        startEndStringGrid[i][j] = "RS";
+                                        startEndStringGrid[i+(bridge[1]-1)][j+(bridge[0]-1)] = "RE";
                                     }  else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
@@ -294,6 +369,8 @@ public class EditorPanel extends JPanel{
                                                 stringGrid[i+m][j+k] = "P";
                                             }
                                         }
+                                        startEndStringGrid[i][j] = "PS";
+                                        startEndStringGrid[i+13][j+13] = "PE";
                                     }  else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
@@ -308,6 +385,10 @@ public class EditorPanel extends JPanel{
                                                     grid[layerList.getSelectedIndex()+1].getStringGrid()[i+m][j+k]="MM";
                                                 }
                                             }
+                                            startEndStringGrid[i][j] = "MS";
+                                            startEndStringGrid[i+3][j+3] = "ME";
+                                            grid[layerList.getSelectedIndex()+1].getStartEndStringGrid()[i][j] = "MS";
+                                            grid[layerList.getSelectedIndex()+1].getStartEndStringGrid()[i+3][j+3] = "ME";
                                         } else {
                                             JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                         }
@@ -318,18 +399,57 @@ public class EditorPanel extends JPanel{
                                 }
 
                                 if (chosenOption.equals("D")) {
+                                    //startEndRectangleGrid[i][j].contains(new Point(x,y)) &&
+                                    /*if (startEndRectangleGrid[i][j].getBounds().contains(x,y)) {
+                                        if ( startEndRectangleGrid[i][j].getHeight()!=20 && startEndRectangleGrid[i][j].getWidth()!=20){
+                                            JOptionPane.showMessageDialog(null, "intersects", "error checking", JOptionPane.PLAIN_MESSAGE);
+                                        }
+                                    }*/
+                                   /* if (stringGrid[i][j].equals("L")){
+                                        //go back until LS
+                                        int startX = 0;
+                                        int startY = 0;
+                                        int endX = 0;
+                                        int endY = 0;
+                                        for (int q=i; q>=0; q--){
+                                            for (int w=j; w>=0; w--){
+                                                if (stringGrid[q][w].equals("LS")){
+                                                    System.out.println("klick");
+                                                    startX = q;
+                                                    startY = w;
+                                                    System.out.println("start coords: " + q + " " + w);
+                                                }
+                                            }
+                                        }
+                                        // go forth until LE
+                                        for (int q=i; q<stringGrid.length; q++){
+                                            for (int w=j; w<stringGrid[0].length; w++){
+                                                if (stringGrid[q][w].equals("LE")){
+                                                    endX = q;
+                                                    endY = w;
+                                                }
+                                            }
+                                        }
+                                        //save both points
+                                        //delete everything inbetween them
+                                        for (int q=startX; q<endX; q++){
+                                            for (int w=startY; w<endY; w++){
+                                                stringGrid[i][j] = "E";
+                                                startEndStringGrid[i][j] = "E";
+                                            }
+                                        }
+                                        //also delete in startEndString
+
+                                        //done! :D
+                                        stringGrid[i][j] = "E";
+                                        startEndStringGrid[i][j] = "E";
+                                    }*/
                                     stringGrid[i][j] = "E";
+                                    startEndStringGrid[i][j] = "E";
                                 }
 
                             }
-                            /*for (int l = 0; l < layerStrings.length; l++) {
-                                if (l != layerList.getSelectedIndex()) {
-                                    if (!(grid[l].getStringGrid()[i][j].equals("Q")) && stringGrid[i][j].equals("W"))
-                                        grid[l].getStringGrid()[i][j] = "Q";
-                                    if (grid[l].getStringGrid()[i][j].equals("Q") && !(stringGrid[i][j].equals("W")))
-                                        grid[l].getStringGrid()[i][j] = "D";
-                                }
-                            }*/
+
                             boolean isWall=false;
                             for (int l = 0; l < layerStrings.length; l++) {
                                 if(grid[l].getStringGrid()[i][j].equals("W")){
@@ -346,6 +466,22 @@ public class EditorPanel extends JPanel{
                                 for (int l = 0; l < layerStrings.length; l++) {
                                     if(grid[l].getStringGrid()[i][j].equals("Q")){
                                         grid[l].getStringGrid()[i][j] = "E";
+                                    }
+                                }
+                            }
+
+                         /*   for (int l = 0; l < layerStrings.length-1; l++) {
+                                if(grid[l].getStringGrid()[i][j].equals("M")){
+                                    grid[l+1].getStringGrid()[i][j] = "MM";
+                                } else {
+                                    grid[l+1].getStringGrid()[i][j] = "E";
+                                }
+                            } */
+
+                            for (int l = 0; l < layerStrings.length; l++) {
+                                if(grid[l].getStartEndStringGrid()[i][j].equals("LS") || grid[l].getStartEndStringGrid()[i][j].equals("LSS") || grid[l].getStartEndStringGrid()[i][j].equals("LE") || grid[l].getStartEndStringGrid()[i][j].equals("LEE")){
+                                    if(!(grid[l].getStringGrid()[i][j].equals("L"))){
+                                        grid[l].getStartEndStringGrid()[i][j] = "E";
                                     }
                                 }
                             }
@@ -429,6 +565,14 @@ public class EditorPanel extends JPanel{
                                     }
                                 }
 
+                                for (int l = 0; l < layerStrings.length; l++) {
+                                    if(grid[l].getStartEndStringGrid()[i][j].equals("LS") || grid[l].getStartEndStringGrid()[i][j].equals("LSS") || grid[l].getStartEndStringGrid()[i][j].equals("LE") || grid[l].getStartEndStringGrid()[i][j].equals("LEE")){
+                                        if(!(grid[l].getStringGrid()[i][j].equals("L"))){
+                                            grid[l].getStartEndStringGrid()[i][j] = "E";
+                                        }
+                                    }
+                                }
+
                                 repaint();
                             }
                         }
@@ -471,13 +615,13 @@ public class EditorPanel extends JPanel{
                         label.setBounds(0, 0, pixelSIZE * 3, pixelSIZE * 3);
                         label.setBackground(Color.black);
                     } else if (chosenOption.equals("L")) {
-                        label.setBounds(0, 0, pixelSIZE * 14, pixelSIZE * 6);
+                        label.setBounds(0, 0, pixelSIZE * loop[1], pixelSIZE * loop[0]);
                         label.setBackground(Color.yellow);
                     } else if (chosenOption.equals("C")) {
-                        label.setBounds(0, 0, pixelSIZE * 13, pixelSIZE * 4);
+                        label.setBounds(0, 0, pixelSIZE * castle[1], pixelSIZE * castle[0]);
                         label.setBackground(Color.pink);
                     } else if (chosenOption.equals("R")) {
-                        label.setBounds(0, 0, pixelSIZE * 4, pixelSIZE * 24);
+                        label.setBounds(0, 0, pixelSIZE * bridge[1], pixelSIZE * bridge[0]);
                         label.setBackground(new Color(0xC6774A));
                     } else if (chosenOption.equals("P")) {
                         label.setBounds(0, 0, pixelSIZE * 14, pixelSIZE * 14);
@@ -496,10 +640,28 @@ public class EditorPanel extends JPanel{
             }
         }
 
+    /*    class RotateListener implements KeyListener{
+
+            public void keyTyped(KeyEvent e) {
+                System.out.println("works");
+                if (e.getKeyCode()==KeyEvent.VK_L){
+                    System.out.println("left");
+                }
+                if (e.getKeyCode()==KeyEvent.VK_R){
+                    System.out.println("right");
+                }
+            }
+
+            public void keyPressed(KeyEvent e) {}
+
+            public void keyReleased(KeyEvent e) {}
+        } */
+
         JLayeredPane pane = new JLayeredPane();
         pane.setPreferredSize(new Dimension(300, 310));
         pane.addMouseListener(new ChoiceListener());
         pane.addMouseMotionListener(new ObjectPreviewListener());
+        //  pane.addKeyListener(new RotateListener());
 
         for (int i = 0; i < layerStrings.length; i++) {
             Grid g = new Grid();
@@ -577,14 +739,6 @@ public class EditorPanel extends JPanel{
                     if (stringGrid[i][j].equals("W")) {
                         g2.setPaint(Color.RED);
                         g2.fill(rectangleGrid[i][j]);
-
-               /*         g2.setPaint(new Color(0xFFBEC6));
-                       // for (int l=0; l<layerStrings.length; l++) {
-                            g2.fill(grid[0].getRectanglegGrid()[i][j]);
-                            /*if (l != layerList.getSelectedIndex()){
-                                g2.fill(grid[l].getRectanglegGrid()[i][j]);
-                            }*/
-                        //}
                     }
                     if (stringGrid[i][j].equals("Q")) {
                         g2.setPaint(new Color(0xFFBEC6));
@@ -609,6 +763,8 @@ public class EditorPanel extends JPanel{
                     if (stringGrid[i][j].equals("L")) {
                         g2.setPaint(yellow);
                         g2.fill(rectangleGrid[i][j]);
+                        g2.setPaint(Color.red);
+                        g2.fill(startEndRectangleGrid[i][j]);
                     }
                     if (stringGrid[i][j].equals("C")) {
                         g2.setPaint(pink);
@@ -629,10 +785,30 @@ public class EditorPanel extends JPanel{
                         g2.setPaint(new Color(0xB7FF56));
                         g2.fill(rectangleGrid[i][j]);
                     }
+                    if (startEndStringGrid[i][j].equals("LS") || startEndStringGrid[i][j].equals("LSS") || startEndStringGrid[i][j].equals("LE") || startEndStringGrid[i][j].equals("LEE")) {
+                        g2.setPaint(new Color(0xFFD109));
+                        g2.fill(rectangleGrid[i][j]);
+                    }
                     g2.setPaint(Color.lightGray);
                     g2.draw(rectangleGrid[i][j]);
                 }
             }
+          /*  for (int i = 0; i < startEndStringGrid.length; i++) {
+                for (int j = 0; j < startEndStringGrid[0].length; j++) {
+                     if (startEndStringGrid[i][j].equals("LS") || startEndStringGrid[i][j].equals("LSS") || startEndStringGrid[i][j].equals("LE") || startEndStringGrid[i][j].equals("LEE")) {
+                        g2.setPaint(new Color(0xFFD109));
+                        g2.fill(rectangleGrid[i][j]);
+                      //   g2.setPaint(Color.red);
+                       //  g2.fill(startEndRectangleGrid[i][j]);
+                    }
+                  //  if (startEndStringGrid[i][j].equals("LS")){
+                    //    g2.setPaint(Color.red);
+                      //  g2.fill(startEndRectangleGrid[i][j]);
+                  //  }
+                    g2.setPaint(Color.lightGray);
+                    g2.draw(rectangleGrid[i][j]);
+                }
+            }*/
         }
     }
 
@@ -648,9 +824,7 @@ public class EditorPanel extends JPanel{
         this.saveButton = saveButton;
     }
 
-    public void setGrid(Grid[] g) {
-        grid= g;
-    }
+    public void setGrid(Grid[] g) { grid=g; }
 
     public Grid[] getGrid(){
         return grid;
