@@ -56,6 +56,6 @@ public class Tree extends WorldObject {
             color=!color;
         }
 
-        setCenter(place);
+        center=place;
     }
 }

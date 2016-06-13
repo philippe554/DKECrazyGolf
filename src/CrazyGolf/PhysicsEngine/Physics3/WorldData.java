@@ -1,5 +1,6 @@
 package CrazyGolf.PhysicsEngine.Physics3;
 
+import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Objects.Native.*;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Objects.Terain.SimplexNoise;
@@ -29,6 +30,8 @@ public class WorldData implements World,Physics{
 
     private int time = 0;
     private SimplexNoise wind;
+
+    private static final boolean terainPhysics=false;
 
     public WorldData(){
         objects=new ArrayList<>();
@@ -169,7 +172,7 @@ public class WorldData implements World,Physics{
                 for(int j=0;j<objects.size();j++){
                     objects.get(j).applyCollision(ball,subframeInv);
                 }
-                terrain.applyCollision(ball,subframeInv);
+                if(terainPhysics)terrain.applyCollision(ball,subframeInv);
                 completed+=subframeInv;
                 subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
                 subframeInv = 1.0 / (double)(subframes);
@@ -198,7 +201,7 @@ public class WorldData implements World,Physics{
                 for(int j=0;j<objects.size();j++){
                     objects.get(j).applyCollision(ball,subframeInv);
                 }
-                terrain.applyCollision(ball,subframeInv);
+                if(terainPhysics)terrain.applyCollision(ball,subframeInv);
             }
         }
     }
@@ -299,7 +302,7 @@ public class WorldData implements World,Physics{
                         copyLock=false;
                         WorldObject wo = new WorldObject(this);
                         wo.load(copyData);
-                        wo.setupBoxing();
+                        wo.setup(true);
                         objects.add(wo);
                         newObjects.offer(wo);
                     }else if(sort==2)
@@ -320,7 +323,7 @@ public class WorldData implements World,Physics{
                                 if(obj instanceof WorldObject){
                                     WorldObject wo = (WorldObject)obj;
                                     wo.load(copyData);
-                                    wo.setupBoxing();
+                                    wo.setup(true);
                                     objects.add(wo);
                                     newObjects.offer(wo);
                                 }else{
@@ -372,13 +375,13 @@ public class WorldData implements World,Physics{
             for (int j = 0; j < data[i].length; j++) {
                 if(!alreadyConverted[i][j]) {
                     if (data[i][j].equals("W")) {
-                        //addWall(data,alreadyConverted,i,j,gs,Z);
+                        wo.subObjects.add(addWall(data,alreadyConverted,i,j,gs,offset));
                     } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
-                        wo.subObjects.add(addGrass(data,alreadyConverted,i,j,gs,offset.getZ()));
+                        wo.subObjects.add(addGrass(data,alreadyConverted,i,j,gs,offset));
                     } else if (data[i][j].equals("S")) {
-                        //addSand(data,alreadyConverted,i,j,gs,Z);
+                        wo.subObjects.add(addSand(data,alreadyConverted,i,j,gs,offset));
                     } else if (data[i][j].equals("H")) {
-                        wo.subObjects.add(new Hole(this,offset.add(i*gs+1.5*gs,j*gs+1.5*gs,0),30,80,30));
+                        wo.subObjects.add(new Hole(this,offset.add(i*gs+1.5*gs,j*gs+1.5*gs,0), Matrix.getRotatoinMatrix(0,0,0),30,80,30));
                         hole=offset.add(i*gs+1.5*gs,j*gs+1.5*gs,-80+20);
                         for(int k=0;k<3;k++)
                         {
@@ -391,7 +394,7 @@ public class WorldData implements World,Physics{
                         }
                     }else if(data[i][j].equals("L"))
                     {
-                        wo.subObjects.add(new Loop(this,offset.add(i*gs+140,j*gs+60,140),140,60,24,25));
+                        wo.subObjects.add(new Loop(this,offset.add(i*gs+140,j*gs+60,140), Matrix.getRotatoinMatrix(0,0,0),140,60,24,25));
                         for(int k=0;k<14;k++)
                         {
                             for(int l=0;l<6;l++)
@@ -403,7 +406,7 @@ public class WorldData implements World,Physics{
                         }
                     }else if(data[i][j].equals("C"))
                     {
-                        wo.subObjects.add(new Castle(this,offset.add(i*gs+40,j*gs+40,0),20,40,180));
+                        wo.subObjects.add(new Castle(this,offset.add(i*gs+40,j*gs+40,0), Matrix.getRotatoinMatrix(0,0,0),20,40,180));
                         for(int k=0;k<13;k++)
                         {
                             for(int l=0;l<4;l++)
@@ -415,7 +418,7 @@ public class WorldData implements World,Physics{
                         }
                     } else if(data[i][j].equals("R"))
                     {
-                        wo.subObjects.add(new Bridge(this,offset.add(i*gs+40,j*gs+140,0),200,50,20,80,20));
+                        wo.subObjects.add(new Bridge(this,offset.add(i*gs+40,j*gs+140,0), Matrix.getRotatoinMatrix(0,0,0),200,50,20,80,20));
                         for(int k=0;k<4;k++)
                         {
                             for(int l=0;l<24;l++)
@@ -427,7 +430,7 @@ public class WorldData implements World,Physics{
                         }
                     }else if(data[i][j].equals("P"))
                     {
-                        wo.subObjects.add(new Pool(this,offset.add(i*gs,j*gs,0),280,150,12,25));
+                        wo.subObjects.add(new Pool(this,offset.add(i*gs,j*gs,0), Matrix.getRotatoinMatrix(0,0,0),280,150,12,25));
                         for(int k=0;k<14;k++)
                         {
                             for(int l=0;l<14;l++)
@@ -438,7 +441,7 @@ public class WorldData implements World,Physics{
                             }
                         }
                     }else if(data[i][j].equals("M")){
-                        //addHill(data,i,j,gs,Z,"FBS");
+                        wo.subObjects.add(addHill(data,i,j,gs,offset,"FBS"));
                         for(int k=0;k<4;k++)
                         {
                             for(int l=0;l<4;l++)
@@ -454,7 +457,7 @@ public class WorldData implements World,Physics{
         }
         if(wo.getAmountSubObjects()>0) {
             newObjects.offer(wo);
-            wo.setupBoxing();
+            wo.setup(true);
             objects.add(wo);
         }
     }
@@ -471,7 +474,7 @@ public class WorldData implements World,Physics{
         return data;
     }
 
-    private WorldObject addGrass(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,double Z) {
+    private WorldObject addGrass(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,Point3D offset) {
         int iCounter=0;
         int jCounter=0;
         boolean keepCountingI=true;
@@ -498,7 +501,76 @@ public class WorldData implements World,Physics{
                 alreadyConverted[k][l] = true;
             }
         }
-        return new Grass(new Point3D(i*gs,j*gs,Z),new Point3D(i*gs+iCounter*gs,j*gs+jCounter*gs,Z),this);
+        return new Grass(offset.add(i*gs,j*gs,0),Matrix.getRotatoinMatrix(0,0,0),iCounter*gs,jCounter*gs,this);
+    }
+    private WorldObject addWall(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,Point3D offset) {
+        int iCounter=0;
+        int jCounter=0;
+        boolean keepCountingI=true;
+        boolean keepCountingJ=true;
+        while(keepCountingI||keepCountingJ)
+        {
+            if(keepCountingI) {
+                if ((iCounter + i) < data.length && expand(data,i, j, iCounter + 1, jCounter, alreadyConverted,"W")) {
+                    iCounter++;
+                }else{
+                    keepCountingI=false;
+                }
+            }
+            if(keepCountingJ) {
+                if ((jCounter + j) < data[0].length && expand(data,i, j, iCounter , jCounter+1, alreadyConverted,"W")) {
+                    jCounter++;
+                }else{
+                    keepCountingJ=false;
+                }
+            }
+        }
+        for(int k=i;k<(i+iCounter);k++) {
+            for(int l=j;l<(j+jCounter);l++) {
+                alreadyConverted[k][l] = true;
+            }
+        }
+        return new Wall(offset.add(i*gs,j*gs,0),Matrix.getRotatoinMatrix(0,0,0),iCounter*gs,jCounter*gs,this);
+    }
+    private WorldObject addSand(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,Point3D offset) {
+        int iCounter=0;
+        int jCounter=0;
+        boolean keepCountingI=true;
+        boolean keepCountingJ=true;
+        while(keepCountingI||keepCountingJ)
+        {
+            if(keepCountingI) {
+                if ((iCounter + i) < data.length && expand(data,i, j, iCounter + 1, jCounter, alreadyConverted,"S")) {
+                    iCounter++;
+                }else{
+                    keepCountingI=false;
+                }
+            }
+            if(keepCountingJ) {
+                if ((jCounter + j) < data[0].length && expand(data,i, j, iCounter , jCounter+1, alreadyConverted,"S")) {
+                    jCounter++;
+                }else{
+                    keepCountingJ=false;
+                }
+            }
+        }
+        for(int k=i;k<(i+iCounter);k++) {
+            for(int l=j;l<(j+jCounter);l++) {
+                alreadyConverted[k][l] = true;
+            }
+        }
+        return new Sand(offset.add(i*gs,j*gs,0),Matrix.getRotatoinMatrix(0,0,0),iCounter*gs,jCounter*gs,this);
+    }
+    protected WorldObject addHill(String[][]data,int i,int j,double gs,Point3D offset,String link){
+        if(i>0 && link.contains(data[i-1][j])){
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0,0),4*gs,4*gs,50,8);
+        }else if(j>0 && link.contains(data[i][j-1])){
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2)),4*gs,4*gs,50,8);
+        }else if(i<(data.length-4) && link.contains(data[i+4][j])){
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) Math.PI),4*gs,4*gs,50,8);
+        }else{
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2*3)),4*gs,4*gs,50,8);
+        }
     }
     private boolean expand(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted,String ignoreData) {
         boolean possible=true;

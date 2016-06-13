@@ -1,5 +1,6 @@
 package CrazyGolf.PhysicsEngine.Objects.Native;
 
+import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
@@ -29,7 +30,7 @@ public abstract class Factory extends WorldObject{
         dynamicEdges = new LinkedList<>();
         dynamicWaters = new LinkedList<>();
     }
-    protected void print(Point3D c){
+    protected void print(Point3D c, Matrix r){
         pointsOriginal = new Point3D[dynamicPoints.size()];
         pointsOriginal = dynamicPoints.toArray(pointsOriginal);
         points = new Point3D[pointsOriginal.length];
@@ -46,7 +47,8 @@ public abstract class Factory extends WorldObject{
         waters = new Water[dynamicWaters.size()];
         waters = dynamicWaters.toArray(waters);
 
-        setCenter(c);
+        center=c;
+        rotation=r;
     }
     protected void addSquare(Point3D p1, Point3D p2, Point3D p3, Point3D p4, int c, double f) {
         dynamicPoints.add(p1.add(0,0,0));

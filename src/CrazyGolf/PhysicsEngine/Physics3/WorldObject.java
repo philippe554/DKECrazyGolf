@@ -1,5 +1,6 @@
 package CrazyGolf.PhysicsEngine.Physics3;
 
+import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
@@ -28,8 +29,9 @@ public class WorldObject {
 
     private int ID;
     private static int nextID=0;
+
     protected Point3D center;
-    private double[][] rotation;
+    protected Matrix rotation;
     private Point3D[] boxing;
 
     public boolean mergeParent=false;
@@ -37,7 +39,8 @@ public class WorldObject {
     public WorldObject(WorldData w){
         ID=nextID;
         nextID++;
-        center=new Point3D(0,0,0);
+        center = new Point3D(0,0,0);
+        rotation = Matrix.getRotatoinMatrix(0,0,0);
         subObjects=new LinkedList<>();
         world=w;
     }
@@ -61,13 +64,11 @@ public class WorldObject {
                     edges = new Edge[Integer.parseInt(field.get(i + 1))];
                     i++;
                     counter = 0;
-                    setCenter(new Point3D(0,0,0));
                 } else if (field.get(i).equals("triangels")) {
                     sort = 3;
                     sides = new Side[Integer.parseInt(field.get(i + 1))];
                     i++;
                     counter = 0;
-                    setCenter(new Point3D(0,0,0));
                 } else if (field.get(i).equals("colors")) {
                     sort = 4;
                     colors = new Color3f[Integer.parseInt(field.get(i + 1))];
@@ -78,7 +79,6 @@ public class WorldObject {
                     waters = new Water[Integer.parseInt(field.get(i + 1))];
                     i++;
                     counter = 0;
-                    setCenter(new Point3D(0,0,0));
                 } else if (field.get(i).equals("ObjectStart")) {
                     sort = 6;
                     copyLock = true;
@@ -209,10 +209,7 @@ public class WorldObject {
         return data;
     }
 
-    public void setupBoxing(){
-        for (int i = 0; i <subObjects.size();i++) {
-            subObjects.get(i).setupBoxing();
-        }
+    private void setupBoxing(boolean recursively){
         if(points!=null && points.length>0) {
             boxing = new Point3D[2];
             boxing[0] = points[0];
@@ -248,37 +245,43 @@ public class WorldObject {
                 boxing[1] = new Point3D(0,0,0);
             }
         }
-        for (int i = 0; i <subObjects.size();i++){
-            if(subObjects.get(i).boxing[0].getX()<boxing[0].getX()){
-                boxing[0]=new Point3D(subObjects.get(i).boxing[0].getX(),boxing[0].getY(),boxing[0].getZ());
-            }
-            if(subObjects.get(i).boxing[0].getY()<boxing[0].getY()){
-                boxing[0]=new Point3D(boxing[0].getX(),subObjects.get(i).boxing[0].getY(),boxing[0].getZ());
-            }
-            if(subObjects.get(i).boxing[0].getZ()<boxing[0].getZ()){
-                boxing[0]=new Point3D(boxing[0].getX(),boxing[0].getY(),subObjects.get(i).boxing[0].getZ());
-            }
-            if(subObjects.get(i).boxing[1].getX()>boxing[1].getX()){
-                boxing[1]=new Point3D(subObjects.get(i).boxing[1].getX(),boxing[1].getY(),boxing[1].getZ());
-            }
-            if(subObjects.get(i).boxing[1].getY()>boxing[1].getY()){
-                boxing[1]=new Point3D(boxing[1].getX(),subObjects.get(i).boxing[1].getY(),boxing[1].getZ());
-            }
-            if(subObjects.get(i).boxing[1].getZ()>boxing[1].getZ()){
-                boxing[1]=new Point3D(boxing[1].getX(),boxing[1].getY(),subObjects.get(i).boxing[1].getZ());
+        if(recursively) {
+            for (int i = 0; i < subObjects.size(); i++) {
+                if (subObjects.get(i).boxing[0].getX() < boxing[0].getX()) {
+                    boxing[0] = new Point3D(subObjects.get(i).boxing[0].getX(), boxing[0].getY(), boxing[0].getZ());
+                }
+                if (subObjects.get(i).boxing[0].getY() < boxing[0].getY()) {
+                    boxing[0] = new Point3D(boxing[0].getX(), subObjects.get(i).boxing[0].getY(), boxing[0].getZ());
+                }
+                if (subObjects.get(i).boxing[0].getZ() < boxing[0].getZ()) {
+                    boxing[0] = new Point3D(boxing[0].getX(), boxing[0].getY(), subObjects.get(i).boxing[0].getZ());
+                }
+                if (subObjects.get(i).boxing[1].getX() > boxing[1].getX()) {
+                    boxing[1] = new Point3D(subObjects.get(i).boxing[1].getX(), boxing[1].getY(), boxing[1].getZ());
+                }
+                if (subObjects.get(i).boxing[1].getY() > boxing[1].getY()) {
+                    boxing[1] = new Point3D(boxing[1].getX(), subObjects.get(i).boxing[1].getY(), boxing[1].getZ());
+                }
+                if (subObjects.get(i).boxing[1].getZ() > boxing[1].getZ()) {
+                    boxing[1] = new Point3D(boxing[1].getX(), boxing[1].getY(), subObjects.get(i).boxing[1].getZ());
+                }
             }
         }
     }
-    public void setCenter(Point3D p){
-        center=p;
-        if(points==null)points=new Point3D[pointsOriginal.length];
-        for(int i=0;i<pointsOriginal.length;i++){
-            points[i]=pointsOriginal[i].add(center);
-            //TODO add rotation
+    public void setup(boolean recursively){
+        if(recursively){
+            for(int i=0;i<subObjects.size();i++){
+                subObjects.get(i).setup(recursively);
+            }
         }
+        if(pointsOriginal!=null && pointsOriginal.length>0) {
+            if (points == null || points.length != pointsOriginal.length) points = new Point3D[pointsOriginal.length];
+            for (int i = 0; i < pointsOriginal.length; i++) {
+                points[i] = rotation.multiply(pointsOriginal[i]).add(center);
+            }
+        }
+        setupBoxing(recursively);
     }
-
-
 
     public void applyCollision(Ball ball,double subframeInv){
         if(ball.place.getX()+ball.size>boxing[0].getX()&&ball.place.getY()+ball.size>boxing[0].getY()&&ball.place.getZ()+ball.size>boxing[0].getZ()&&

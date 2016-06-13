@@ -1,5 +1,6 @@
 package CrazyGolf.PhysicsEngine.Objects.Native;
 
+import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
@@ -9,7 +10,7 @@ import javax.vecmath.Color3f;
  * Created by pmmde on 6/13/2016.
  */
 public class Castle extends Factory{
-    public Castle(WorldData w,Point3D offset,double parts, double towerSize, double towerHeight) {
+    public Castle(WorldData w, Point3D offset, Matrix r, double parts, double towerSize, double towerHeight) {
         super(w);
         dynamicColors.add(new Color3f(1.0f, 0.0f, 0.5f));//3
         dynamicColors.add(new Color3f(0.2f, 0.2f, 0.2f));//4
@@ -47,6 +48,6 @@ public class Castle extends Factory{
                 new Point3D(20*13-40,20*4-40,0),
                 new Point3D(0-40,20*4-40,0),
                 3,0.1);
-        print(offset);
+        print(offset,r);
     }
 }

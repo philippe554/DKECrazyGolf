@@ -1,5 +1,6 @@
 package CrazyGolf.PhysicsEngine.Objects.Native;
 
+import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
@@ -9,7 +10,7 @@ import javax.vecmath.Color3f;
  * Created by pmmde on 6/13/2016.
  */
 public class Bridge extends Factory{
-    public Bridge(WorldData w, Point3D offset, double length, double height, double borderHeight, double width, int parts) {
+    public Bridge(WorldData w, Point3D offset, Matrix r , double length, double height, double borderHeight, double width, int parts) {
         super(w);
         dynamicColors.add(new Color3f(0.8f, 0.8f, 0.8f));//0
         dynamicColors.add(new Color3f(0.5f, 0.5f, 0.5f));//1
@@ -49,7 +50,7 @@ public class Bridge extends Factory{
                 new Point3D(20*4-40,20*24-140,0),
                 new Point3D(0-40,20*24-140,0),
                 2,1);
-        print(offset);
+        print(offset,r);
 
     }
 }

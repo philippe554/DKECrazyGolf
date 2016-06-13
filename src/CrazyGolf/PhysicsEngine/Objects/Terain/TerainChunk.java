@@ -58,7 +58,9 @@ public class TerainChunk extends WorldObject {
         colors[12]=new Color3f(1f,1f,1f);
         colors[13]=new Color3f(0.0f, 0.8f, 1.0f);
 
-        setCenter(new Point3D(x*chunkSize,y*chunkSize,0));
+        center=new Point3D(x*chunkSize,y*chunkSize,0);
+
+        setup(false);
 
         for(int i=0;i<chunkParts;i++) {
             for (int j = 0; j < chunkParts; j++) {

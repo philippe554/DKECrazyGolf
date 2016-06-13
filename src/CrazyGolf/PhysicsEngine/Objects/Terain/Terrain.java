@@ -84,7 +84,7 @@ public class Terrain{
     }
     private TerainChunk loadObject(Key key){
         TerainChunk tc = new TerainChunk(sn,key,world);
-        tc.setupBoxing();
+        tc.setup(true);
         return tc;
     }
 

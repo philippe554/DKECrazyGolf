@@ -1,5 +1,6 @@
 package CrazyGolf.PhysicsEngine.Objects.Native;
 
+import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
@@ -9,7 +10,7 @@ import javax.vecmath.Color3f;
  * Created by pmmde on 6/12/2016.
  */
 public class Loop extends Factory{
-    public Loop(WorldData w,Point3D center, double size, double width, int parts, double wallSize) {
+    public Loop(WorldData w, Point3D center, Matrix r, double size, double width, int parts, double wallSize) {
         super(w);
         double angleGrowSize = Math.PI / (parts / 2);
         double widthCounter = 0;
@@ -36,6 +37,6 @@ public class Loop extends Factory{
                 new Point3D(size,width,-140),
                 new Point3D(size,-width,-140)
                 ,2,0.1);
-        print(center);
+        print(center,r);
     }
 }
