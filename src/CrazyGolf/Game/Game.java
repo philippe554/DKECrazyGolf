@@ -86,6 +86,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
             brutefinder = new Brutefinder();
             brutefinder.init(world);
             brutefinder.loadDatabase(brutefinderData);
+            load((Brutefinder) brutefinder);
         }
 
         players = new ArrayList<>();

@@ -21,6 +21,7 @@ public class WorldData implements World,Physics{
     protected ArrayList<WorldObject> objects;
     protected Terrain terrain;
     protected ArrayList<Ball> balls;
+    protected ArrayList<Ball> pointerToBalls;
     protected Ball start;
     protected Point3D hole;
 
@@ -31,12 +32,15 @@ public class WorldData implements World,Physics{
     private int time = 0;
     private SimplexNoise wind;
 
+    private static final int amountOfThreads=4;
+
     private static final boolean terainPhysics=false;
 
     public WorldData(){
         objects=new ArrayList<>();
         terrain=new Terrain(1631365,this);
         balls=new ArrayList<>();
+        pointerToBalls=balls;
         newObjects = new LinkedList<>();
         updatedObjects = new LinkedList<>();
         deletedObjects = new LinkedList<>();
@@ -55,7 +59,18 @@ public class WorldData implements World,Physics{
             stepWithCollision();
         }else
         {
-            stepWithoutCollision();
+            WorkThreadWithoutBallBallCollision RT[]= new WorkThreadWithoutBallBallCollision[amountOfThreads];
+            for(int i=0;i<amountOfThreads;i++) {
+                RT[i] = new WorkThreadWithoutBallBallCollision((int)(balls.size()*i / amountOfThreads), (int) (balls.size()* (i+1) / amountOfThreads));
+                RT[i].start();
+            }
+            for(int i=0;i<amountOfThreads;i++) {
+                try {
+                    RT[i].join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         for(Ball ball:balls){
             if(ball.place.subtract(ball.oldPlace).magnitude()<Ball.minVelocity){
@@ -106,10 +121,10 @@ public class WorldData implements World,Physics{
         terrain.run();
     }
     @Override public int getAmountBalls() {
-        return balls.size();
+        return pointerToBalls.size();
     }
     @Override public Ball getBall(int i) {
-        return balls.get(i);
+        return pointerToBalls.get(i);
     }
     @Override public void pushBall(int i, Point3D dir) {
         balls.get(i).velocity= balls.get(i).velocity
@@ -154,31 +169,6 @@ public class WorldData implements World,Physics{
         return deletedObjects.poll();
     }
 
-    protected void stepWithoutCollision(){
-        for(Ball ball:balls) {
-            double completed=0;
-            int subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
-            double subframeInv = 1.0 / (double)(subframes);
-
-            while(completed<1){
-                if(completed+subframeInv > 1){
-                    subframeInv = Math.abs(completed-subframeInv)+0.0001;
-                }
-                ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
-                ball.velocity = ball.velocity.add(ball.acceleration);
-                ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
-                ball.acceleration = new Point3D(0, 0, 0);
-
-                for(int j=0;j<objects.size();j++){
-                    objects.get(j).applyCollision(ball,subframeInv);
-                }
-                if(terainPhysics)terrain.applyCollision(ball,subframeInv);
-                completed+=subframeInv;
-                subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
-                subframeInv = 1.0 / (double)(subframes);
-            }
-        }
-    }
     protected void stepWithCollision(){
         double maxV = -1;
         double ballSize = 0;
@@ -587,4 +577,40 @@ public class WorldData implements World,Physics{
         return possible;
     }
 
+    public class WorkThreadWithoutBallBallCollision extends Thread{
+        public int start;
+        public int stop;
+        public WorkThreadWithoutBallBallCollision(int tStart,int tStop){
+            start=tStart;
+            stop=tStop;
+        }
+
+        @Override
+        public void run() {
+            for(int i=start;i<stop;i++) {
+                Ball ball= balls.get(i);
+                double completed=0;
+                int subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
+                double subframeInv = 1.0 / (double)(subframes);
+
+                while(completed<1){
+                    if(completed+subframeInv > 1){
+                        subframeInv = Math.abs(completed-subframeInv)+0.0001;
+                    }
+                    ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
+                    ball.velocity = ball.velocity.add(ball.acceleration);
+                    ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
+                    ball.acceleration = new Point3D(0, 0, 0);
+
+                    for(int j=0;j<objects.size();j++){
+                        objects.get(j).applyCollision(ball,subframeInv);
+                    }
+                    if(terainPhysics)terrain.applyCollision(ball,subframeInv);
+                    completed+=subframeInv;
+                    subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
+                    subframeInv = 1.0 / (double)(subframes);
+                }
+            }
+        }
+    }
 }

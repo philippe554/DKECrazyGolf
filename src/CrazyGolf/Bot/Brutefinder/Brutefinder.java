@@ -24,7 +24,7 @@ public class Brutefinder implements BotInterface{
     //private World world;
     private Physics physics;
 
-    private Node[][][] nodes;
+    public Node[][][] nodes;
 
     private int endI;
     private int endJ;
@@ -251,12 +251,10 @@ public class Brutefinder implements BotInterface{
                     {
                         nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
                     }
-                }
-                if (tBall.place.getZ() < -100) {
+                }else if (tBall.place.getZ() < -100) {
                     balls.remove(i);
                     i--;
-                }
-                if(tBall.totalCounter>500 || tBall.place.getX()==Double.NaN || tBall.place.getY()==Double.NaN || tBall.place.getZ()==Double.NaN){
+                }else if(tBall.totalCounter>500 || tBall.place.getX()==Double.NaN || tBall.place.getY()==Double.NaN || tBall.place.getZ()==Double.NaN){
                     if(World.DEBUG)System.out.println("Brutefinder: Something went wrong: "+tBall.place+" - "+tBall.velocity);
                     balls.remove(i);
                     i--;

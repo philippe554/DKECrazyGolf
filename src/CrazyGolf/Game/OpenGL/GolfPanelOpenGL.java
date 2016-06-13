@@ -2,12 +2,14 @@ package CrazyGolf.Game.OpenGL;
 
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.*;
 
+import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics3.World;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
@@ -103,6 +105,8 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
     Point3D arrowDir=null;
     float scale=200;
     public GLCanvas glCanvas;
+    ArrayList<VAO> database=null;
+    Brutefinder brutefinder=null;
 
     public int xAngle=0;
     public int yAngle=0;
@@ -262,6 +266,13 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             set.cleanUp(gl);
         }
 
+        if(database!=null){
+            for(int i=0;i<database.size();i++){
+                gl.glBindVertexArray(database.get(i).VAO[0]);
+                gl.glDrawArrays(GL.GL_TRIANGLES, 0, database.get(i).vertices.length/4);
+            }
+        }
+
         // Check out error
         int error = gl.glGetError();
         if(error!=0){
@@ -309,6 +320,21 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         while(wo1!=null){
             addObject(gl,wo1);
             wo1 = world.getNextNewObject();
+        }
+
+        if(brutefinder!=null && database==null){
+            database=new ArrayList<>();
+            for(int i=0;i<brutefinder.nodes.length;i++){
+                for(int j=0;j<brutefinder.nodes[i].length;j++){
+                    for(int k=0;k<brutefinder.nodes[i][j].length;k++){
+                        if(brutefinder.nodes[i][j][k]!=null){
+                            VAO set = new VAO(gl, Sphere.getSphere(new Point3D(i*20,j*20,(k-5)*20), 5,scale),
+                                    Sphere.getSphereColor((float) Math.sqrt(1.0f/brutefinder.nodes[i][j][k].minPath),0,0), vertexLoc, colorLoc);
+                            database.add(set);
+                        }
+                    }
+                }
+            }
         }
 
         renderScene(gl);
@@ -581,5 +607,8 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         glCanvas.addMouseWheelListener(this);
         glCanvas.addKeyListener(this);
         this.add(glCanvas);
+    }
+    public void load(Brutefinder bf){
+        brutefinder=bf;
     }
 }
