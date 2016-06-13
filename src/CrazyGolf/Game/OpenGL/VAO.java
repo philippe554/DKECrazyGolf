@@ -5,16 +5,16 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 /**
- * Created by pmmde on 6/9/2016.
+ * Created by pmmde on 6/12/2016.
  */
-public class OpenGLTriangleSet {
+public class VAO {
     float vertices[];
     float colors[];
     int VAO[];
     int vertexBufferId[];
     int colorBufferId[];
 
-    public OpenGLTriangleSet(GL3 gl, float[] points, float [] tColors, int verticeLoc, int colorLoc) {
+    public VAO(GL3 gl, float[] points, float [] tColors, int verticeLoc, int colorLoc) {
         VAO = generateVAOId(gl);
         vertices = points;
         colors = tColors;

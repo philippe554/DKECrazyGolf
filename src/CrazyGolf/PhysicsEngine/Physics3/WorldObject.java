@@ -1,14 +1,13 @@
-package CrazyGolf.PhysicsEngine.Objects;
+package CrazyGolf.PhysicsEngine.Physics3;
 
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
-import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import CrazyGolf.PhysicsEngine.Objects.Terain.TerainChunk;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -29,10 +28,9 @@ public class WorldObject {
 
     private int ID;
     private static int nextID=0;
-    private Point3D center;
+    protected Point3D center;
     private double[][] rotation;
     private Point3D[] boxing;
-    private Point3D[] boxingOriginal;
 
     public boolean mergeParent=false;
 
@@ -111,12 +109,12 @@ public class WorldObject {
                     } else if (sort == 2) {
                         String[] data = field.get(i).split(";");
                         if (data.length == 2) {
-                            edges[counter] = new Edge(this, Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+                            edges[counter] = new Edge(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
                         }
                     } else if (sort == 3) {
                         String[] data = field.get(i).split(";");
                         if (data.length == 5) {
-                            sides[counter] = new Side(this, Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]),
+                            sides[counter] = new Side(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]),
                                     Integer.parseInt(data[3]), Double.parseDouble(data[4]));
                         }
                     } else if (sort == 4) {
@@ -177,9 +175,9 @@ public class WorldObject {
         data.add(String.valueOf(ID));
         if(pointsOriginal!=null && pointsOriginal.length>0) {
             data.add("points");
-            data.add(String.valueOf(pointsOriginal.length));
-            for (int i = 0; i < pointsOriginal.length; i++) {
-                data.add(pointsOriginal[i].getX() + ";" + pointsOriginal[i].getY() + ";" + pointsOriginal[i].getZ());
+            data.add(String.valueOf(points.length));
+            for (int i = 0; i < points.length; i++) {
+                data.add(points[i].getX() + ";" + points[i].getY() + ";" + points[i].getZ());
             }
             data.add("colors");
             data.add(String.valueOf(colors.length));
@@ -211,44 +209,68 @@ public class WorldObject {
         return data;
     }
 
-    protected void setupBoxing(){
-        if(pointsOriginal.length>0) {
+    public void setupBoxing(){
+        for (int i = 0; i <subObjects.size();i++) {
+            subObjects.get(i).setupBoxing();
+        }
+        if(points!=null && points.length>0) {
             boxing = new Point3D[2];
-            boxingOriginal = new Point3D[2];
-            boxingOriginal[0] = pointsOriginal[0].add(0,0,0);
-            boxingOriginal[1] = pointsOriginal[0].add(0,0,0);
-            for (int i = 0; i <pointsOriginal.length;i++){
-                if(pointsOriginal[i].getX()<boxingOriginal[0].getX()){
-                    boxingOriginal[0]=new Point3D(pointsOriginal[i].getX(),boxingOriginal[0].getY(),boxingOriginal[0].getZ());
+            boxing[0] = points[0];
+            boxing[1] = points[0];
+            for (int i = 0; i < points.length; i++) {
+                if (points[i].getX() < boxing[0].getX()) {
+                    boxing[0] = new Point3D(points[i].getX(), boxing[0].getY(), boxing[0].getZ());
                 }
-                if(pointsOriginal[i].getY()<boxingOriginal[0].getY()){
-                    boxingOriginal[0]=new Point3D(boxingOriginal[0].getX(),pointsOriginal[i].getY(),boxingOriginal[0].getZ());
+                if (points[i].getY() < boxing[0].getY()) {
+                    boxing[0] = new Point3D(boxing[0].getX(), points[i].getY(), boxing[0].getZ());
                 }
-                if(pointsOriginal[i].getZ()<boxingOriginal[0].getZ()){
-                    boxingOriginal[0]=new Point3D(boxingOriginal[0].getX(),boxingOriginal[0].getY(),pointsOriginal[i].getZ());
+                if (points[i].getZ() < boxing[0].getZ()) {
+                    boxing[0] = new Point3D(boxing[0].getX(), boxing[0].getY(), points[i].getZ());
                 }
-                if(pointsOriginal[i].getX()>boxingOriginal[1].getX()){
-                    boxingOriginal[1]=new Point3D(pointsOriginal[i].getX(),boxingOriginal[1].getY(),boxingOriginal[1].getZ());
+                if (points[i].getX() > boxing[1].getX()) {
+                    boxing[1] = new Point3D(points[i].getX(), boxing[1].getY(), boxing[1].getZ());
                 }
-                if(pointsOriginal[i].getY()>boxingOriginal[1].getY()){
-                    boxingOriginal[1]=new Point3D(boxingOriginal[1].getX(),pointsOriginal[i].getY(),boxingOriginal[1].getZ());
+                if (points[i].getY() > boxing[1].getY()) {
+                    boxing[1] = new Point3D(boxing[1].getX(), points[i].getY(), boxing[1].getZ());
                 }
-                if(pointsOriginal[i].getZ()>boxingOriginal[1].getZ()){
-                    boxingOriginal[1]=new Point3D(boxingOriginal[1].getX(),boxingOriginal[1].getY(),pointsOriginal[i].getZ());
+                if (points[i].getZ() > boxing[1].getZ()) {
+                    boxing[1] = new Point3D(boxing[1].getX(), boxing[1].getY(), points[i].getZ());
                 }
+            }
+        }
+        else {
+            boxing = new Point3D[2];
+            if(subObjects.size()>0){
+                boxing[0] = subObjects.get(0).boxing[0];
+                boxing[1] = subObjects.get(0).boxing[1];
+            }else{
+                boxing[0] = new Point3D(0,0,0);
+                boxing[1] = new Point3D(0,0,0);
+            }
+        }
+        for (int i = 0; i <subObjects.size();i++){
+            if(subObjects.get(i).boxing[0].getX()<boxing[0].getX()){
+                boxing[0]=new Point3D(subObjects.get(i).boxing[0].getX(),boxing[0].getY(),boxing[0].getZ());
+            }
+            if(subObjects.get(i).boxing[0].getY()<boxing[0].getY()){
+                boxing[0]=new Point3D(boxing[0].getX(),subObjects.get(i).boxing[0].getY(),boxing[0].getZ());
+            }
+            if(subObjects.get(i).boxing[0].getZ()<boxing[0].getZ()){
+                boxing[0]=new Point3D(boxing[0].getX(),boxing[0].getY(),subObjects.get(i).boxing[0].getZ());
+            }
+            if(subObjects.get(i).boxing[1].getX()>boxing[1].getX()){
+                boxing[1]=new Point3D(subObjects.get(i).boxing[1].getX(),boxing[1].getY(),boxing[1].getZ());
+            }
+            if(subObjects.get(i).boxing[1].getY()>boxing[1].getY()){
+                boxing[1]=new Point3D(boxing[1].getX(),subObjects.get(i).boxing[1].getY(),boxing[1].getZ());
+            }
+            if(subObjects.get(i).boxing[1].getZ()>boxing[1].getZ()){
+                boxing[1]=new Point3D(boxing[1].getX(),boxing[1].getY(),subObjects.get(i).boxing[1].getZ());
             }
         }
     }
     public void setCenter(Point3D p){
-        center=p.add(0,0,0);
-        if(points==null)points=new Point3D[pointsOriginal.length];
-        for(int i=0;i<pointsOriginal.length;i++){
-            points[i]=pointsOriginal[i].add(center);
-            //TODO add rotation
-        }
-    }
-    public void moveCenter(Point3D p){
-        center=center.add(p);
+        center=p;
         if(points==null)points=new Point3D[pointsOriginal.length];
         for(int i=0;i<pointsOriginal.length;i++){
             points[i]=pointsOriginal[i].add(center);
@@ -256,43 +278,45 @@ public class WorldObject {
         }
     }
 
-    public float applyCollision(Ball ball,double subframeInv){
-        float f=0.0f;
-        if(pointsOriginal!=null) {
-            if (waters != null) {
-                for (int j = 0; j < waters.length; j++) {
-                    ballWater(waters[j], ball, subframeInv);
+    public void applyCollision(Ball ball,double subframeInv){
+        if(ball.place.getX()+ball.size>boxing[0].getX()&&ball.place.getY()+ball.size>boxing[0].getY()&&ball.place.getZ()+ball.size>boxing[0].getZ()&&
+                ball.place.getX()-ball.size<boxing[1].getX()&&ball.place.getY()-ball.size<boxing[1].getY()&&ball.place.getZ()-ball.size<boxing[1].getZ()) {
+            if (pointsOriginal != null) {
+                if (waters != null) {
+                    for (int j = 0; j < waters.length; j++) {
+                        ballWater(waters[j], ball, subframeInv);
+                    }
                 }
-            }
-            if(sides!=null) {
-                for (int j = 0; j < sides.length; j++) {
-                    if (sideCollision(sides[j], ball)) {
-                        if (sides[j].friction > f) {
-                            f = (float) sides[j].friction;
+                if (sides != null) {
+                    for (int j = 0; j < sides.length; j++) {
+                        if (sideCollision(sides[j], ball)) {
+                            if (sides[j].friction > ball.friction) {
+                                ball.friction = (float) sides[j].friction;
+                            }
                         }
                     }
                 }
-            }
-            if(edges!=null) {
-                for (int j = 0; j < edges.length; j++) {
-                    edgeCollision(edges[j], ball);
+                if (edges != null) {
+                    for (int j = 0; j < edges.length; j++) {
+                        edgeCollision(edges[j], ball);
+                    }
                 }
-            }
-            if(points!=null) {
-                for (int j = 0; j < points.length; j++) {
-                    pointCollision(j, ball);
+                if (points != null) {
+                    for (int j = 0; j < points.length; j++) {
+                        pointCollision(j, ball);
 
+                    }
                 }
             }
         }
         for(int i=0;i<subObjects.size();i++)
         {
-            float t = subObjects.get(i).applyCollision(ball,subframeInv);
-            if(t>f)f=t;
+            subObjects.get(i).applyCollision(ball,subframeInv);
         }
-        return f;
     }
     private boolean sideCollision(Side side, Ball ball){
+        side.updateData(this);
+
         boolean result=false;
 
         double Nr0 = side.abc.dotProduct(ball.place);
@@ -316,6 +340,8 @@ public class WorldObject {
         return result;
     }
     private boolean edgeCollision(Edge edge, Ball ball){
+        edge.updateData(this);
+
         boolean result=false;
         double t = edge.unit.dotProduct(ball.place.subtract(points[edge.points[0]]));
 
@@ -370,9 +396,11 @@ public class WorldObject {
                     double h=w.place[1].getZ()-(ball.place.getZ()-ball.size);
                     volume+=((Math.PI*h*h)/3.0)*(3*ball.size-h);
                 }
-                double ratio = volume/completeVolume;
+                float f = (float) (volume/completeVolume);
                 ball.acceleration=ball.acceleration.add(0,0,volume*gravity*subFrameInv*0.0001);
-                ball.velocity = ball.velocity.multiply(Math.pow((0.85+(1-ratio)*0.15),subFrameInv));
+                if(f>ball.friction){
+                    ball.friction=f;
+                }
             }
         }
     }
@@ -415,6 +443,9 @@ public class WorldObject {
         }
         return false;
     }
+    public int getAmountWaters(){return waters.length;}
+    public Point3D[] getWaterPlace(int i){return waters[i].place;}
+    public Color3f getWaterColor(int i){return colors[waters[i].color];}
 
     public int getID(){return ID;}
 }

@@ -1,7 +1,6 @@
 package CrazyGolf.PhysicsEngine.Physics3;
 
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import javafx.geometry.Point3D;
 
 import java.util.LinkedList;

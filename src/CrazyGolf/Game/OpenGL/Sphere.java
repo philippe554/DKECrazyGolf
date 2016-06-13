@@ -1,4 +1,4 @@
-package CrazyGolf.PhysicsEngine.Objects.Native;
+package CrazyGolf.Game.OpenGL;
 
 import javafx.geometry.Point3D;
 

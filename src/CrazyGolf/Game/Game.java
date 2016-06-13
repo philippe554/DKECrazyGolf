@@ -5,6 +5,7 @@ import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.Game.OpenGL.GolfPanelOpenGL;
 import CrazyGolf.Menu.Popup;
 import CrazyGolf.Menu.StartMenu;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Physics12.World;
 import CrazyGolf.PhysicsEngine.Physics12.WorldCPU;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
@@ -130,9 +131,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
         //loadWorld(world,players.length);
     }
     public void run(){
-        int nextSlot;
         if(World.DEBUG)System.out.println("Game: Start game with player "+currentPlayer);
-        int stopCounter=0;
         boolean inputFlag=true;
         long lastTime=System.currentTimeMillis();
         while(keepPlaying)
@@ -147,7 +146,6 @@ public class Game extends GolfPanelOpenGL implements Runnable{
                 }
                 world.step(true);
                 update();
-                //UpdateView(currentPlayer);
                 if(inputFlag) {
                     players.get(currentPlayer).updatePushParameters();
                     if(enterPressed) {
@@ -160,25 +158,19 @@ public class Game extends GolfPanelOpenGL implements Runnable{
                 }else{
                     boolean allBallsStop = true;
                     for (int i = 0; i < world.getAmountBalls(); i++) {
-                        if (world.getBall(i).place.getZ() > -100) {
-                            if (world.getBall(i).velocity.magnitude() > 1.5) {
-                                allBallsStop = false;
-                            }
+                        if(!world.ballStoppedMoving(i)){
+                            allBallsStop=false;
+                        }
+                        if(world.getBall(i).place.getZ() < Ball.minZ){
+                            world.getBall(i).place=players.get(i).oldLocation;
+                            world.getBall(i).velocity=new Point3D(0,0,0);
                         }
                     }
                     if (allBallsStop) {
-                        stopCounter++;
-                    }
-                    if (stopCounter > 20) {
                         for (int i = world.getAmountBalls()-1; i >= 0; i--) {
-                            if (world.getBall(i).place.getZ() < -100) {
-                                world.getBall(i).place= players.get(i).oldLocation;
-                                world.getBall(i).velocity= new Point3D(0, 0, 0);
-                            }
                             if (world.checkBallInHole(i)) {
                                 keepPlaying = false;
                                 if (World.DEBUG){
-                                    //JOptionPane.showMessageDialog(null, "Player " + i + " Won with "+players[i].turns+" turns!", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     System.out.println("Game: Player " + i + " Won with "+players.get(i).turns+" turns!");
                                 }
                                 winner= i;
@@ -193,7 +185,6 @@ public class Game extends GolfPanelOpenGL implements Runnable{
                             if (currentPlayer == players.size()) {
                                 currentPlayer = 0;
                             }
-                            stopCounter = 0;
                             if (World.DEBUG) System.out.println("Game: Switched to player " + currentPlayer);
                             inputFlag = true;
                         }

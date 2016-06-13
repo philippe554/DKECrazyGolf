@@ -3,7 +3,7 @@ package CrazyGolf.PhysicsEngine.Objects.Native;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
@@ -29,10 +29,9 @@ public class Grass extends WorldObject {
         pointsOriginal[2]=new Point3D(p2.getX(),p2.getY(),p1.getZ());
         pointsOriginal[3]=new Point3D(p2.getX(),p1.getY(),p1.getZ());
 
-        setCenter(p1.midpoint(p2));
-        setupBoxing();
+        sides[0]=new Side(0,1,3,0,0.1);
+        sides[1]=new Side(1,2,3,0,0.1);
 
-        sides[0]=new Side(this,0,1,3,0,0.1);
-        sides[1]=new Side(this,1,2,3,0,0.1);
+        setCenter(new Point3D(0,0,0));
     }
 }

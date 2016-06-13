@@ -1,6 +1,6 @@
 package CrazyGolf.PhysicsEngine.Objects.Parts;
 
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics12.World;
 import javafx.geometry.Point3D;
 
@@ -44,15 +44,13 @@ public class Side {
 
         friction=f;
     }
-    public Side(WorldObject worldObject, int p1, int p2, int p3, int c, double f){
+    public Side(int p1, int p2, int p3, int c, double f){
         points=new int[3];
         points[0]=p1;
         points[1]=p2;
         points[2]=p3;
         color=c;
         friction=f;
-
-        updateData(worldObject);
     }
     public void updateData(WorldObject worldObject){
         Point3D d1= worldObject.getPoint(points[0]).subtract(worldObject.getPoint(points[2]));

@@ -1,7 +1,8 @@
 package CrazyGolf.PhysicsEngine.Objects.Terain;
 
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import javafx.geometry.Point3D;
 
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.*;
 /**
  * Created by pmmde on 6/1/2016.
  */
-public class Terrain implements Runnable{
+public class Terrain{
     private Map<Key,TerainChunk> chunks;
     private SimplexNoise sn;
 
@@ -30,59 +31,61 @@ public class Terrain implements Runnable{
     }
 
     public void updateTerain(Point3D center){
-        x = (int) (center.getX()/TerainChunk.chunkSize);
-        y = (int) (center.getY()/TerainChunk.chunkSize);
+        x = (int) Math.floor(center.getX()/TerainChunk.chunkSize);
+        y = (int) Math.floor(center.getY()/TerainChunk.chunkSize);
     }
 
-    @Override public void run() {
-        //while(keepUpdating){
-            chunks.entrySet().removeIf(e->{
-                Key key = e.getKey();
-                if(Math.abs(key.x-x)>viewDistance || Math.abs(key.y-y)>viewDistance){
-                    if(e.getValue().loaded) {
-                        e.getValue().loaded=false;
-                        world.newObjects.remove(e.getValue());
-                        world.deletedObjects.add(e.getValue().getID());
-                    }
+    public void run() {
+        chunks.entrySet().removeIf(e->{
+            Key key = e.getKey();
+            if(Math.abs(key.x-x)>viewDistance || Math.abs(key.y-y)>viewDistance){
+                if(e.getValue().loaded) {
+                    e.getValue().loaded=false;
+                    world.newObjects.remove(e.getValue());
+                    world.deletedObjects.add(e.getValue().getID());
                 }
-                if(Math.abs(key.x-x)>loadDistance || Math.abs(key.y-y)>loadDistance){
-                    saveObject(key);
-                    return true;
-                }
-                return false;
-            });
+            }
+            if(Math.abs(key.x-x)>loadDistance || Math.abs(key.y-y)>loadDistance){
+                saveObject(key);
+                return true;
+            }
+            return false;
+        });
 
-            for(int i=x-viewDistance;i<=x+viewDistance;i++){
-                for(int j=y-viewDistance;j<=y+viewDistance;j++){
-                    Key key = new Key(i,j);
-                    if(!chunks.containsKey(key)){
-                        TerainChunk tc = loadObject(key);
-                        chunks.put(key,tc);
+        for(int i=x-viewDistance;i<=x+viewDistance;i++){
+            for(int j=y-viewDistance;j<=y+viewDistance;j++){
+                Key key = new Key(i,j);
+                if(!chunks.containsKey(key)){
+                    TerainChunk tc = loadObject(key);
+                    chunks.put(key,tc);
+                    world.deletedObjects.remove(chunks.get(key).getID());
+                    world.newObjects.add(chunks.get(key));
+                }else {
+                    if (!chunks.get(key).loaded) {
                         world.deletedObjects.remove(chunks.get(key).getID());
                         world.newObjects.add(chunks.get(key));
-                    }else {
-                        if (!chunks.get(key).loaded) {
-                            world.deletedObjects.remove(chunks.get(key).getID());
-                            world.newObjects.add(chunks.get(key));
-                            chunks.get(key).loaded = true;
-                        }
+                        chunks.get(key).loaded = true;
                     }
                 }
             }
-
-            /*try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
+        }
+    }
+    public void applyCollision(Ball ball, double subFrameInv){
+        int cx = (int) Math.floor(ball.place.getX()/TerainChunk.chunkSize);
+        int cy = (int) Math.floor(ball.place.getY()/TerainChunk.chunkSize);
+        TerainChunk tc = chunks.get(new Key(cx,cy));
+        if(tc!=null){
+            tc.applyCollision(ball,subFrameInv);
+        }
     }
 
     private void saveObject(Key key){
 
     }
     private TerainChunk loadObject(Key key){
-        return new TerainChunk(sn,key,world);
+        TerainChunk tc = new TerainChunk(sn,key,world);
+        tc.setupBoxing();
+        return tc;
     }
 
     public double getHeight(double tx,double ty){

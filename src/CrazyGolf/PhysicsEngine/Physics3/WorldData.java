@@ -1,10 +1,9 @@
 package CrazyGolf.PhysicsEngine.Physics3;
 
-import CrazyGolf.PhysicsEngine.Objects.Native.Grass;
+import CrazyGolf.PhysicsEngine.Objects.Native.*;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
-import CrazyGolf.PhysicsEngine.Objects.Terain.TerainChunk;
+import CrazyGolf.PhysicsEngine.Objects.Terain.SimplexNoise;
 import CrazyGolf.PhysicsEngine.Objects.Terain.Terrain;
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import javafx.geometry.Point3D;
 
 import java.util.ArrayList;
@@ -28,6 +27,9 @@ public class WorldData implements World,Physics{
     public Queue<WorldObject> updatedObjects;
     public Queue<Integer> deletedObjects;
 
+    private int time = 0;
+    private SimplexNoise wind;
+
     public WorldData(){
         objects=new ArrayList<>();
         terrain=new Terrain(1631365,this);
@@ -35,22 +37,51 @@ public class WorldData implements World,Physics{
         newObjects = new LinkedList<>();
         updatedObjects = new LinkedList<>();
         deletedObjects = new LinkedList<>();
-
+        wind=new SimplexNoise(4654654);
         start = new Ball(20, new Point3D(0,0,0));
         hole = new Point3D(0,0,0);
     }
 
     @Override public void step(boolean useBallBallCollision) {
+        time++;
+        for(Ball ball:balls){
+            ball.oldPlace=ball.place;
+            ball.friction=0;
+        }
         if(useBallBallCollision){
             stepWithCollision();
         }else
         {
             stepWithoutCollision();
         }
+        for(Ball ball:balls){
+            if(ball.place.subtract(ball.oldPlace).magnitude()<Ball.minVelocity){
+                ball.zeroCounter++;
+                ball.place=ball.oldPlace;
+            }else{
+                ball.zeroCounter=0;
+            }
+
+            double windPowerX = wind.noise(ball.place.getX()*0.0001,ball.place.getY()*0.0001,time*0.0002)*0.05;
+            double windPowerY = wind.noise(ball.place.getX()*0.0001+100,ball.place.getY()*0.0001+100,time*0.0002)*0.05;
+            ball.windVector = new Point3D(windPowerX,windPowerY,0);
+            ball.acceleration = ball.acceleration.add(ball.windVector);
+
+            if (ball.friction > 0.001f) {
+                if (ball.velocity.magnitude() > ball.friction) {
+                    ball.velocity = ball.velocity.subtract(ball.velocity.normalize().multiply(ball.friction));
+                } else {
+                    ball.velocity = new Point3D(0, 0, 0);
+                }
+            } else {
+                ball.velocity = ball.velocity.multiply(0.995);
+            }
+        }
     }
     @Override public void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision) {
         ArrayList<Ball> original=balls;
         balls=simBalls;
+        time--;
         step(useBallBallCollision);
         balls=original;
     }
@@ -71,15 +102,6 @@ public class WorldData implements World,Physics{
         terrain.updateTerain(center);
         terrain.run();
     }
-    @Override public WorldObject getNextNewObject() {
-        return newObjects.poll();
-    }
-    @Override public WorldObject getNextUpdateObject() {
-        return updatedObjects.poll();
-    }
-    @Override public Integer getNextRemoveObject() {
-        return deletedObjects.poll();
-    }
     @Override public int getAmountBalls() {
         return balls.size();
     }
@@ -87,10 +109,17 @@ public class WorldData implements World,Physics{
         return balls.get(i);
     }
     @Override public void pushBall(int i, Point3D dir) {
-        balls.get(i).velocity= balls.get(i).velocity.add(dir);
+        balls.get(i).velocity= balls.get(i).velocity
+                .add(dir.add(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5));
     }
     @Override public boolean checkBallInHole(int i) {
         if (hole.distance(balls.get(i).place) < (balls.get(i).size)) {
+            return true;
+        }
+        return false;
+    }
+    @Override public boolean ballStoppedMoving(int i) {
+        if(balls.get(i).zeroCounter>=Ball.thresholdCounter){
             return true;
         }
         return false;
@@ -112,78 +141,64 @@ public class WorldData implements World,Physics{
         balls.add(new Ball(start.size,start.place.add(0,0,moveup)));
     }
 
-    protected void stepWithoutCollision(){
-        for(int i=0;i<balls.size();i++) {
-            int subframes=((int) (balls.get(i).velocity.magnitude() / balls.get(i).size * 1.1*precision) + 1);
-            double subframeInv = 1.0 / (double)(subframes);
-            float friction=0.0f;
+    @Override public WorldObject getNextNewObject() {
+        return newObjects.poll();
+    }
+    @Override public WorldObject getNextUpdateObject() {
+        return updatedObjects.poll();
+    }
+    @Override public Integer getNextRemoveObject() {
+        return deletedObjects.poll();
+    }
 
-            for (int l = 0; l < subframes; l++) {
-                balls.get(i).acceleration = balls.get(i).acceleration.add(0, 0, -gravity*subframeInv); //gravity
-                balls.get(i).velocity = balls.get(i).velocity.add(balls.get(i).acceleration);
-                balls.get(i).place = balls.get(i).place.add(balls.get(i).velocity.multiply(subframeInv));
-                balls.get(i).acceleration = new Point3D(0, 0, 0);
+    protected void stepWithoutCollision(){
+        for(Ball ball:balls) {
+            double completed=0;
+            int subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
+            double subframeInv = 1.0 / (double)(subframes);
+
+            while(completed<1){
+                if(completed+subframeInv > 1){
+                    subframeInv = Math.abs(completed-subframeInv)+0.0001;
+                }
+                ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
+                ball.velocity = ball.velocity.add(ball.acceleration);
+                ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
+                ball.acceleration = new Point3D(0, 0, 0);
 
                 for(int j=0;j<objects.size();j++){
-                    float f = objects.get(j).applyCollision(balls.get(i),subframeInv);
-                    if (f > friction) {
-                        friction = f;
-                    }
+                    objects.get(j).applyCollision(ball,subframeInv);
                 }
-
-            }
-            if (friction > 0.001f) {
-                if (balls.get(i).velocity.magnitude() > friction) {
-                    balls.get(i).velocity = balls.get(i).velocity.subtract(balls.get(i).velocity.normalize().multiply(friction));
-                } else {
-                    balls.get(i).velocity = new Point3D(0, 0, 0);
-                }
-            } else {
-                balls.get(i).velocity = balls.get(i).velocity.multiply(0.999);
+                terrain.applyCollision(ball,subframeInv);
+                completed+=subframeInv;
+                subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
+                subframeInv = 1.0 / (double)(subframes);
             }
         }
     }
     protected void stepWithCollision(){
         double maxV = -1;
         double ballSize = 0;
-        for (int i = 0; i < balls.size(); i++) {
-            if (balls.get(i).velocity.magnitude() > maxV) {
-                maxV = balls.get(i).velocity.magnitude();
-                ballSize = balls.get(i).size;
+        for(Ball ball:balls) {
+            if (ball.velocity.magnitude() > maxV) {
+                maxV = ball.velocity.magnitude();
+                ballSize = ball.size;
             }
         }
         int subframes=((int) (maxV / ballSize * 1.1*precision) + 1);
         double subframeInv = 1.0 / (double)(subframes);
-        float friction[]=new float[balls.size()];
-        for(int i=0;i<balls.size();i++)
-        {
-            friction[i]=0.0f;
-        }
         for (int l = 0; l < subframes; l++) {
             ballCollisionComplete();
-            for (int i = 0; i < balls.size(); i++) {
-                balls.get(i).acceleration = balls.get(i).acceleration.add(0, 0, -gravity*subframeInv); //gravity
-                balls.get(i).velocity = balls.get(i).velocity.add(balls.get(i).acceleration);
-                balls.get(i).place = balls.get(i).place.add(balls.get(i).velocity.multiply(subframeInv));
-                balls.get(i).acceleration = new Point3D(0, 0, 0);
+            for(Ball ball:balls) {
+                ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
+                ball.velocity = ball.velocity.add(ball.acceleration);
+                ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
+                ball.acceleration = new Point3D(0, 0, 0);
 
                 for(int j=0;j<objects.size();j++){
-                    float f = objects.get(j).applyCollision(balls.get(i),subframeInv);
-                    if (f > friction[i]) {
-                        friction[i] = f;
-                    }
+                    objects.get(j).applyCollision(ball,subframeInv);
                 }
-            }
-        }
-        for(int i=0;i<balls.size();i++) {
-            if (friction[i] > 0.001f) {
-                if (balls.get(i).velocity.magnitude() > friction[i]) {
-                    balls.get(i).velocity = balls.get(i).velocity.subtract(balls.get(i).velocity.normalize().multiply(friction[i]));
-                } else {
-                    balls.get(i).velocity = new Point3D(0, 0, 0);
-                }
-            } else {
-                balls.get(i).velocity = balls.get(i).velocity.multiply(0.999);
+                terrain.applyCollision(ball,subframeInv);
             }
         }
     }
@@ -284,6 +299,7 @@ public class WorldData implements World,Physics{
                         copyLock=false;
                         WorldObject wo = new WorldObject(this);
                         wo.load(copyData);
+                        wo.setupBoxing();
                         objects.add(wo);
                         newObjects.offer(wo);
                     }else if(sort==2)
@@ -304,6 +320,7 @@ public class WorldData implements World,Physics{
                                 if(obj instanceof WorldObject){
                                     WorldObject wo = (WorldObject)obj;
                                     wo.load(copyData);
+                                    wo.setupBoxing();
                                     objects.add(wo);
                                     newObjects.offer(wo);
                                 }else{
@@ -332,7 +349,7 @@ public class WorldData implements World,Physics{
             for (int j = 0; j < data[i].length; j++) {
                 if (!alreadyConverted[i][j]) {
                     if (data[i][j].equals("B")) {
-                        start = new Ball(20, new Point3D(i * gs + gs, j * gs + gs, offset.getZ() + 20));
+                        start = new Ball(20, new Point3D(i * gs + gs, j * gs + gs, 20).add(offset));
                         for (int k = 0; k < 2; k++) {
                             for (int l = 0; l < 2; l++) {
                                 if ((i + k) < data.length && (j + l) < data[i + k].length) {
@@ -361,7 +378,8 @@ public class WorldData implements World,Physics{
                     } else if (data[i][j].equals("S")) {
                         //addSand(data,alreadyConverted,i,j,gs,Z);
                     } else if (data[i][j].equals("H")) {
-                        //addHole(i*gs+1.5*gs,j*gs+1.5*gs,Z,30,80,30);
+                        wo.subObjects.add(new Hole(this,offset.add(i*gs+1.5*gs,j*gs+1.5*gs,0),30,80,30));
+                        hole=offset.add(i*gs+1.5*gs,j*gs+1.5*gs,-80+20);
                         for(int k=0;k<3;k++)
                         {
                             for(int l=0;l<3;l++)
@@ -373,12 +391,7 @@ public class WorldData implements World,Physics{
                         }
                     }else if(data[i][j].equals("L"))
                     {
-                        /*addSquare(new Point3D(i*gs,j*gs,Z),
-                                new Point3D(i*gs+gs*14,j*gs,Z),
-                                new Point3D(i*gs+gs*14,j*gs+gs*6,Z),
-                                new Point3D(i*gs,j*gs+gs*6,Z),
-                                2,1);*/
-                        /*addLoop(i*gs+140,j*gs+30,Z+140,140,60,24,25);*/
+                        wo.subObjects.add(new Loop(this,offset.add(i*gs+140,j*gs+60,140),140,60,24,25));
                         for(int k=0;k<14;k++)
                         {
                             for(int l=0;l<6;l++)
@@ -390,12 +403,7 @@ public class WorldData implements World,Physics{
                         }
                     }else if(data[i][j].equals("C"))
                     {
-                        /*addSquare(new Point3D(i*gs,j*gs,Z),
-                                new Point3D(i*gs+gs*13,j*gs,Z),
-                                new Point3D(i*gs+gs*13,j*gs+gs*4,Z),
-                                new Point3D(i*gs,j*gs+gs*4,Z),
-                                2,1);
-                        addCastle(i*gs+40,j*gs+40,Z,20,40,180);*/
+                        wo.subObjects.add(new Castle(this,offset.add(i*gs+40,j*gs+40,0),20,40,180));
                         for(int k=0;k<13;k++)
                         {
                             for(int l=0;l<4;l++)
@@ -407,12 +415,7 @@ public class WorldData implements World,Physics{
                         }
                     } else if(data[i][j].equals("R"))
                     {
-                        /*addSquare(new Point3D(i*gs,j*gs,Z),
-                                new Point3D(i*gs+gs*4,j*gs,Z),
-                                new Point3D(i*gs+gs*4,j*gs+gs*24,Z),
-                                new Point3D(i*gs,j*gs+gs*24,Z),
-                                2,1);
-                        addBridge(i*gs+40,j*gs+140,Z,200,50,20,80,20);*/
+                        wo.subObjects.add(new Bridge(this,offset.add(i*gs+40,j*gs+140,0),200,50,20,80,20));
                         for(int k=0;k<4;k++)
                         {
                             for(int l=0;l<24;l++)
@@ -424,7 +427,7 @@ public class WorldData implements World,Physics{
                         }
                     }else if(data[i][j].equals("P"))
                     {
-                        //addPool(i*gs,j*gs,Z,280,150,12,25);
+                        wo.subObjects.add(new Pool(this,offset.add(i*gs,j*gs,0),280,150,12,25));
                         for(int k=0;k<14;k++)
                         {
                             for(int l=0;l<14;l++)
@@ -451,6 +454,7 @@ public class WorldData implements World,Physics{
         }
         if(wo.getAmountSubObjects()>0) {
             newObjects.offer(wo);
+            wo.setupBoxing();
             objects.add(wo);
         }
     }

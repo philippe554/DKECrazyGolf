@@ -4,8 +4,6 @@ import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
-import CrazyGolf.PhysicsEngine.Objects.Terain.Terrain;
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;

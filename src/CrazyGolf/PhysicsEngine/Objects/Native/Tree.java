@@ -3,7 +3,7 @@ package CrazyGolf.PhysicsEngine.Objects.Native;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Edge;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Side;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Water;
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
@@ -46,17 +46,16 @@ public class Tree extends WorldObject {
             pointsOriginal[4+z*3+2]=new Point3D(Math.cos(angle)*(Math.random()*heightPortion+heightPortion),Math.sin(angle)*(Math.random()*heightPortion+heightPortion),z*leaveDistance+Math.random()*leaveDistance);
         }
 
-        setCenter(place);
-        setupBoxing();
-
-        sides[0]=new Side(this,0,1,3,0,0);
-        sides[1]=new Side(this,1,2,3,0,0);
-        sides[2]=new Side(this,2,0,3,0,0);
+        sides[0]=new Side(0,1,3,0,0);
+        sides[1]=new Side(1,2,3,0,0);
+        sides[2]=new Side(2,0,3,0,0);
 
         boolean color=true;
         for(int i=0;i<amountOfLeaves;i++){
-            sides[3+i]=new Side(this,4+i*3,4+3*i+1,4+3*i+2,color?1:2,0);
+            sides[3+i]=new Side(4+i*3,4+3*i+1,4+3*i+2,color?1:2,0);
             color=!color;
         }
+
+        setCenter(place);
     }
 }

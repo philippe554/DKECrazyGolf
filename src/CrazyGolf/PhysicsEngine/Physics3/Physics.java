@@ -16,6 +16,7 @@ public interface Physics {
     Ball getBall(int i);
     void pushBall(int i, Point3D dir);
     boolean checkBallInHole(int i);
+    boolean ballStoppedMoving(int i);
     void addNewBall();
 
     Point3D getHolePosition();

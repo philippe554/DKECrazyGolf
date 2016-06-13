@@ -1,6 +1,6 @@
 package CrazyGolf.PhysicsEngine.Objects.Parts;
 
-import CrazyGolf.PhysicsEngine.Objects.WorldObject;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics12.World;
 import javafx.geometry.Point3D;
 
@@ -20,11 +20,10 @@ public class Edge {
         lenght=unit.magnitude();
         unit=unit.normalize();
     }
-    public Edge(WorldObject worldObject, int p1, int p2){
+    public Edge(int p1, int p2){
         points=new int[2];
         points[0]=p1;
         points[1]=p2;
-        updateData(worldObject);
     }
     public void updateData(WorldObject worldObject){
         unit = worldObject.getPoint(points[1]).subtract(worldObject.getPoint(points[0]));
