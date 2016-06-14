@@ -354,8 +354,8 @@ public class WorldObject {
             Point3D clossest = points[edge.points[0]].add(edge.unit.multiply(t));
             Point3D unit = ball.place.subtract(clossest);
             double distance = unit.magnitude();
-            unit = unit.normalize();
             if (distance < ball.size) {
+                unit = unit.normalize();
                 ball.place = clossest.add(unit.multiply(ball.size));
                 ball.velocity = ball.velocity.subtract(unit.multiply(ball.velocity.dotProduct(unit) * 1.8));
                 result=true;

@@ -39,11 +39,15 @@ public class Tree extends WorldObject {
         for(int z=0;z<amountOfLeaves;z++){
             double angle = Math.random() * Math.PI*2;
             double heightPortion = (height-z*leaveDistance)/4;
-            pointsOriginal[4+z*3]=new Point3D(Math.cos(angle)*(Math.random()*heightPortion+heightPortion),Math.sin(angle)*(Math.random()*heightPortion+heightPortion),z*leaveDistance+Math.random()*leaveDistance);
+            double min=25;
+            pointsOriginal[4+z*3]=new Point3D(Math.cos(angle)*(Math.random()*heightPortion+heightPortion+min),Math.sin(angle)*(Math.random()*heightPortion+heightPortion+min),
+                    z*leaveDistance+Math.random()*leaveDistance);
             angle+=Math.PI*2/3;
-            pointsOriginal[4+z*3+1]=new Point3D(Math.cos(angle)*(Math.random()*heightPortion+heightPortion),Math.sin(angle)*(Math.random()*heightPortion+heightPortion),z*leaveDistance+Math.random()*leaveDistance);
+            pointsOriginal[4+z*3+1]=new Point3D(Math.cos(angle)*(Math.random()*heightPortion+heightPortion+min),Math.sin(angle)*(Math.random()*heightPortion+heightPortion+min),
+                    z*leaveDistance+Math.random()*leaveDistance);
             angle+=Math.PI*2/3;
-            pointsOriginal[4+z*3+2]=new Point3D(Math.cos(angle)*(Math.random()*heightPortion+heightPortion),Math.sin(angle)*(Math.random()*heightPortion+heightPortion),z*leaveDistance+Math.random()*leaveDistance);
+            pointsOriginal[4+z*3+2]=new Point3D(Math.cos(angle)*(Math.random()*heightPortion+heightPortion+min),Math.sin(angle)*(Math.random()*heightPortion+heightPortion+min),
+                    z*leaveDistance+Math.random()*leaveDistance);
         }
 
         sides[0]=new Side(0,1,3,0,0);
