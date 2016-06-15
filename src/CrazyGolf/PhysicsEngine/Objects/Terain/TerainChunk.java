@@ -15,7 +15,7 @@ import javax.vecmath.Color3f;
  */
 public class TerainChunk extends WorldObject {
     public static final float chunkSize=1024;
-    public static final int chunkParts=16;
+    public static final int chunkParts=12;
     public static final float chunkPartSize=chunkSize/chunkParts;
 
     public int x;
@@ -26,10 +26,10 @@ public class TerainChunk extends WorldObject {
         super(w);
         points=new Point3D[(chunkParts+1)*(chunkParts+1)+4];
         pointsOriginal=new Point3D[points.length];
-        colors=new Color3f[14];
+        colors=new Color3f[15];
         sides=new Side[chunkParts*chunkParts*2];
         edges=new Edge[chunkParts*chunkParts*2];
-        waters=new Water[1];
+        waters=new Water[0];
 
         x=key.x;
         y=key.y;
@@ -39,9 +39,10 @@ public class TerainChunk extends WorldObject {
                 double height = (sm.noise((x*chunkSize+i*chunkPartSize)*0.001f,(y*chunkSize+j*chunkPartSize)*0.001f)+1)/2;
                 double terrain = (sm.noise((x*chunkSize+i*chunkPartSize)*0.0001,(y*chunkSize+j*chunkPartSize)*0.0001)+1)/2;
                 height*=Math.pow(terrain*2,3)*100;
+                if(height<30)height=30;
                 pointsOriginal[i*(chunkParts+1)+j]=new Point3D(i*chunkPartSize,j*chunkPartSize, height);
 
-                if(height>60 && height<250 && (sm.noise((x*chunkSize+i*chunkPartSize)*0.001,(y*chunkSize+j*chunkPartSize)*0.001)+1)/2 >0.6 && Math.random()*height<10) {
+                if(height>60 && height<250 && (sm.noise((x*chunkSize+i*chunkPartSize)*0.001,(y*chunkSize+j*chunkPartSize)*0.001)+1)/2 >0.6 && Math.random()*height<20) {
                     subObjects.add(new Tree(new Point3D(x * chunkSize + (i+Math.random()) * chunkPartSize, y * chunkSize + (j+Math.random()) * chunkPartSize, height),world));
                 }
             }
@@ -50,13 +51,35 @@ public class TerainChunk extends WorldObject {
         pointsOriginal[pointsOriginal.length-3]=new Point3D(chunkSize,0,20);
         pointsOriginal[pointsOriginal.length-2]=new Point3D(chunkSize,chunkSize,20);
         pointsOriginal[pointsOriginal.length-1]=new Point3D(0,chunkSize,20);
-        for(int i=0;i<10;i++){
+
+        /*for(int i=0;i<10;i++){
             colors[i]=new Color3f(0,1-((float) (i/20.0f)+0.5f),0);
         }
         colors[10]=new Color3f(0.93f,0.78f,0.68f);
         colors[11]=new Color3f(0.59f,0.55f,0.6f);
         colors[12]=new Color3f(1f,1f,1f);
-        colors[13]=new Color3f(0.0f, 0.8f, 1.0f);
+        colors[13]=new Color3f(0.0f, 0.8f, 1.0f);*/
+
+        //water
+        colors[0]=new Color3f(0.36f,0.81f,0.88f);
+        colors[1]=new Color3f(0.16f,0.74f,0.78f);
+        colors[2]=new Color3f(0.58f,0.87f,0.95f);
+        //sand
+        colors[3]=new Color3f(0.98f,0.98f,0.61f);
+        colors[4]=new Color3f(0.95f,0.95f,0.42f);
+        colors[5]=new Color3f(0.94f,0.82f,0.36f);
+        //grass
+        colors[6]=new Color3f(0.25f,0.82f,0.25f);
+        colors[7]=new Color3f(0.17f,0.68f,0.17f);
+        colors[8]=new Color3f(0.08f,0.91f,0.27f);
+        //rock
+        colors[9]=new Color3f(0.86f,0.86f,0.82f);
+        colors[10]=new Color3f(0.81f,0.81f,0.75f);
+        colors[11]=new Color3f(0.80f,0.80f,0.79f);
+        //snow
+        colors[12]=new Color3f(0.91f,0.92f,0.95f);
+        colors[13]=new Color3f(0.99f,0.99f,1.00f);
+        colors[14]=new Color3f(0.95f,0.97f,0.98f);
 
         center=new Point3D(x*chunkSize,y*chunkSize,0);
 
@@ -65,8 +88,45 @@ public class TerainChunk extends WorldObject {
         for(int i=0;i<chunkParts;i++) {
             for (int j = 0; j < chunkParts; j++) {
                 sides[(i*chunkParts+j)*2]=new Side(i*(chunkParts+1)+j,(i+1)*(chunkParts+1)+j,i*(chunkParts+1)+(j+1),0,0.5);
+                double avgHeight=(pointsOriginal[i*(chunkParts+1)+j].getZ()+pointsOriginal[(i+1)*(chunkParts+1)+j].getZ()+pointsOriginal[i*(chunkParts+1)+(j+1)].getZ())/3.0;
+                int color;
+                if(avgHeight<30.001){
+                    color= (int) (Math.random()*3);
+                }else if(avgHeight<50){
+                    color= (int) (Math.random()*3+3);
+                }else if(avgHeight<250){
+                    color= (int) (Math.random()*3+6);
+                }else if(avgHeight<350){
+                    color= (int) (Math.random()*3+9);
+                }else{
+                    color= (int) (Math.random()*3+12);
+                }
+                sides[(i*chunkParts+j)*2].color=color;
+
                 sides[(i*chunkParts+j)*2+1]=new Side(i*(chunkParts+1)+(j+1),(i+1)*(chunkParts+1)+(j+1),(i+1)*(chunkParts+1)+(j),0,0.5);
-                sides[(i*chunkParts+j)*2].updateData(this);
+                avgHeight=(pointsOriginal[i*(chunkParts+1)+(j+1)].getZ()+pointsOriginal[(i+1)*(chunkParts+1)+(j+1)].getZ()+pointsOriginal[(i+1)*(chunkParts+1)+(j)].getZ())/3.0;
+                if(avgHeight<30.001){
+                    color= (int) (Math.random()*3);
+                }else if(avgHeight<50){
+                    color= (int) (Math.random()*3+3);
+                }else if(avgHeight<250){
+                    color= (int) (Math.random()*3+6);
+                }else if(avgHeight<350){
+                    color= (int) (Math.random()*3+9);
+                }else{
+                    color= (int) (Math.random()*3+12);
+                }
+                sides[(i*chunkParts+j)*2+1].color=color;
+
+
+
+
+
+                edges[(i*chunkParts+j)*2]=new Edge(i*(chunkParts+1)+j,(i+1)*(chunkParts+1)+j);
+                edges[(i*chunkParts+j)*2+1]=new Edge(i*(chunkParts+1)+(j),i*(chunkParts+1)+(j+1));
+
+
+                /*sides[(i*chunkParts+j)*2].updateData(this);
                 sides[(i*chunkParts+j)*2+1].updateData(this);
                 double angle = Math.acos(sides[(i*chunkParts+j)*2].normal.dotProduct(0,0,1))*180.0/Math.PI;
                 double height = (sm.noise((x*chunkSize+i*chunkPartSize)*0.001f,(y*chunkSize+j*chunkPartSize)*0.001f)+1)/2;
@@ -83,12 +143,11 @@ public class TerainChunk extends WorldObject {
                 if(height>250)color2=11;
                 if(height>300)color2=12;
                 sides[(i*chunkParts+j)*2].color=color1;
-                sides[(i*chunkParts+j)*2+1].color=color2;
+                sides[(i*chunkParts+j)*2+1].color=color2;*/
 
-                edges[(i*chunkParts+j)*2]=new Edge(i*(chunkParts+1)+j,(i+1)*(chunkParts+1)+j);
-                edges[(i*chunkParts+j)*2+1]=new Edge(i*(chunkParts+1)+(j),i*(chunkParts+1)+(j+1));
+
             }
         }
-        waters[0]=new Water(new Point3D[]{new Point3D(0,0,0).add(center), new Point3D(chunkSize,chunkSize,30).add(center)},13);
+        //waters[0]=new Water(new Point3D[]{new Point3D(0,0,0).add(center), new Point3D(chunkSize,chunkSize,30).add(center)},13);
     }
 }
