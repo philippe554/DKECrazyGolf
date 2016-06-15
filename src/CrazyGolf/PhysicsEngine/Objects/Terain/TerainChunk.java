@@ -15,7 +15,7 @@ import javax.vecmath.Color3f;
  */
 public class TerainChunk extends WorldObject {
     public static final float chunkSize=1024;
-    public static final int chunkParts=32;
+    public static final int chunkParts=16;
     public static final float chunkPartSize=chunkSize/chunkParts;
 
     public int x;
@@ -73,12 +73,17 @@ public class TerainChunk extends WorldObject {
                 double terrain = (sm.noise((x*chunkSize+i*chunkPartSize)*0.0001,(y*chunkSize+j*chunkPartSize)*0.0001)+1)/2;
                 height*=Math.pow(terrain*2,3)*100;
                 if(angle>90)angle-=90;
-                int color = (int)(angle/9.0);
-                if(height<50)color=10;
-                if(height>250)color=11;
-                if(height>300)color=12;
-                sides[(i*chunkParts+j)*2].color=color;
-                sides[(i*chunkParts+j)*2+1].color=color;
+                int color1 = (int) (Math.random()*5);//(int)(angle/9.0);
+                if(height<50)color1=10;
+                if(height>250)color1=11;
+                if(height>300)color1=12;
+
+                int color2 = (int) (Math.random()*5);//(int)(angle/9.0);
+                if(height<50)color2=10;
+                if(height>250)color2=11;
+                if(height>300)color2=12;
+                sides[(i*chunkParts+j)*2].color=color1;
+                sides[(i*chunkParts+j)*2+1].color=color2;
 
                 edges[(i*chunkParts+j)*2]=new Edge(i*(chunkParts+1)+j,(i+1)*(chunkParts+1)+j);
                 edges[(i*chunkParts+j)*2+1]=new Edge(i*(chunkParts+1)+(j),i*(chunkParts+1)+(j+1));
