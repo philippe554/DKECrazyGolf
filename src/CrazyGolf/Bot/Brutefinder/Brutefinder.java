@@ -13,11 +13,11 @@ import java.util.LinkedList;
  * Created by pmmde on 4/29/2016.
  */
 public class Brutefinder implements BotInterface{
-    public int amountDirections=12;
-    public int amountPowers=5;
+    public int amountDirections=16;
+    public int amountPowers=6;
 
     public int amountDirectionsHighRes=40;
-    public int amountPowersHighRes=10;
+    public int amountPowersHighRes=20;
 
     private int GS=20;
 
