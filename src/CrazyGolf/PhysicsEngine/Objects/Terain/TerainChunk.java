@@ -8,6 +8,7 @@ import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
+
 import javax.vecmath.Color3f;
 
 /**
@@ -22,8 +23,11 @@ public class TerainChunk extends WorldObject {
     public int y;
     public boolean loaded;
 
-    public TerainChunk(SimplexNoise sm, Key key, WorldData w){
+    SimplexNoise sm;
+
+    public TerainChunk(SimplexNoise tsm, Key key, WorldData w){
         super(w);
+        sm=tsm;
         points=new Point3D[(chunkParts+1)*(chunkParts+1)+4];
         pointsOriginal=new Point3D[points.length];
         colors=new Color3f[15];
@@ -36,14 +40,7 @@ public class TerainChunk extends WorldObject {
         loaded=true;
         for(int i=0;i<=chunkParts;i++){
             for(int j=0;j<=chunkParts;j++){
-                double height = (sm.noise((x*chunkSize+i*chunkPartSize)*0.0005f,(y*chunkSize+j*chunkPartSize)*0.0005f)+1)/2;
-                double terrain = (sm.noise((x*chunkSize+i*chunkPartSize)*0.0001,(y*chunkSize+j*chunkPartSize)*0.0001)+1)/2;
-                double smallNoise = (sm.noise((x*chunkSize+i*chunkPartSize)*0.1,(y*chunkSize+j*chunkPartSize)*0.1)+1)/2;
-                double bigNoise = (sm.noise((x*chunkSize+i*chunkPartSize)*0.01,(y*chunkSize+j*chunkPartSize)*0.01)+1)/2;
-                double mountainNoise = sm.noise((x*chunkSize+i*chunkPartSize)*0.5,(y*chunkSize+j*chunkPartSize)*0.5);
-                height*=Math.pow(terrain*2,3)*250+smallNoise*20+bigNoise*50;
-                if(height>400)height+=mountainNoise*100;
-                if(height<45)height=40;
+                double height = getHeight(i,j);
                 pointsOriginal[i*(chunkParts+1)+j]=new Point3D(i*chunkPartSize,j*chunkPartSize, height);
 
                 if(height>60 && height<600 && (sm.noise((x*chunkSize+i*chunkPartSize)*0.001,(y*chunkSize+j*chunkPartSize)*0.001)+1)/2 > 0.55 && Math.random()*height<50) {
@@ -115,35 +112,78 @@ public class TerainChunk extends WorldObject {
                 edges[(i*chunkParts+j)*2]=new Edge(i*(chunkParts+1)+j,(i+1)*(chunkParts+1)+j);
                 edges[(i*chunkParts+j)*2+1]=new Edge(i*(chunkParts+1)+(j),i*(chunkParts+1)+(j+1));
 
-                sides[(i*chunkParts+j)*2].normals=new Point3D[]{new Point3D(0,0,1),new Point3D(0,0,1),new Point3D(0,0,1)};
-                sides[(i*chunkParts+j)*2+1].normals=new Point3D[]{new Point3D(0,0,1),new Point3D(0,0,1),new Point3D(0,0,1)};
+                //sides[(i*chunkParts+j)*2].normals=new Point3D[]{new Point3D(0,0,1),new Point3D(0,0,1),new Point3D(0,0,1)};
+                //sides[(i*chunkParts+j)*2+1].normals=new Point3D[]{new Point3D(0,0,1),new Point3D(0,0,1),new Point3D(0,0,1)};
             }
         }
         setup(false);
         hasPointNormals=true;
         for(int i=0;i<chunkParts;i++) {
             for (int j = 0; j < chunkParts; j++) {
-                if(i==0 ||  j==0) {
 
-                }else{
-                    Point3D total=sides[(i*chunkParts+j)*2].normal.getZ()>0?sides[(i*chunkParts+j)*2].normal:sides[(i*chunkParts+j)*2].normal.multiply(-1.0)
-                            .add(sides[((i-1)*chunkParts+j)*2].normal.getZ()>0?sides[((i-1)*chunkParts+j)*2].normal:sides[((i-1)*chunkParts+j)*2].normal.multiply(-1.0))
-                            .add(sides[((i-1)*chunkParts+j)*2+1].normal.getZ()>0?sides[((i-1)*chunkParts+j)*2+1].normal:sides[((i-1)*chunkParts+j)*2+1].normal.multiply(-1.0))
-                            .add(sides[((i)*chunkParts+j-1)*2].normal.getZ()>0?sides[((i)*chunkParts+j-1)*2].normal:sides[((i)*chunkParts+j-1)*2].normal.multiply(-1.0))
-                            .add(sides[((i)*chunkParts+j-1)*2+1].normal.getZ()>0?sides[((i)*chunkParts+j-1)*2+1].normal:sides[((i)*chunkParts+j-1)*2+1].normal.multiply(-1.0))
-                            .add(sides[((i-1)*chunkParts+j-1)*2+1].normal.getZ()>0?sides[((i-1)*chunkParts+j-1)*2+1].normal:sides[((i-1)*chunkParts+j-1)*2+1].normal.multiply(-1.0));
+                sides[(i*chunkParts+j)*2].normals=new Point3D[3];
+                sides[(i*chunkParts+j)*2].normals[0]=calculateNormal(i,j);
+                sides[(i*chunkParts+j)*2].normals[1]=calculateNormal(i+1,j);
+                sides[(i*chunkParts+j)*2].normals[2]=calculateNormal(i,j+1);
 
-                    Point3D pointNormal = total.normalize();
+                sides[(i*chunkParts+j)*2+1].normals=new Point3D[3];
+                sides[(i*chunkParts+j)*2+1].normals[0]=calculateNormal(i,j+1);
+                sides[(i*chunkParts+j)*2+1].normals[1]=calculateNormal(i+1,j+1);
+                sides[(i*chunkParts+j)*2+1].normals[2]=calculateNormal(i+1,j);
+                //Point3D normal = calculateNormal(i,j);
+                //System.out.println(normal);
 
-                    sides[(i*chunkParts+j)*2].normals[0]=pointNormal;
-                    sides[((i-1)*chunkParts+j)*2].normals[1]=pointNormal;
-                    sides[((i-1)*chunkParts+j)*2+1].normals[2]=pointNormal;
-                    sides[(i*chunkParts+(j-1))*2].normals[2]=pointNormal;
-                    sides[(i*chunkParts+(j-1))*2+1].normals[0]=pointNormal;
-                    sides[((i-1)*chunkParts+(j-1))*2+1].normals[1]=pointNormal;
-                }
+                /*sides[(i*chunkParts+j)*2].normals[0]= normal;
+                sides[((i-1)*chunkParts+j)*2].normals[1]=normal;
+                sides[((i-1)*chunkParts+j)*2+1].normals[2]=normal;
+                sides[(i*chunkParts+(j-1))*2].normals[2]=normal;
+                sides[(i*chunkParts+(j-1))*2+1].normals[0]=normal;
+                sides[((i-1)*chunkParts+(j-1))*2+1].normals[1]=normal;*/
             }
+
         }
-        //waters[0]=new Water(new Point3D[]{new Point3D(0,0,0).add(center), new Point3D(chunkSize,chunkSize,30).add(center)},13);
+//                if(i==0 ||  j==0) {
+//
+//                }else{
+//                    Point3D total=sides[(i*chunkParts+j)*2].normal.getZ()>0?sides[(i*chunkParts+j)*2].normal:sides[(i*chunkParts+j)*2].normal.multiply(-1.0)
+//                            .add(sides[((i-1)*chunkParts+j)*2].normal.getZ()>0?sides[((i-1)*chunkParts+j)*2].normal:sides[((i-1)*chunkParts+j)*2].normal.multiply(-1.0))
+//                            .add(sides[((i-1)*chunkParts+j)*2+1].normal.getZ()>0?sides[((i-1)*chunkParts+j)*2+1].normal:sides[((i-1)*chunkParts+j)*2+1].normal.multiply(-1.0))
+//                            .add(sides[((i)*chunkParts+j-1)*2].normal.getZ()>0?sides[((i)*chunkParts+j-1)*2].normal:sides[((i)*chunkParts+j-1)*2].normal.multiply(-1.0))
+//                            .add(sides[((i)*chunkParts+j-1)*2+1].normal.getZ()>0?sides[((i)*chunkParts+j-1)*2+1].normal:sides[((i)*chunkParts+j-1)*2+1].normal.multiply(-1.0))
+//                            .add(sides[((i-1)*chunkParts+j-1)*2+1].normal.getZ()>0?sides[((i-1)*chunkParts+j-1)*2+1].normal:sides[((i-1)*chunkParts+j-1)*2+1].normal.multiply(-1.0));
+//
+//                    Point3D pointNormal = total.normalize();
+//
+//                    sides[(i*chunkParts+j)*2].normals[0]=pointNormal;
+//                    sides[((i-1)*chunkParts+j)*2].normals[1]=pointNormal;
+//                    sides[((i-1)*chunkParts+j)*2+1].normals[2]=pointNormal;
+//                    sides[(i*chunkParts+(j-1))*2].normals[2]=pointNormal;
+//                    sides[(i*chunkParts+(j-1))*2+1].normals[0]=pointNormal;
+//                    sides[((i-1)*chunkParts+(j-1))*2+1].normals[1]=pointNormal;
+//                }
+//            }
+
+
+    }
+    //waters[0]=new Water(new Point3D[]{new Point3D(0,0,0).add(center), new Point3D(chunkSize,chunkSize,30).add(center)},13);
+    private Point3D calculateNormal(int i,int j){
+
+        double heightL = getHeight(i-1,j);//pointsOriginal[(i-1)*(chunkParts+1)+j].getZ();
+        double heightR = getHeight(i+1,j);//pointsOriginal[(i+1)*(chunkParts+1)+j].getZ();
+        double heightD= getHeight(i,j-1);//pointsOriginal[(i)*(chunkParts+1)+(j+1)].getZ();
+        double heightU = getHeight(i,j+1);//pointsOriginal[(i)*(chunkParts+1)+(j-1)].getZ();
+        Point3D normal = new Point3D(heightL-heightR, heightD-heightU, 20);
+        return normal.normalize();
+    }
+    private double getHeight(int i,int j){
+        double height = (sm.noise((x*chunkSize+i*chunkPartSize)*0.0005f,(y*chunkSize+j*chunkPartSize)*0.0005f)+1)/2;
+        double terrain = (sm.noise((x*chunkSize+i*chunkPartSize)*0.0001,(y*chunkSize+j*chunkPartSize)*0.0001)+1)/2;
+        double smallNoise = (sm.noise((x*chunkSize+i*chunkPartSize)*0.1,(y*chunkSize+j*chunkPartSize)*0.1)+1)/2;
+        double bigNoise = (sm.noise((x*chunkSize+i*chunkPartSize)*0.01,(y*chunkSize+j*chunkPartSize)*0.01)+1)/2;
+        double mountainNoise = sm.noise((x*chunkSize+i*chunkPartSize)*0.5,(y*chunkSize+j*chunkPartSize)*0.5);
+        height*=Math.pow(terrain*2,3)*250+smallNoise*20+bigNoise*50;
+        if(height>400)height+=mountainNoise*100;
+        if(height<45)height=40;
+        return height;
     }
 }

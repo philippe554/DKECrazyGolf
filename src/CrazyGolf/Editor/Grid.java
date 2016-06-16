@@ -13,18 +13,15 @@ public class Grid extends JComponent {
     private String[][] stringGrid;
     private Rectangle[][] rectangleGrid;
     private String[][] startEndStringGrid;
-    private Rectangle[][] startEndRectangleGrid;
 
     public Grid(){
-        stringGrid = new String[82][50];
-        rectangleGrid = new Rectangle[82][50];
-        startEndStringGrid = new String[82][50];
-        startEndRectangleGrid = new Rectangle[82][50];
+        stringGrid = new String[81][50];
+        rectangleGrid = new Rectangle[81][50];
+        startEndStringGrid = new String[81][50];
 
         for(int i=0; i<rectangleGrid.length; i++) {
             for (int j=0; j<rectangleGrid[0].length; j++) {
                 rectangleGrid[i][j] = new Rectangle(20*i,20*j, 20, 20);
-                startEndRectangleGrid[i][j] = new Rectangle(20*i,20*j, 20, 20);
                 stringGrid[i][j] = "E";
                 startEndStringGrid[i][j] = "E";
             }
@@ -42,6 +39,4 @@ public class Grid extends JComponent {
     public String[][] getStartEndStringGrid(){
         return startEndStringGrid;
     }
-
-    public Rectangle[][] getStartEndRectangleGrid() { return startEndRectangleGrid; }
 }
