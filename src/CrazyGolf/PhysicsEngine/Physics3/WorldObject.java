@@ -35,6 +35,7 @@ public class WorldObject {
     private Point3D[] boxing;
 
     public boolean mergeParent=false;
+    public boolean hasPointNormals=false;
 
     public WorldObject(WorldData w){
         ID=nextID;
@@ -279,6 +280,12 @@ public class WorldObject {
             for (int i = 0; i < pointsOriginal.length; i++) {
                 points[i] = rotation.multiply(pointsOriginal[i]).add(center);
             }
+            for(int i=0;i<sides.length;i++) {
+                sides[i].updateData(this);
+            }
+            for(int i=0;i<edges.length;i++) {
+                edges[i].updateData(this);
+            }
         }
         setupBoxing(recursively);
     }
@@ -287,43 +294,27 @@ public class WorldObject {
         if(ball.place.getX()+ball.size>boxing[0].getX()&&ball.place.getY()+ball.size>boxing[0].getY()&&ball.place.getZ()+ball.size>boxing[0].getZ()&&
                 ball.place.getX()-ball.size<boxing[1].getX()&&ball.place.getY()-ball.size<boxing[1].getY()&&ball.place.getZ()-ball.size<boxing[1].getZ()) {
             if (pointsOriginal != null) {
-                if (waters != null) {
-                    for (int j = 0; j < waters.length; j++) {
-                        ballWater(waters[j], ball, subframeInv);
-                    }
+                for (int j = 0; j < waters.length; j++) {
+                    ballWater(waters[j], ball, subframeInv);
                 }
-                if (sides != null) {
-                    for (int j = 0; j < sides.length; j++) {
-                        if (sideCollision(sides[j], ball)) {
-                            if (sides[j].friction > ball.friction) {
-                                ball.friction = (float) sides[j].friction;
-                            }
-                        }
-                    }
+                for (int j = 0; j < sides.length; j++) {
+                    sideCollision(sides[j], ball);
                 }
-                if (edges != null) {
-                    for (int j = 0; j < edges.length; j++) {
-                        edgeCollision(edges[j], ball);
-                    }
+                for (int j = 0; j < edges.length; j++) {
+                    edgeCollision(edges[j], ball);
                 }
-                if (points != null) {
-                    for (int j = 0; j < points.length; j++) {
-                        pointCollision(j, ball);
+                for (int j = 0; j < points.length; j++) {
+                    pointCollision(j, ball);
 
-                    }
                 }
             }
-        }
-        for(int i=0;i<subObjects.size();i++)
-        {
-            subObjects.get(i).applyCollision(ball,subframeInv);
+            for(int i=0;i<subObjects.size();i++)
+            {
+                subObjects.get(i).applyCollision(ball,subframeInv);
+            }
         }
     }
-    private boolean sideCollision(Side side, Ball ball){
-        side.updateData(this);
-
-        boolean result=false;
-
+    private void sideCollision(Side side, Ball ball){
         double Nr0 = side.abc.dotProduct(ball.place);
 
         double t = (side.d - Nr0) / side.Nv;
@@ -339,40 +330,31 @@ public class WorldObject {
                 double dir = t > 0 ? -1 : 1;
                 ball.place = intersection.add(side.normal.multiply(dir * ball.size));
                 ball.velocity = ball.velocity.subtract(side.normal.multiply(ball.velocity.dotProduct(side.normal) * 1.8));
-                result =true;
+                if (side.friction > ball.friction) {
+                    ball.friction = (float) side.friction;
+                }
             }
         }
-        return result;
     }
-    private boolean edgeCollision(Edge edge, Ball ball){
-        edge.updateData(this);
-
-        boolean result=false;
+    private void edgeCollision(Edge edge, Ball ball){
         double t = edge.unit.dotProduct(ball.place.subtract(points[edge.points[0]]));
-
         if (t > 0 && t < edge.lenght) {
             Point3D clossest = points[edge.points[0]].add(edge.unit.multiply(t));
             Point3D unit = ball.place.subtract(clossest);
-            double distance = unit.magnitude();
-            if (distance < ball.size) {
+            if (unit.magnitude() < ball.size) {
                 unit = unit.normalize();
                 ball.place = clossest.add(unit.multiply(ball.size));
                 ball.velocity = ball.velocity.subtract(unit.multiply(ball.velocity.dotProduct(unit) * 1.8));
-                result=true;
             }
         }
-        return result;
     }
-    private boolean pointCollision(int i, Ball ball){
-        boolean result=false;
+    private void pointCollision(int i, Ball ball){
         Point3D ballEndPoint = ball.place.subtract(points[i]);
         if (ballEndPoint.magnitude() < ball.size) {
             Point3D unit = ballEndPoint.normalize();
             ball.place = points[i].add(unit.multiply(ball.size));
             ball.velocity = ball.velocity.subtract(unit.multiply(ball.velocity.dotProduct(unit) * 1.8));
-            result=true;
         }
-        return result;
     }
     private void ballWater(Water w, Ball ball,double subFrameInv){
         if(ball.place.getX()>w.place[0].getX()&&
@@ -439,6 +421,7 @@ public class WorldObject {
     public Color3f getTriangleColor(int i) {
         return colors[sides[i].color];
     }
+    public Point3D getTriangleNormal(int i,int j){return sides[i].normals[j];}
     public int getAmountSubObjects(){return subObjects.size();}
     public WorldObject getSubObject(int i){return subObjects.get(i);}
     public boolean containsNonObjectData(){

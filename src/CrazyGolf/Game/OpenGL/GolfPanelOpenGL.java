@@ -91,9 +91,11 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
 
     enum ShaderType{ VertexShader, FragmentShader}
 
-    int programID;
+    int programID,programID2;
     int vertexLoc, colorLoc;
+    int vertexLoc2, colorLoc2, normalLoc2;
     int projMatrixLoc, viewMatrixLoc;
+    int projMatrixLoc2, viewMatrixLoc2;
 
     // storage for Matrices
     float projMatrix[] = new float[16];
@@ -101,6 +103,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
 
     World world;
     Map<Integer,VAO> triangles;
+    Map<Integer,VAONormal> trianglesWithPointNormals;
     Point3D arrowStart=null;
     Point3D arrowDir=null;
     float scale=200;
@@ -273,6 +276,14 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             }
         }
 
+        gl.glUseProgram(this.programID2);
+        gl.glUniformMatrix4fv( this.projMatrixLoc2, 1, false, this.projMatrix, 0);
+        gl.glUniformMatrix4fv( this.viewMatrixLoc2, 1, false, this.viewMatrix, 0);
+        trianglesWithPointNormals.values().forEach(e->{
+            gl.glBindVertexArray(e.VAO[0]);
+            gl.glDrawArrays(GL.GL_TRIANGLES, 0, e.vertices.length/4);
+        });
+
         // Check out error
         int error = gl.glGetError();
         if(error!=0){
@@ -285,6 +296,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         gl.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
         this.programID = this.newProgram(gl);
+        this.programID2 = newProgram2(gl);
         this.setupBuffers(gl);
     }
     @Override public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
@@ -313,6 +325,10 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
                 triangles.get(wo2).cleanUp(gl);
                 triangles.remove(wo2);
             }
+            if(trianglesWithPointNormals.containsKey(wo2)){
+                trianglesWithPointNormals.get(wo2).cleanUp(gl);
+                trianglesWithPointNormals.remove(wo2);
+            }
             wo2 = world.getNextRemoveObject();
         }
 
@@ -340,6 +356,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         renderScene(gl);
     }
     @Override public void dispose(GLAutoDrawable drawable) {
+
     }
 
     int newProgram(GL3 gl) {
@@ -356,6 +373,25 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
 
         this.projMatrixLoc = gl.glGetUniformLocation( p, "projMatrix");
         this.viewMatrixLoc = gl.glGetUniformLocation( p, "viewMatrix");
+
+        return p;
+    }
+    int newProgram2(GL3 gl) {
+        // create the two shader and compile them
+
+        int v = this.newShaderFromCurrentClass(gl, "vertex2.shader", ShaderType.VertexShader);
+        int f = this.newShaderFromCurrentClass(gl, "fragment2.shader", ShaderType.FragmentShader);
+
+        int p = this.createProgram(gl, v, f);
+
+        gl.glBindFragDataLocation(p, 0, "outColor");
+
+        this.vertexLoc2 = gl.glGetAttribLocation( p, "position");
+        this.colorLoc2 = gl.glGetAttribLocation( p, "color");
+        this.normalLoc2 = gl.glGetAttribLocation( p, "normal");
+
+        this.projMatrixLoc2 = gl.glGetUniformLocation( p, "projMatrix");
+        this.viewMatrixLoc2 = gl.glGetUniformLocation( p, "viewMatrix");
 
         return p;
     }
@@ -414,6 +450,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
 
     void setupBuffers(GL3 gl) {
         triangles=new HashMap<>();
+        trianglesWithPointNormals=new HashMap<>();
         /*for(int i=0;i<world.getAmountWorldObjects();i++){
             addObject(gl,world.getWorldObject(i));
         }
@@ -433,7 +470,12 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         if(!object.mergeParent && object.containsNonObjectData()) {
             float[] points = getObjectPoints(object);
             float[] colors = getObjectColors(object);
-            triangles.put(object.getID(), new VAO(gl, points, colors, vertexLoc, colorLoc));
+            if(object.hasPointNormals){
+                float[] normals = getObjectNormals(object);
+                trianglesWithPointNormals.put(object.getID(), new VAONormal(gl, points, colors,normals, vertexLoc2, colorLoc2,normalLoc2));
+            }else {
+                triangles.put(object.getID(), new VAO(gl, points, colors, vertexLoc, colorLoc));
+            }
         }
         for (int i = 0; i < object.getAmountSubObjects(); i++) {
             addObject(gl, object.getSubObject(i));
@@ -537,6 +579,29 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             }
         }
         return colors;
+    }
+    public float[] getObjectNormals(WorldObject object){
+        float[] normals = new float[object.getAmountSides()*12];
+        for(int i=0;i<object.getAmountSides();i++) {
+            normals[i*12+0]=(float) object.getTriangleNormal(i,0).getX();
+            normals[i*12+1]=(float) object.getTriangleNormal(i,0).getZ();
+            normals[i*12+2]=(float) object.getTriangleNormal(i,0).getY();
+            normals[i*12+3]=1.0f;
+            normals[i*12+4]=(float) object.getTriangleNormal(i,1).getX();
+            normals[i*12+5]=(float) object.getTriangleNormal(i,1).getZ();
+            normals[i*12+6]=(float) object.getTriangleNormal(i,1).getY();
+            normals[i*12+7]=1.0f;
+            normals[i*12+8]=(float) object.getTriangleNormal(i,2).getX();
+            normals[i*12+9]=(float) object.getTriangleNormal(i,2).getZ();
+            normals[i*12+10]=(float) object.getTriangleNormal(i,2).getY();
+            normals[i*12+11]=1.0f;
+        }
+        for(int i=0;i<object.getAmountSubObjects();i++) {
+            if(object.getSubObject(i).mergeParent && object.getSubObject(i).hasPointNormals){
+                normals=merge(normals,getObjectNormals(object.getSubObject(i)));
+            }
+        }
+        return normals;
     }
     public static float[] merge(float[] first, float[] second) {
         float[] result = Arrays.copyOf(first, first.length + second.length);

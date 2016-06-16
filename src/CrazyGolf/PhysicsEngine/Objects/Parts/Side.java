@@ -17,6 +17,8 @@ public class Side {
     public double Nv;
     public double friction;
 
+    public Point3D[] normals;
+
     public Side(World world, int p1, int p2, int p3, int c, double f){
         points=new int[3];
         points[0]=p1;
@@ -51,6 +53,7 @@ public class Side {
         points[2]=p3;
         color=c;
         friction=f;
+        normal=null;
     }
     public void updateData(WorldObject worldObject){
         Point3D d1= worldObject.getPoint(points[0]).subtract(worldObject.getPoint(points[2]));

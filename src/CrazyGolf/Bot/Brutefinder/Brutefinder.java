@@ -65,7 +65,7 @@ public class Brutefinder implements BotInterface{
                 int velocityCounter = 0;
                 int totalCounter=0;
                 boolean outOfWorld = false;
-                if(World.DEBUG)System.out.print("Brutefinder: " + l + ";" + m+" Start ");
+                //if(World.DEBUG)System.out.print("Brutefinder: " + l + ";" + m+" Start ");
                 while (velocityCounter < 20) {
                     totalCounter++;
                     physics.stepSimulated(balls,true);
@@ -80,7 +80,7 @@ public class Brutefinder implements BotInterface{
                         velocityCounter = 20;
                     }
                 }
-                if(World.DEBUG)System.out.print(+totalCounter+" Stop");
+                //if(World.DEBUG)System.out.print(+totalCounter+" Stop");
                 int newi=(int)(balls.get(playerNumber).place.getX()/GS)+xOffset;
                 int newj=(int)(balls.get(playerNumber).place.getY()/GS)+yOffset;
                 int newk=(int)(balls.get(playerNumber).place.getZ()/GS)+zOffset;
@@ -95,22 +95,22 @@ public class Brutefinder implements BotInterface{
                                 bestDir = l;
                                 bestPow = m;
                                 if (nodes[newi][newj][newk].minPath == 0) {
-                                    if (World.DEBUG) System.out.print(" - Inside hole");
+                                    //if (World.DEBUG) System.out.print(" - Inside hole");
                                 }
                             }
-                            if (World.DEBUG) System.out.println(" - Min Path to hole: "+newBestPlace);
+                            //if (World.DEBUG) System.out.println(" - Min Path to hole: "+newBestPlace);
                         }
                         else
                         {
-                            if (World.DEBUG) System.out.println(" - Grid not calculated...");
+                            //if (World.DEBUG) System.out.println(" - Grid not calculated...");
                         }
                     }
                     else
                     {
-                        if(World.DEBUG)System.out.println(" - Outside grid");
+                        //if(World.DEBUG)System.out.println(" - Outside grid");
                     }
                 } else {
-                    if(World.DEBUG)System.out.println(" - Outside World");
+                    //if(World.DEBUG)System.out.println(" - Outside World");
                 }
             }
         }
