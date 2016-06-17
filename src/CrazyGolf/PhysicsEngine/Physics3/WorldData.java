@@ -491,7 +491,7 @@ public class WorldData implements World,Physics{
                 alreadyConverted[k][l] = true;
             }
         }
-        return new Grass(offset.add(i*gs,j*gs,0),Matrix.getRotatoinMatrix(0,0,0),iCounter*gs,jCounter*gs,this);
+        return new Grass(offset.add(i*gs,j*gs,0),Matrix.getRotatoinMatrix(0,0,0),iCounter*gs,jCounter*gs,this,gs);
     }
     private WorldObject addWall(String[][]data,boolean[][]alreadyConverted,int i,int j,double gs,Point3D offset) {
         int iCounter=0;
