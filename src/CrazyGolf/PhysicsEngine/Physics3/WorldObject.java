@@ -421,7 +421,13 @@ public class WorldObject {
     public Color3f getTriangleColor(int i) {
         return colors[sides[i].color];
     }
-    public Point3D getTriangleNormal(int i,int j){return sides[i].normals[j];}
+    public Point3D getTriangleNormal(int i,int j){
+        if(hasPointNormals) {
+            return sides[i].normals[j];
+        }else{
+            return sides[i].normal;
+        }
+    }
     public int getAmountSubObjects(){return subObjects.size();}
     public WorldObject getSubObject(int i){return subObjects.get(i);}
     public boolean containsNonObjectData(){

@@ -100,4 +100,14 @@ public class Sphere {
 
         return color;
     }
+    public static float[] getNormals(){
+        float[] normals = new float[unitSphere.length*4];
+        for(int i=0;i<unitSphere.length;i++){
+            normals[i*4+0]= (float) unitSphere[i].getX();
+            normals[i*4+1]= (float) unitSphere[i].getZ();
+            normals[i*4+2]= (float) unitSphere[i].getY();
+            normals[i*4+3]= 0.0f;
+        }
+        return normals;
+    }
 }

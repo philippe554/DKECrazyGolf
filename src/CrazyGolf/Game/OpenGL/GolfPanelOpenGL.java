@@ -246,20 +246,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             gl.glDrawArrays(GL.GL_TRIANGLES, 0, e.vertices.length/4);
         });
 
-        for(int i=0;i<world.getAmountBalls();i++){
-            VAO set1 = new VAO(gl, Sphere.getSphere(world.getBall(i).place, (float) world.getBall(i).size,scale), Sphere.getSphereColor(1,0,0), vertexLoc, colorLoc);
-            gl.glBindVertexArray(set1.VAO[0]);
-            gl.glDrawArrays(GL.GL_TRIANGLES, 0, set1.vertices.length/4);
-            set1.cleanUp(gl);
 
-            VAO set2 = new VAO(gl,new float[]{(float)world.getBall(i).place.getX(),(float) world.getBall(i).place.getZ(),(float) world.getBall(i).place.getY(),scale,
-                    (float) (world.getBall(i).windVector.getX()*5000+world.getBall(i).place.getX()),
-                    (float) (world.getBall(i).windVector.getZ()*5000+world.getBall(i).place.getZ()),
-                    (float) (world.getBall(i).windVector.getY()*5000+world.getBall(i).place.getY()),scale},new float[]{0,0,0,0,0,0,0,0},vertexLoc, colorLoc);
-            gl.glBindVertexArray(set2.VAO[0]);
-            gl.glDrawArrays(GL.GL_LINES, 0, 2);
-            set2.cleanUp(gl);
-        }
 
         if(arrowStart!=null){
             VAO set = new VAO(gl,new float[]{(float) arrowStart.getX(),(float) arrowStart.getZ(),(float) arrowStart.getY(),scale,
@@ -279,6 +266,22 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         gl.glUseProgram(this.programID2);
         gl.glUniformMatrix4fv( this.projMatrixLoc2, 1, false, this.projMatrix, 0);
         gl.glUniformMatrix4fv( this.viewMatrixLoc2, 1, false, this.viewMatrix, 0);
+        for(int i=0;i<world.getAmountBalls();i++){
+            VAONormal set1 = new VAONormal(gl, Sphere.getSphere(world.getBall(i).place, (float) world.getBall(i).size,scale), Sphere.getSphereColor(1,0,0),Sphere.getNormals()
+                    , vertexLoc2, colorLoc2,normalLoc2);
+            gl.glBindVertexArray(set1.VAO[0]);
+            gl.glDrawArrays(GL.GL_TRIANGLES, 0, set1.vertices.length/4);
+            set1.cleanUp(gl);
+
+            VAO set2 = new VAO(gl,new float[]{(float)world.getBall(i).place.getX(),(float) world.getBall(i).place.getZ(),(float) world.getBall(i).place.getY(),scale,
+                    (float) (world.getBall(i).windVector.getX()*5000+world.getBall(i).place.getX()),
+                    (float) (world.getBall(i).windVector.getZ()*5000+world.getBall(i).place.getZ()),
+                    (float) (world.getBall(i).windVector.getY()*5000+world.getBall(i).place.getY()),scale},new float[]{0,0,0,0,0,0,0,0},vertexLoc, colorLoc);
+            gl.glBindVertexArray(set2.VAO[0]);
+            gl.glDrawArrays(GL.GL_LINES, 0, 2);
+            set2.cleanUp(gl);
+        }
+
         trianglesWithPointNormals.values().forEach(e->{
             gl.glBindVertexArray(e.VAO[0]);
             gl.glDrawArrays(GL.GL_TRIANGLES, 0, e.vertices.length/4);
@@ -307,7 +310,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             height = 1;
 
         ratio = (1.0f * width) / height;
-        this.projMatrix = buildProjectionMatrix(53.13f, ratio, 0.2f, 40.0f, this.projMatrix);
+        this.projMatrix = buildProjectionMatrix(53.13f, ratio, 0.2f, 60.0f, this.projMatrix);
     }
     @Override public void display(GLAutoDrawable drawable) {
 
@@ -470,12 +473,8 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         if(!object.mergeParent && object.containsNonObjectData()) {
             float[] points = getObjectPoints(object);
             float[] colors = getObjectColors(object);
-            if(object.hasPointNormals){
-                float[] normals = getObjectNormals(object);
-                trianglesWithPointNormals.put(object.getID(), new VAONormal(gl, points, colors,normals, vertexLoc2, colorLoc2,normalLoc2));
-            }else {
-                triangles.put(object.getID(), new VAO(gl, points, colors, vertexLoc, colorLoc));
-            }
+            float[] normals = getObjectNormals(object);
+            trianglesWithPointNormals.put(object.getID(), new VAONormal(gl, points, colors,normals, vertexLoc2, colorLoc2,normalLoc2));
         }
         for (int i = 0; i < object.getAmountSubObjects(); i++) {
             addObject(gl, object.getSubObject(i));
@@ -581,23 +580,50 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         return colors;
     }
     public float[] getObjectNormals(WorldObject object){
-        float[] normals = new float[object.getAmountSides()*12];
+        float[] normals = new float[object.getAmountSides()*12+object.getAmountWaters()*24];
         for(int i=0;i<object.getAmountSides();i++) {
             normals[i*12+0]=(float) object.getTriangleNormal(i,0).getX();
             normals[i*12+1]=(float) object.getTriangleNormal(i,0).getZ();
             normals[i*12+2]=(float) object.getTriangleNormal(i,0).getY();
-            normals[i*12+3]=1.0f;
+            normals[i*12+3]=0;
             normals[i*12+4]=(float) object.getTriangleNormal(i,1).getX();
             normals[i*12+5]=(float) object.getTriangleNormal(i,1).getZ();
             normals[i*12+6]=(float) object.getTriangleNormal(i,1).getY();
-            normals[i*12+7]=1.0f;
+            normals[i*12+7]=0;
             normals[i*12+8]=(float) object.getTriangleNormal(i,2).getX();
             normals[i*12+9]=(float) object.getTriangleNormal(i,2).getZ();
             normals[i*12+10]=(float) object.getTriangleNormal(i,2).getY();
-            normals[i*12+11]=1.0f;
+            normals[i*12+11]=0;
+        }
+        for(int i=0;i<object.getAmountWaters();i++) {
+            normals[object.getAmountSides()*12 +i*12+0]=0;
+            normals[object.getAmountSides()*12 +i*12+1]=1;
+            normals[object.getAmountSides()*12 +i*12+2]=0;
+            normals[object.getAmountSides()*12 +i*12+3]=0;
+            normals[object.getAmountSides()*12 +i*12+4]=0;
+            normals[object.getAmountSides()*12 +i*12+5]=1;
+            normals[object.getAmountSides()*12 +i*12+6]=0;
+            normals[object.getAmountSides()*12 +i*12+7]=0;
+            normals[object.getAmountSides()*12 +i*12+8]=0;
+            normals[object.getAmountSides()*12 +i*12+9]=1;
+            normals[object.getAmountSides()*12 +i*12+10]=0;
+            normals[object.getAmountSides()*12 +i*12+11]=0;
+            normals[object.getAmountSides()*12 +i*12+12]=0;
+            normals[object.getAmountSides()*12 +i*12+13]=1;
+            normals[object.getAmountSides()*12 +i*12+14]=0;
+            normals[object.getAmountSides()*12 +i*12+15]=0;
+            normals[object.getAmountSides()*12 +i*12+16]=0;
+            normals[object.getAmountSides()*12 +i*12+17]=1;
+            normals[object.getAmountSides()*12 +i*12+18]=0;
+            normals[object.getAmountSides()*12 +i*12+19]=0;
+            normals[object.getAmountSides()*12 +i*12+20]=0;
+            normals[object.getAmountSides()*12 +i*12+21]=1;
+            normals[object.getAmountSides()*12 +i*12+22]=0;
+            normals[object.getAmountSides()*12 +i*12+23]=0;
+
         }
         for(int i=0;i<object.getAmountSubObjects();i++) {
-            if(object.getSubObject(i).mergeParent && object.getSubObject(i).hasPointNormals){
+            if(object.getSubObject(i).mergeParent){
                 normals=merge(normals,getObjectNormals(object.getSubObject(i)));
             }
         }

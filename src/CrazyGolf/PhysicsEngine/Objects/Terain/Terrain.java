@@ -14,7 +14,7 @@ public class Terrain{
     private Map<Key,TerainChunk> chunks;
     private SimplexNoise sn;
 
-    public static final int viewDistance = 5;
+    public static final int viewDistance = 6;
     public static final int loadDistance = 7;
 
     private int x;

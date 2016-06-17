@@ -420,7 +420,7 @@ public class WorldData implements World,Physics{
                         }
                     }else if(data[i][j].equals("P"))
                     {
-                        wo.subObjects.add(new Pool(this,offset.add(i*gs,j*gs,0), Matrix.getRotatoinMatrix(0,0,0),280,150,12,25));
+                        wo.subObjects.add(new Pool(this,offset.add(i*gs,j*gs,0), Matrix.getRotatoinMatrix(0,0,0),280,150,24,25));
                         for(int k=0;k<14;k++)
                         {
                             for(int l=0;l<14;l++)
