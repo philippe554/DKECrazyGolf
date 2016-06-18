@@ -2,20 +2,28 @@ package CrazyGolf.PhysicsEngine.Objects.Native;
 
 import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
+import java.util.ArrayList;
 
 /**
  * Created by pmmde on 6/13/2016.
  */
-public class Bridge extends Factory{
+public class Bridge extends WorldObject{
     public Bridge(WorldData w, Point3D offset, Matrix r , double length, double height, double borderHeight, double width, int parts) {
         super(w);
-        dynamicColors.add(new Color3f(0.8f, 0.8f, 0.8f));//0
-        dynamicColors.add(new Color3f(0.5f, 0.5f, 0.5f));//1
-        dynamicColors.add(new Color3f(0.0f, 1.0f, 0.0f));//2
-        dynamicColors.add(new Color3f(0.2f, 0.2f, 0.2f));
+        pointsOriginal=new ArrayList<>();
+        colors=new ArrayList<>();
+        sides=new ArrayList<>();
+        edges=new ArrayList<>();
+        waters=new ArrayList<>();
+
+        colors.add(new Color3f(0.8f, 0.8f, 0.8f));//0
+        colors.add(new Color3f(0.5f, 0.5f, 0.5f));//1
+        colors.add(new Color3f(0.0f, 1.0f, 0.0f));//2
+        colors.add(new Color3f(0.2f, 0.2f, 0.2f));
         for (int j = 0; j < 2; j++) {
             double angleGrowSize = Math.PI / (parts / 2);
             for (double angle = 0; angle < Math.PI * 1.99; angle += angleGrowSize) {
@@ -50,7 +58,8 @@ public class Bridge extends Factory{
                 new Point3D(20*4-40,20*24-140,0),
                 new Point3D(0-40,20*24-140,0),
                 2,1);
-        print(offset,r);
 
+        center=offset;
+        rotation=r;
     }
 }

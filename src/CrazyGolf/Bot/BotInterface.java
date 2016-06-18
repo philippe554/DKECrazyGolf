@@ -3,6 +3,7 @@ package CrazyGolf.Bot;
 import CrazyGolf.PhysicsEngine.Physics12.World;
 import CrazyGolf.PhysicsEngine.Physics3.Physics;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -14,6 +15,6 @@ public interface BotInterface {
     void calcNextShot(int playerNumber);
 
     void makeDatabase();
-    LinkedList<String> ouputDatabase();
-    void loadDatabase(LinkedList<String> input);
+    ArrayList<String> ouputDatabase();
+    void loadDatabase(ArrayList<String> input);
 }

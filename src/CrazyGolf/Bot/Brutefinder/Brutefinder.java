@@ -142,8 +142,8 @@ public class Brutefinder implements BotInterface{
 
         if(World.DEBUG)System.out.println("Brutefinder: Done initializing");
     }
-    @Override public LinkedList<String> ouputDatabase(){
-        LinkedList<String> output = new LinkedList<>();
+    @Override public ArrayList<String> ouputDatabase(){
+        ArrayList<String> output = new ArrayList<>();
 
         output.add(Integer.toString(GS));
         output.add(Integer.toString(nodes.length)+";"+Integer.toString(nodes[0].length)+";"+Integer.toString(nodes[0][0].length));
@@ -164,7 +164,7 @@ public class Brutefinder implements BotInterface{
 
         return output;
     }
-    @Override public void loadDatabase(LinkedList<String> input){
+    @Override public void loadDatabase(ArrayList<String> input){
         GS=Integer.parseInt(input.get(0));
         String[] data = input.get(1).split(";");
         nodes = new Node[Integer.parseInt(data[0])][Integer.parseInt(data[1])][Integer.parseInt(data[2])];

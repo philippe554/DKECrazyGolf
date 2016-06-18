@@ -3,6 +3,7 @@ package CrazyGolf.PhysicsEngine.Physics3;
 import CrazyGolf.PhysicsEngine.Objects.Parts.Ball;
 import javafx.geometry.Point3D;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -20,7 +21,7 @@ public interface World {
     int getAmountBalls();
     Ball getBall(int i);
 
-    void load(LinkedList<String> data);
+    void load(ArrayList<String> data);
     void load(String[][]data,double gs,Point3D offset);
-    LinkedList<String> save();
+    ArrayList<String> save();
 }

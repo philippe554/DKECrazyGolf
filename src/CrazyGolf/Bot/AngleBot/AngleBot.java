@@ -71,12 +71,12 @@ public class AngleBot implements BotInterface {
     }
 
     @Override
-    public LinkedList<String> ouputDatabase() {
+    public ArrayList<String> ouputDatabase() {
         return null;
     }
 
     @Override
-    public void loadDatabase(LinkedList<String> input) {
+    public void loadDatabase(ArrayList<String> input) {
 
     }
 }

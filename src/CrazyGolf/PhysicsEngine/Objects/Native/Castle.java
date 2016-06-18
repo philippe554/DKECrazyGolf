@@ -2,20 +2,28 @@ package CrazyGolf.PhysicsEngine.Objects.Native;
 
 import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
+import java.util.ArrayList;
 
 /**
  * Created by pmmde on 6/13/2016.
  */
-public class Castle extends Factory{
+public class Castle extends WorldObject{
     public Castle(WorldData w, Point3D offset, Matrix r, double parts, double towerSize, double towerHeight) {
         super(w);
-        dynamicColors.add(new Color3f(1.0f, 0.0f, 0.5f));//3
-        dynamicColors.add(new Color3f(0.2f, 0.2f, 0.2f));//4
-        dynamicColors.add(new Color3f(0.4f, 0.4f, 0.4f));//5
-        dynamicColors.add(new Color3f(0.0f, 1.0f, 0.0f));//2
+        pointsOriginal=new ArrayList<>();
+        colors=new ArrayList<>();
+        sides=new ArrayList<>();
+        edges=new ArrayList<>();
+        waters=new ArrayList<>();
+
+        colors.add(new Color3f(1.0f, 0.0f, 0.5f));//3
+        colors.add(new Color3f(0.2f, 0.2f, 0.2f));//4
+        colors.add(new Color3f(0.4f, 0.4f, 0.4f));//5
+        colors.add(new Color3f(0.0f, 1.0f, 0.0f));//2
         for (int j = 0; j < 2; j++) {
             double angleGrowSize = Math.PI / (parts / 2);
             for (double angle = 0; angle < Math.PI * 1.99; angle += angleGrowSize) {
@@ -48,6 +56,7 @@ public class Castle extends Factory{
                 new Point3D(20*13-40,20*4-40,0),
                 new Point3D(0-40,20*4-40,0),
                 3,0.1);
-        print(offset,r);
+        center=offset;
+        rotation=r;
     }
 }

@@ -2,19 +2,27 @@ package CrazyGolf.PhysicsEngine.Objects.Native;
 
 import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
+import java.util.ArrayList;
 
 /**
  * Created by pmmde on 6/13/2016.
  */
-public class Hill extends Factory{
-    public Hill(WorldData w, Point3D c, Matrix r, double xSize, double ySize,double zSize, int parts) {
+public class Hill extends WorldObject {
+    public Hill(WorldData w, Point3D offset, Matrix r, double xSize, double ySize,double zSize, int parts) {
         super(w);
+        pointsOriginal=new ArrayList<>();
+        colors=new ArrayList<>();
+        sides=new ArrayList<>();
+        edges=new ArrayList<>();
+        waters=new ArrayList<>();
+
         double xStep = xSize/parts;
         double yStep = ySize/parts;
-        dynamicColors.add(new Color3f(0.0f, 1.0f, 0.0f));
+        colors.add(new Color3f(0.0f, 1.0f, 0.0f));
         for(double i=0;i<(parts);i++)
         {
             for(double j=0;j<(parts);j++)
@@ -26,6 +34,7 @@ public class Hill extends Factory{
                 addSquare(p1,p2,p3,p4,0,0.1);
             }
         }
-        print(c,r);
+        center=offset;
+        rotation=r;
     }
 }

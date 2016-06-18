@@ -5,6 +5,7 @@ import CrazyGolf.PhysicsEngine.Physics12.World;
 import CrazyGolf.PhysicsEngine.Physics3.Physics;
 import javafx.geometry.Point3D;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import java.lang.Math;
@@ -41,12 +42,12 @@ public class RandomBot implements BotInterface {
     }
 
     @Override
-    public LinkedList<String> ouputDatabase() {
+    public ArrayList<String> ouputDatabase() {
         return null;
     }
 
     @Override
-    public void loadDatabase(LinkedList<String> input) {
+    public void loadDatabase(ArrayList<String> input) {
 
     }
 }

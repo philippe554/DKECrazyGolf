@@ -7,6 +7,7 @@ import CrazyGolf.PhysicsEngine.Physics12.WorldGPUBotOpti;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
 import javafx.geometry.Point3D;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -27,12 +28,12 @@ public class Export implements Runnable {
         done=false;
     }
     @Override public void run() {
-        LinkedList<String> brutefinderData = null;
+        ArrayList<String> brutefinderData = null;
         WorldData world = new WorldData();
         for(int i=0;i<grid.length;i++) {
             world.load(grid[i].getStringGrid(), gridSize, new Point3D(0,0,i*50+100));
         }
-        LinkedList<String> worldData = world.save();
+        ArrayList<String> worldData = world.save();
 
         boolean calcDatabase = false;
 

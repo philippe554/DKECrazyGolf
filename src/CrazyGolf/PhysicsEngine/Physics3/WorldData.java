@@ -34,7 +34,9 @@ public class WorldData implements World,Physics{
 
     private static final int amountOfThreads=4;
 
-    private static final boolean terainPhysics=false;
+    private static final boolean terainPhysics=true;
+
+    private boolean borderAdded=false;
 
     public WorldData(){
         objects=new ArrayList<>();
@@ -47,6 +49,7 @@ public class WorldData implements World,Physics{
         wind=new SimplexNoise(4654654);
         start = new Ball(20, new Point3D(0,0,0));
         hole = new Point3D(0,0,0);
+        terrain.run();
     }
 
     @Override public void step(boolean useBallBallCollision) {
@@ -234,7 +237,7 @@ public class WorldData implements World,Physics{
         }
     }
 
-    @Override public void load(LinkedList<String> data) {
+    @Override public void load(ArrayList<String> data) {
         String copyEnd="";
         boolean copyLock=false;
         Class copyObject = null;
@@ -329,130 +332,125 @@ public class WorldData implements World,Physics{
         }
     }
     @Override public void load(String[][] data, double gs, Point3D offset) {
-        WorldObject wo = new WorldObject(this);
-        boolean[][]alreadyConverted=new boolean[data.length][data[0].length];
-        for(int i=0;i<alreadyConverted.length;i++)
-        {
-            for(int j=0;j<alreadyConverted[i].length;j++)
-            {
-                alreadyConverted[i][j]=false;
-            }
-        }
+        boolean isEmpty=true;
         for(int i=0;i<data.length;i++) {
             for (int j = 0; j < data[i].length; j++) {
-                if (!alreadyConverted[i][j]) {
-                    if (data[i][j].equals("B")) {
-                        start = new Ball(20, new Point3D(i * gs + gs, j * gs + gs, 20).add(offset));
-                        for (int k = 0; k < 2; k++) {
-                            for (int l = 0; l < 2; l++) {
-                                if ((i + k) < data.length && (j + l) < data[i + k].length) {
-                                    alreadyConverted[i + k][j + l] = true;
+                if (!data[i][j].equals("E") && (!data[i][j].equals("Q"))) {
+                    isEmpty = false;
+                }
+            }
+        }
+        if(!isEmpty) {
+            WorldObject wo = new WorldObject(this);
+            if (!borderAdded) {
+                borderAdded = true;
+                Point3D borderOffset=new Point3D(offset.getX(),offset.getY(),0);
+                wo.subObjects.add(new FieldBorder(borderOffset, Matrix.getRotatoinMatrix(0, 0, 0), gs, data, this,offset.getZ()));
+            }
+            boolean[][] alreadyConverted = new boolean[data.length][data[0].length];
+            for (int i = 0; i < alreadyConverted.length; i++) {
+                for (int j = 0; j < alreadyConverted[i].length; j++) {
+                    alreadyConverted[i][j] = false;
+                }
+            }
+            for (int i = 0; i < data.length; i++) {
+                for (int j = 0; j < data[i].length; j++) {
+                    if (!alreadyConverted[i][j]) {
+                        if (data[i][j].equals("B")) {
+                            start = new Ball(20, new Point3D(i * gs + gs, j * gs + gs, 20).add(offset));
+                            for (int k = 0; k < 2; k++) {
+                                for (int l = 0; l < 2; l++) {
+                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        for(int i=0;i<alreadyConverted.length;i++)
-        {
-            for(int j=0;j<alreadyConverted[i].length;j++)
-            {
-                alreadyConverted[i][j]=false;
+            for (int i = 0; i < alreadyConverted.length; i++) {
+                for (int j = 0; j < alreadyConverted[i].length; j++) {
+                    alreadyConverted[i][j] = false;
+                }
             }
-        }
-        for(int i=0;i<data.length;i++) {
-            for (int j = 0; j < data[i].length; j++) {
-                if(!alreadyConverted[i][j]) {
-                    if (data[i][j].equals("W")) {
-                        wo.subObjects.add(addWall(data,alreadyConverted,i,j,gs,offset));
-                    } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
-                        wo.subObjects.add(addGrass(data,alreadyConverted,i,j,gs,offset));
-                    } else if (data[i][j].equals("S")) {
-                        wo.subObjects.add(addSand(data,alreadyConverted,i,j,gs,offset));
-                    } else if (data[i][j].equals("H")) {
-                        wo.subObjects.add(new Hole(this,offset.add(i*gs+1.5*gs,j*gs+1.5*gs,0), Matrix.getRotatoinMatrix(0,0,0),30,80,30));
-                        hole=offset.add(i*gs+1.5*gs,j*gs+1.5*gs,-80+20);
-                        for(int k=0;k<3;k++)
-                        {
-                            for(int l=0;l<3;l++)
-                            {
-                                if(i+k<data.length && j+l<data[i+k].length) {
-                                    alreadyConverted[i + k][j + l] = true;
+            for (int i = 0; i < data.length; i++) {
+                for (int j = 0; j < data[i].length; j++) {
+                    if (!alreadyConverted[i][j]) {
+                        if (data[i][j].equals("W")) {
+                            wo.subObjects.add(addWall(data, alreadyConverted, i, j, gs, offset));
+                        } else if (data[i][j].equals("F") || data[i][j].equals("B")) {
+                            wo.subObjects.add(addGrass(data, alreadyConverted, i, j, gs, offset));
+                        } else if (data[i][j].equals("S")) {
+                            wo.subObjects.add(addSand(data, alreadyConverted, i, j, gs, offset));
+                        } else if (data[i][j].equals("H")) {
+                            wo.subObjects.add(new Hole(this, offset.add(i * gs + 1.5 * gs, j * gs + 1.5 * gs, 0), Matrix.getRotatoinMatrix(0, 0, 0), 30, 80, 30));
+                            hole = offset.add(i * gs + 1.5 * gs, j * gs + 1.5 * gs, -80 + 20);
+                            for (int k = 0; k < 3; k++) {
+                                for (int l = 0; l < 3; l++) {
+                                    if (i + k < data.length && j + l < data[i + k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
                                 }
                             }
-                        }
-                    }else if(data[i][j].equals("L"))
-                    {
-                        wo.subObjects.add(new Loop(this,offset.add(i*gs+140,j*gs+60,140), Matrix.getRotatoinMatrix(0,0,0),140,60,24,25));
-                        for(int k=0;k<14;k++)
-                        {
-                            for(int l=0;l<6;l++)
-                            {
-                                if((i+k)<data.length && (j+l)<data[i+k].length) {
-                                    alreadyConverted[i + k][j + l] = true;
+                        } else if (data[i][j].equals("L")) {
+                            wo.subObjects.add(new Loop(this, offset.add(i * gs + 140, j * gs + 60, 140), Matrix.getRotatoinMatrix(0, 0, 0), 140, 60, 24, 25));
+                            for (int k = 0; k < 14; k++) {
+                                for (int l = 0; l < 6; l++) {
+                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
                                 }
                             }
-                        }
-                    }else if(data[i][j].equals("C"))
-                    {
-                        wo.subObjects.add(new Castle(this,offset.add(i*gs+40,j*gs+40,0), Matrix.getRotatoinMatrix(0,0,0),20,40,180));
-                        for(int k=0;k<13;k++)
-                        {
-                            for(int l=0;l<4;l++)
-                            {
-                                if((i+k)<data.length && (j+l)<data[i+k].length) {
-                                    alreadyConverted[i + k][j + l] = true;
+                        } else if (data[i][j].equals("C")) {
+                            wo.subObjects.add(new Castle(this, offset.add(i * gs + 40, j * gs + 40, 0), Matrix.getRotatoinMatrix(0, 0, 0), 20, 40, 180));
+                            for (int k = 0; k < 13; k++) {
+                                for (int l = 0; l < 4; l++) {
+                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
                                 }
                             }
-                        }
-                    } else if(data[i][j].equals("R"))
-                    {
-                        wo.subObjects.add(new Bridge(this,offset.add(i*gs+40,j*gs+140,0), Matrix.getRotatoinMatrix(0,0,0),200,50,20,80,20));
-                        for(int k=0;k<4;k++)
-                        {
-                            for(int l=0;l<24;l++)
-                            {
-                                if((i+k)<data.length && (j+l)<data[i+k].length) {
-                                    alreadyConverted[i + k][j + l] = true;
+                        } else if (data[i][j].equals("R")) {
+                            wo.subObjects.add(new Bridge(this, offset.add(i * gs + 40, j * gs + 140, 0), Matrix.getRotatoinMatrix(0, 0, 0), 200, 50, 20, 80, 20));
+                            for (int k = 0; k < 4; k++) {
+                                for (int l = 0; l < 24; l++) {
+                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
                                 }
                             }
-                        }
-                    }else if(data[i][j].equals("P"))
-                    {
-                        wo.subObjects.add(new Pool(this,offset.add(i*gs,j*gs,0), Matrix.getRotatoinMatrix(0,0,0),280,150,24,25));
-                        for(int k=0;k<14;k++)
-                        {
-                            for(int l=0;l<14;l++)
-                            {
-                                if((i+k)<data.length && (j+l)<data[i+k].length) {
-                                    alreadyConverted[i + k][j + l] = true;
+                        } else if (data[i][j].equals("P")) {
+                            wo.subObjects.add(new Pool(this, offset.add(i * gs, j * gs, 0), Matrix.getRotatoinMatrix(0, 0, 0), 280, 150, 24, 25));
+                            for (int k = 0; k < 14; k++) {
+                                for (int l = 0; l < 14; l++) {
+                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
                                 }
                             }
-                        }
-                    }else if(data[i][j].equals("M")){
-                        wo.subObjects.add(addHill(data,i,j,gs,offset,"FBS"));
-                        for(int k=0;k<4;k++)
-                        {
-                            for(int l=0;l<4;l++)
-                            {
-                                if((i+k)<data.length && (j+l)<data[i+k].length) {
-                                    alreadyConverted[i + k][j + l] = true;
+                        } else if (data[i][j].equals("M")) {
+                            wo.subObjects.add(addHill(data, i, j, gs, offset, "FBS"));
+                            for (int k = 0; k < 4; k++) {
+                                for (int l = 0; l < 4; l++) {
+                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                        alreadyConverted[i + k][j + l] = true;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        if(wo.getAmountSubObjects()>0) {
-            newObjects.offer(wo);
-            wo.setup(true);
-            objects.add(wo);
+            if (wo.getAmountSubObjects() > 0) {
+                newObjects.offer(wo);
+                wo.setup(true);
+                objects.add(wo);
+            }
         }
     }
-    @Override public LinkedList<String> save() {
-        LinkedList<String> data =new LinkedList<>();
+    @Override public ArrayList<String> save() {
+        ArrayList<String> data =new ArrayList<>();
         data.add("balls");
         data.add(start.place.getX()+";"+start.place.getY()+";"+start.place.getZ()+";"+start.size+";"+start.mass);
         data.add("holes");

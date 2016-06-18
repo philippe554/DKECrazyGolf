@@ -39,7 +39,8 @@ public class Game extends GolfPanelOpenGL implements Runnable{
         keepPlaying=true;
         pause=false;
 
-        LinkedList<String> file = new LinkedList<>();
+        if(World.DEBUG)System.out.println("Start reading file.");
+        ArrayList<String> file = new ArrayList<>();
         try {
             Scanner s = new Scanner(new FileReader(fileName));
             while (s.hasNextLine()) {
@@ -51,9 +52,9 @@ public class Game extends GolfPanelOpenGL implements Runnable{
         }
 
         int sort=0;
-        LinkedList<String> worldData = new LinkedList<>();
-        LinkedList<String> gamemodeData = new LinkedList<>();
-        LinkedList<String> brutefinderData = new LinkedList<>();
+        ArrayList<String> worldData = new ArrayList<>();
+        ArrayList<String> gamemodeData = new ArrayList<>();
+        ArrayList<String> brutefinderData = new ArrayList<>();
 
         for(int i=0;i<file.size();i++)
         {
@@ -88,6 +89,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
             brutefinder.loadDatabase(brutefinderData);
             load((Brutefinder) brutefinder);
         }
+        if(World.DEBUG)System.out.println("Finished reading file.");
 
         players = new ArrayList<>();
         currentPlayer = 0;

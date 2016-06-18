@@ -2,22 +2,30 @@ package CrazyGolf.PhysicsEngine.Objects.Native;
 
 import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
+import java.util.ArrayList;
 
 /**
  * Created by pmmde on 6/12/2016.
  */
-public class Loop extends Factory{
-    public Loop(WorldData w, Point3D center, Matrix r, double size, double width, int parts, double wallSize) {
+public class Loop extends WorldObject {
+    public Loop(WorldData w, Point3D offset, Matrix r, double size, double width, int parts, double wallSize) {
         super(w);
+        pointsOriginal=new ArrayList<>();
+        colors=new ArrayList<>();
+        sides=new ArrayList<>();
+        edges=new ArrayList<>();
+        waters=new ArrayList<>();
+
         double angleGrowSize = Math.PI / (parts / 2);
         double widthCounter = 0;
         double widthIncrrement = width / parts;
-        dynamicColors.add(new Color3f(0.8f, 0.8f, 0.8f));
-        dynamicColors.add(new Color3f(0.5f, 0.5f, 0.5f));
-        dynamicColors.add(new Color3f(0.0f, 1.0f, 0.0f));
+        colors.add(new Color3f(0.8f, 0.8f, 0.8f));
+        colors.add(new Color3f(0.5f, 0.5f, 0.5f));
+        colors.add(new Color3f(0.0f, 1.0f, 0.0f));
         for (double angle = 0; angle < Math.PI * 1.99; angle += angleGrowSize) {
             Point3D p1 = new Point3D(Math.sin(angle) * size, - width + widthCounter, 0 - Math.cos(angle) * size);
             Point3D p2 = new Point3D(Math.sin(angle + angleGrowSize) * size, 0 - width + widthCounter + widthIncrrement, 0 - Math.cos(angle + angleGrowSize) * size);
@@ -37,6 +45,7 @@ public class Loop extends Factory{
                 new Point3D(size,width,-140),
                 new Point3D(size,-width,-140)
                 ,2,0.1);
-        print(center,r);
+        center=offset;
+        rotation=r;
     }
 }

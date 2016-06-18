@@ -2,20 +2,28 @@ package CrazyGolf.PhysicsEngine.Objects.Native;
 
 import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
+import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import javafx.geometry.Point3D;
 
 import javax.vecmath.Color3f;
+import java.util.ArrayList;
 
 /**
  * Created by pmmde on 6/13/2016.
  */
-public class Hole extends Factory{
+public class Hole extends WorldObject {
 
     public Hole(WorldData w, Point3D offset, Matrix r, double radius, double depth, int parts) {
         super(w);
-        dynamicColors.add(new Color3f(0.8f, 0.8f, 0.8f));//0
-        dynamicColors.add(new Color3f(0.5f, 0.5f, 0.5f));//1
-        dynamicColors.add(new Color3f(0.0f, 1.0f, 0.0f));//2
+        pointsOriginal=new ArrayList<>();
+        colors=new ArrayList<>();
+        sides=new ArrayList<>();
+        edges=new ArrayList<>();
+        waters=new ArrayList<>();
+
+        colors.add(new Color3f(0.8f, 0.8f, 0.8f));//0
+        colors.add(new Color3f(0.5f, 0.5f, 0.5f));//1
+        colors.add(new Color3f(0.0f, 1.0f, 0.0f));//2
         Point3D mid = new Point3D(0, 0,  - depth);
         Point3D cornerPoints[] = new Point3D[4];
         cornerPoints[0] = new Point3D(radius, radius, 0);
@@ -34,6 +42,7 @@ public class Hole extends Factory{
                 addTriangle(p1, p2, cornerPoints[i], 2,0.1);
             }
         }
-        print(offset,r);
+        center=offset;
+        rotation=r;
     }
 }

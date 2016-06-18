@@ -1,5 +1,6 @@
 package CrazyGolf.Editor;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -11,8 +12,8 @@ public class Import {
     private String[] playerChoice;
     public Import(LinkedList<String> file){
         int sort=0;
-        LinkedList<String> EditData = new LinkedList<>();
-        LinkedList<String> gamemodeData = new LinkedList<>();
+        ArrayList<String> EditData = new ArrayList<>();
+        ArrayList<String> gamemodeData = new ArrayList<>();
         for(int i=0;i<file.size();i++)
         {
             if(file.get(i).equals("Master:World")){
