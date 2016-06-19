@@ -336,7 +336,13 @@ public class WorldObject {
                     points.get(side.points[2]))) {
                 double dir = t > 0 ? -1 : 1;
                 ball.place = intersection.add(side.normal.multiply(dir * ball.size));
-                ball.velocity = ball.velocity.subtract(side.normal.multiply(ball.velocity.dotProduct(side.normal) * 1.8));
+
+                //ball.velocity = ball.velocity.subtract(side.normal.multiply(ball.velocity.dotProduct(side.normal) * 1.8));
+
+                double angle=Math.asin(side.normal.multiply(-dir).dotProduct(ball.velocity.normalize()));
+                ball.normalTotal=ball.normalTotal.add(side.normal.multiply(dir*angle));
+                ball.normalCounter+=angle;
+
                 if (side.friction > ball.friction) {
                     ball.friction = (float) side.friction;
                 }
@@ -351,7 +357,10 @@ public class WorldObject {
             if (unit.magnitude() < ball.size) {
                 unit = unit.normalize();
                 ball.place = clossest.add(unit.multiply(ball.size));
-                ball.velocity = ball.velocity.subtract(unit.multiply(ball.velocity.dotProduct(unit) * 1.8));
+                //ball.velocity = ball.velocity.subtract(unit.multiply(ball.velocity.dotProduct(unit) * 1.8));
+                double angle=Math.asin(unit.multiply(-1).dotProduct(ball.velocity.normalize()));
+                ball.normalTotal=ball.normalTotal.add(unit.multiply(angle));
+                ball.normalCounter+=angle;
             }
         }
     }
@@ -360,7 +369,10 @@ public class WorldObject {
         if (ballEndPoint.magnitude() < ball.size) {
             Point3D unit = ballEndPoint.normalize();
             ball.place = points.get(i).add(unit.multiply(ball.size));
-            ball.velocity = ball.velocity.subtract(unit.multiply(ball.velocity.dotProduct(unit) * 1.8));
+            //ball.velocity = ball.velocity.subtract(unit.multiply(ball.velocity.dotProduct(unit) * 1.8));
+            double angle=Math.asin(unit.multiply(-1).dotProduct(ball.velocity.normalize()));
+            ball.normalTotal=ball.normalTotal.add(unit.multiply(angle));
+            ball.normalCounter+=angle;
         }
     }
     protected void ballWater(Water w, Ball ball,double subFrameInv){

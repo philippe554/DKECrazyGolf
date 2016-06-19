@@ -22,6 +22,9 @@ public class Ball {
     public static final int thresholdCounter=10;
     public static final float minZ = -100;
 
+    public Point3D normalTotal;
+    public double normalCounter;
+
     public Ball(double tsize,Point3D tplace)
     {
         mass=1;

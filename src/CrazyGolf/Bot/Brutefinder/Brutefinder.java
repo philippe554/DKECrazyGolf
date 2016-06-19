@@ -32,7 +32,7 @@ public class Brutefinder implements BotInterface{
 
     private int xOffset=0;
     private int yOffset=0;
-    private int zOffset=5;
+    private int zOffset=0;
 
     private int amountNodes=0;
     private int amountConnections=0;
@@ -81,9 +81,9 @@ public class Brutefinder implements BotInterface{
                     }
                 }
                 //if(World.DEBUG)System.out.print(+totalCounter+" Stop");
-                int newi=(int)(balls.get(playerNumber).place.getX()/GS)+xOffset;
-                int newj=(int)(balls.get(playerNumber).place.getY()/GS)+yOffset;
-                int newk=(int)(balls.get(playerNumber).place.getZ()/GS)+zOffset;
+                int newi=(int)Math.round(balls.get(playerNumber).place.getX()/GS)+xOffset;
+                int newj=(int)Math.round(balls.get(playerNumber).place.getY()/GS)+yOffset;
+                int newk=(int)Math.round(balls.get(playerNumber).place.getZ()/GS)+zOffset;
                 if (!outOfWorld) {
                     if(newi>=0&&newi<nodes.length && newj>=0&&newj<nodes[newi].length && newk>=0&&newk<nodes[newi][newj].length) {
                         if(nodes[newi][newj][newk]!=null && nodes[newi][newj][newk].minPath>-0.5) {
@@ -189,9 +189,9 @@ public class Brutefinder implements BotInterface{
     private void calcNodes() {
         nodes=new Node[100][100][20];
 
-        endI=(int)(physics.getHolePosition().getX()/GS)+xOffset;
-        endJ=(int)(physics.getHolePosition().getY()/GS)+yOffset;
-        endK=(int)(physics.getHolePosition().getZ()/GS)+zOffset;
+        endI=(int)Math.round(physics.getHolePosition().getX()/GS)+xOffset;
+        endJ=(int)Math.round(physics.getHolePosition().getY()/GS)+yOffset;
+        endK=(int)Math.round(physics.getHolePosition().getZ()/GS)+zOffset;
         nodes[endI][endJ][endK]=new Node(amountDirections,amountPowers);
         amountNodes++;
 
@@ -199,9 +199,9 @@ public class Brutefinder implements BotInterface{
         double dirStep = 2 * Math.PI / (double) amountDirections;
         double powStep = World.maxPower / (double) amountPowers;
 
-        int xg=(int)(physics.getStartPosition().getX()/GS)+xOffset;
-        int yg=(int)(physics.getStartPosition().getY()/GS)+yOffset;
-        int zg=(int)(physics.getStartPosition().getZ()/GS)+zOffset;
+        int xg=(int)Math.round(physics.getStartPosition().getX()/GS)+xOffset;
+        int yg=(int)Math.round(physics.getStartPosition().getY()/GS)+yOffset;
+        int zg=(int)Math.round(physics.getStartPosition().getZ()/GS)+zOffset;
         if(nodes[xg][yg][zg]==null) {
             nodes[xg][yg][zg] = new Node(amountDirections,amountPowers);
             amountNodes++;
@@ -229,9 +229,9 @@ public class Brutefinder implements BotInterface{
                 if (tBall.velocityCounter == 20) {
                     balls.remove(i);
                     i--;
-                    int xGrid=(int)(tBall.place.getX()/GS)+xOffset;
-                    int yGrid=(int)(tBall.place.getY()/GS)+yOffset;
-                    int zGrid=(int)(tBall.place.getZ()/GS)+zOffset;
+                    int xGrid= (int) (Math.round(tBall.place.getX()/GS)+xOffset);
+                    int yGrid= (int) (Math.round(tBall.place.getY()/GS)+yOffset);
+                    int zGrid= (int) (Math.round(tBall.place.getZ()/GS)+zOffset);
                     nodes[tBall.i][tBall.j][tBall.k].forward[tBall.dir][tBall.pow]=nodes[xGrid][yGrid][zGrid];
                     amountConnections++;
                     if(nodes[xGrid][yGrid][zGrid]==null) {
@@ -241,7 +241,7 @@ public class Brutefinder implements BotInterface{
                         if (xGrid != endI || zGrid != endJ || zGrid != endK) {
                             for (int l = 0; l < amountDirections; l++) {
                                 for (int m = 0; m < amountPowers; m++) {
-                                    balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid - zOffset) * GS), xGrid, yGrid, zGrid, l, m));
+                                    balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid) * GS), xGrid, yGrid, zGrid, l, m));
                                     balls.get(balls.size() - 1).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
                                 }
                             }

@@ -347,7 +347,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
                 for(int j=0;j<brutefinder.nodes[i].length;j++){
                     for(int k=0;k<brutefinder.nodes[i][j].length;k++){
                         if(brutefinder.nodes[i][j][k]!=null){
-                            VAO set = new VAO(gl, Sphere.getSphere(new Point3D(i*20,j*20,(k-5)*20), 5,scale),
+                            VAO set = new VAO(gl, Sphere.getSphere(new Point3D(i*20,j*20,k*20), 5,scale),
                                     Sphere.getSphereColor((float) Math.sqrt(1.0f/brutefinder.nodes[i][j][k].minPath),0,0), vertexLoc, colorLoc);
                             database.add(set);
                         }

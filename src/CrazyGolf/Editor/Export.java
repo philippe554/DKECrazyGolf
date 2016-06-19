@@ -31,7 +31,7 @@ public class Export implements Runnable {
         ArrayList<String> brutefinderData = null;
         WorldData world = new WorldData();
         for(int i=0;i<grid.length;i++) {
-            world.load(grid[i].getStringGrid(), gridSize, new Point3D(0,0,i*50+100));
+            world.load(grid[i].getStringGrid(), gridSize, new Point3D(0,0,i*40+80));
         }
         ArrayList<String> worldData = world.save();
 

@@ -34,7 +34,7 @@ public class WorldData implements World,Physics{
 
     private static final int amountOfThreads=4;
 
-    private static final boolean terainPhysics=true;
+    private boolean terainPhysics=false;
 
     private boolean borderAdded=false;
 
@@ -186,7 +186,7 @@ public class WorldData implements World,Physics{
         for (int l = 0; l < subframes; l++) {
             ballCollisionComplete();
             for(Ball ball:balls) {
-                ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
+                /*ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
                 ball.velocity = ball.velocity.add(ball.acceleration);
                 ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
                 ball.acceleration = new Point3D(0, 0, 0);
@@ -194,7 +194,23 @@ public class WorldData implements World,Physics{
                 for(int j=0;j<objects.size();j++){
                     objects.get(j).applyCollision(ball,subframeInv);
                 }
+                if(terainPhysics)terrain.applyCollision(ball,subframeInv);*/
+                ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
+                ball.normalTotal=new Point3D(0,0,0);
+                ball.normalCounter=0;
+
+                for(int j=0;j<objects.size();j++){
+                    objects.get(j).applyCollision(ball,subframeInv);
+                }
                 if(terainPhysics)terrain.applyCollision(ball,subframeInv);
+
+                if(ball.normalCounter>0){
+                    Point3D normal = ball.normalTotal.multiply(1.0/ball.normalCounter).normalize();
+                    ball.acceleration = ball.acceleration.add(normal.multiply(ball.velocity.dotProduct(normal) * -1.8));
+                }
+                ball.velocity = ball.velocity.add(ball.acceleration);
+                ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
+                ball.acceleration = new Point3D(0, 0, 0);
             }
         }
     }
@@ -551,13 +567,13 @@ public class WorldData implements World,Physics{
     }
     protected WorldObject addHill(String[][]data,int i,int j,double gs,Point3D offset,String link){
         if(i>0 && link.contains(data[i-1][j])){
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0,0),4*gs,4*gs,50,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0,0),4*gs,4*gs,40,8);
         }else if(j>0 && link.contains(data[i][j-1])){
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2)),4*gs,4*gs,50,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2)),4*gs,4*gs,40,8);
         }else if(i<(data.length-4) && link.contains(data[i+4][j])){
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) Math.PI),4*gs,4*gs,50,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) Math.PI),4*gs,4*gs,40,8);
         }else{
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2*3)),4*gs,4*gs,50,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2*3)),4*gs,4*gs,40,8);
         }
     }
     private boolean expand(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted,String ignoreData) {
@@ -595,6 +611,7 @@ public class WorldData implements World,Physics{
                     if(completed+subframeInv > 1){
                         subframeInv = Math.abs(completed-subframeInv)+0.0001;
                     }
+                    /*
                     ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
                     ball.velocity = ball.velocity.add(ball.acceleration);
                     ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
@@ -603,7 +620,25 @@ public class WorldData implements World,Physics{
                     for(int j=0;j<objects.size();j++){
                         objects.get(j).applyCollision(ball,subframeInv);
                     }
+                    if(terainPhysics)terrain.applyCollision(ball,subframeInv);*/
+
+                    ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
+                    ball.normalTotal=new Point3D(0,0,0);
+                    ball.normalCounter=0;
+
+                    for(int j=0;j<objects.size();j++){
+                        objects.get(j).applyCollision(ball,subframeInv);
+                    }
                     if(terainPhysics)terrain.applyCollision(ball,subframeInv);
+
+                    if(ball.normalCounter>0){
+                        Point3D normal = ball.normalTotal.multiply(1.0/ball.normalCounter).normalize();
+                        ball.acceleration = ball.acceleration.add(normal.multiply(ball.velocity.dotProduct(normal) * -1.8));
+                    }
+                    ball.velocity = ball.velocity.add(ball.acceleration);
+                    ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
+                    ball.acceleration = new Point3D(0, 0, 0);
+
                     completed+=subframeInv;
                     subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
                     subframeInv = 1.0 / (double)(subframes);
