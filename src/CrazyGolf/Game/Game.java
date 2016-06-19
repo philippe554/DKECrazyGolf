@@ -79,7 +79,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
             }
         }
 
-        world = new WorldData();
+        world = new WorldData(false);
         world.load(worldData);
         load(world);
 
@@ -127,6 +127,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=false;
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=false;
                 if(e.getKeyChar() == KeyEvent.VK_ENTER)launch();
+                if(e.getKeyChar() == KeyEvent.VK_F)world.swapTerainPhysics();
                 game.keyReleased(e);
             }
         });

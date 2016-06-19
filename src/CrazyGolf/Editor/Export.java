@@ -29,7 +29,7 @@ public class Export implements Runnable {
     }
     @Override public void run() {
         ArrayList<String> brutefinderData = null;
-        WorldData world = new WorldData();
+        WorldData world = new WorldData(false);
         for(int i=0;i<grid.length;i++) {
             world.load(grid[i].getStringGrid(), gridSize, new Point3D(0,0,i*40+80));
         }

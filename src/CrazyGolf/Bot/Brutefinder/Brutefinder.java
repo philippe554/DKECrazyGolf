@@ -68,7 +68,7 @@ public class Brutefinder implements BotInterface{
                 //if(World.DEBUG)System.out.print("Brutefinder: " + l + ";" + m+" Start ");
                 while (velocityCounter < 20) {
                     totalCounter++;
-                    physics.stepSimulated(balls,true);
+                    physics.stepSimulated(balls,true,true);
                     velocityCounter++;
                     for(int i=0;i<balls.size();i++){
                         if (balls.get(i).velocity.magnitude() > 1.5 && balls.get(i).place.getZ() > -100) {
@@ -216,7 +216,7 @@ public class Brutefinder implements BotInterface{
         int frameCounter=0;
         while(balls.size()>0) {
             long t1 = System.currentTimeMillis();
-            physics.stepSimulated(balls, false);
+            physics.stepSimulated(balls, false,false);
             long t2 = System.currentTimeMillis();
             for (int i = 0; i < balls.size(); i++) {
                 BrutefinderBall tBall = (BrutefinderBall) balls.get(i);

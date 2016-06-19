@@ -236,6 +236,26 @@ public class WorldObject {
                     boxing[1] = new Point3D(boxing[1].getX(), boxing[1].getY(), points.get(i).getZ());
                 }
             }
+            for (int i = 0; i < waters.size(); i++) {
+                if (waters.get(i).place[0].getX() < boxing[0].getX()) {
+                    boxing[0] = new Point3D(waters.get(i).place[0].getX(), boxing[0].getY(), boxing[0].getZ());
+                }
+                if (waters.get(i).place[0].getY() < boxing[0].getY()) {
+                    boxing[0] = new Point3D(boxing[0].getX(), waters.get(i).place[0].getY(), boxing[0].getZ());
+                }
+                if (waters.get(i).place[0].getZ() < boxing[0].getZ()) {
+                    boxing[0] = new Point3D(boxing[0].getX(), boxing[0].getY(),waters.get(i).place[0].getZ());
+                }
+                if (waters.get(i).place[1].getX() > boxing[1].getX()) {
+                    boxing[1] = new Point3D(waters.get(i).place[1].getX(), boxing[1].getY(), boxing[1].getZ());
+                }
+                if (waters.get(i).place[1].getY() > boxing[1].getY()) {
+                    boxing[1] = new Point3D(boxing[1].getX(), waters.get(i).place[1].getY(), boxing[1].getZ());
+                }
+                if (waters.get(i).place[1].getZ() > boxing[1].getZ()) {
+                    boxing[1] = new Point3D(boxing[1].getX(), boxing[1].getY(), waters.get(i).place[1].getZ());
+                }
+            }
         }
         else {
             boxing = new Point3D[2];

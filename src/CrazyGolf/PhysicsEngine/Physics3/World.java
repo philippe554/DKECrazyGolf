@@ -21,6 +21,8 @@ public interface World {
     int getAmountBalls();
     Ball getBall(int i);
 
+    void swapTerainPhysics();
+
     void load(ArrayList<String> data);
     void load(String[][]data,double gs,Point3D offset);
     ArrayList<String> save();

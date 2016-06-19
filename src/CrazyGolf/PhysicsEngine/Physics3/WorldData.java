@@ -35,10 +35,11 @@ public class WorldData implements World,Physics{
     private static final int amountOfThreads=4;
 
     private boolean terainPhysics=false;
+    private boolean useNoise=true;
 
     private boolean borderAdded=false;
 
-    public WorldData(){
+    public WorldData(boolean useTerainPhysics){
         objects=new ArrayList<>();
         terrain=new Terrain(1631365,this);
         balls=new ArrayList<>();
@@ -49,6 +50,7 @@ public class WorldData implements World,Physics{
         wind=new SimplexNoise(4654654);
         start = new Ball(20, new Point3D(0,0,0));
         hole = new Point3D(0,0,0);
+        terainPhysics=useTerainPhysics;
         terrain.run();
     }
 
@@ -75,36 +77,16 @@ public class WorldData implements World,Physics{
                 }
             }
         }
-        for(Ball ball:balls){
-            if(ball.place.subtract(ball.oldPlace).magnitude()<Ball.minVelocity){
-                ball.zeroCounter++;
-                ball.place=ball.oldPlace;
-            }else{
-                ball.zeroCounter=0;
-            }
-
-            double windPowerX = wind.noise(ball.place.getX()*0.0001,ball.place.getY()*0.0001,time*0.0002)*0.05;
-            double windPowerY = wind.noise(ball.place.getX()*0.0001+100,ball.place.getY()*0.0001+100,time*0.0002)*0.05;
-            ball.windVector = new Point3D(windPowerX,windPowerY,0);
-            ball.acceleration = ball.acceleration.add(ball.windVector);
-
-            if (ball.friction > 0.001f) {
-                if (ball.velocity.magnitude() > ball.friction) {
-                    ball.velocity = ball.velocity.subtract(ball.velocity.normalize().multiply(ball.friction));
-                } else {
-                    ball.velocity = new Point3D(0, 0, 0);
-                }
-            } else {
-                ball.velocity = ball.velocity.multiply(0.995);
-            }
-        }
     }
-    @Override public void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision) {
+    @Override public void stepSimulated(ArrayList<Ball> simBalls, boolean useBallBallCollision,boolean noise) {
+        boolean n=useNoise;
+        useNoise=n;
         ArrayList<Ball> original=balls;
         balls=simBalls;
         time--;
         step(useBallBallCollision);
         balls=original;
+        useNoise=n;
     }
 
     @Override public Point3D getHolePosition() {
@@ -128,6 +110,9 @@ public class WorldData implements World,Physics{
     }
     @Override public Ball getBall(int i) {
         return pointerToBalls.get(i);
+    }
+    @Override public void swapTerainPhysics() {
+        terainPhysics=!terainPhysics;
     }
     @Override public void pushBall(int i, Point3D dir) {
         balls.get(i).velocity= balls.get(i).velocity
@@ -212,6 +197,34 @@ public class WorldData implements World,Physics{
                 ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
                 ball.acceleration = new Point3D(0, 0, 0);
             }
+        }
+        for(int i=0;i<balls.size();i++){
+            stepPostCalculations(balls.get(i));
+        }
+    }
+    private void stepPostCalculations(Ball ball){
+        if(ball.place.subtract(ball.oldPlace).magnitude()<Ball.minVelocity){
+            ball.zeroCounter++;
+            ball.place=ball.oldPlace;
+        }else{
+            ball.zeroCounter=0;
+        }
+
+        if(useNoise) {
+            double windPowerX = wind.noise(ball.place.getX() * 0.0001, ball.place.getY() * 0.0001, time * 0.0002) * 0.05;
+            double windPowerY = wind.noise(ball.place.getX() * 0.0001 + 100, ball.place.getY() * 0.0001 + 100, time * 0.0002) * 0.05;
+            ball.windVector = new Point3D(windPowerX, windPowerY, 0);
+            ball.acceleration = ball.acceleration.add(ball.windVector);
+        }
+
+        if (ball.friction > 0.001f) {
+            if (ball.velocity.magnitude() > ball.friction) {
+                ball.velocity = ball.velocity.subtract(ball.velocity.normalize().multiply(ball.friction));
+            } else {
+                ball.velocity = new Point3D(0, 0, 0);
+            }
+        } else {
+            ball.velocity = ball.velocity.multiply(0.995);
         }
     }
 
@@ -643,6 +656,7 @@ public class WorldData implements World,Physics{
                     subframes=((int) (ball.velocity.magnitude() / ball.size * 1.1 * precision) + 1);
                     subframeInv = 1.0 / (double)(subframes);
                 }
+                stepPostCalculations(ball);
             }
         }
     }
