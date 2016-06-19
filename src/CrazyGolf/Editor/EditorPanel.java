@@ -4,6 +4,8 @@ import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.PhysicsEngine.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -29,6 +31,8 @@ public class EditorPanel extends JPanel{
 
     private String chosenOption;
 
+    private boolean noiseHandling;
+
     public int pixelSIZE  = 20;
 
     private RadioButtons buttons;
@@ -36,6 +40,12 @@ public class EditorPanel extends JPanel{
     private int[] loop;
     private int[] castle;
     private int[] bridge;
+    private int loop0;
+    private int loop1;
+    private int castle0;
+    private int castle1;
+    private int bridge0;
+    private int bridge1;
 
     private final String[] layerStrings = {"Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"};
     private final String[] playerStrings = {"Human", "Brutefinder bot", "One-Shooter bot", "Random bot", "Nobody"};
@@ -52,13 +62,19 @@ public class EditorPanel extends JPanel{
         chosenOption = "D";
         loop = new int[2];
         loop[0] = 6;
+        loop0 = 6;
         loop[1] = 14;
+        loop1 = 14;
         castle = new int[2];
         castle[0] = 4;
+        castle0 = 4;
         castle[1] = 13;
+        castle1 = 13;
         bridge = new int[2];
         bridge[0] = 24;
+        bridge0 = 24;
         bridge[1] = 4;
+        bridge1 = 4;
 
         setLayout(new BorderLayout());
 
@@ -69,7 +85,7 @@ public class EditorPanel extends JPanel{
         loadSave.setLayout(new GridLayout(2,1));
 
         JPanel settings = new JPanel();
-        settings.setLayout(new GridLayout(6,1));
+        settings.setLayout(new GridLayout(7,1));
 
         buttons = someButtons;
 
@@ -92,7 +108,8 @@ public class EditorPanel extends JPanel{
         rotate = makeRotationButton();
 
         settings.add(layerList);
-        playerList= makePlayerList();
+        settings.add(makeNoiseCheckbox());
+        playerList = makePlayerList();
         for (int i=0; i<playerStrings.length; i++){
             settings.add(playerList[i]);
         }
@@ -104,6 +121,24 @@ public class EditorPanel extends JPanel{
 
         add(settingPanel, BorderLayout.EAST);
         add(layeredPane, BorderLayout.CENTER);
+    }
+
+    public JCheckBox makeNoiseCheckbox(){
+        JCheckBox box = new JCheckBox("Noise handling?");
+        box.setFont(new Font("Century Gothic", Font.PLAIN, 13));
+        box.setForeground(Color.darkGray);
+
+        class NoiseHandlingListener implements ActionListener{
+
+            public void actionPerformed(ActionEvent e) {
+                if (box.isSelected()){
+                    noiseHandling = true;
+                } else noiseHandling = false;
+            }
+        }
+
+        box.addActionListener(new NoiseHandlingListener());
+        return box;
     }
 
     public JButton makeRotationButton(){
@@ -119,16 +154,28 @@ public class EditorPanel extends JPanel{
                     int temp = loop[0];
                     loop[0] = loop[1];
                     loop[1] = temp;
+
+                    int temp1 = loop0;
+                    loop0 = loop1;
+                    loop1 = temp1;
                 }
                 if (chosenOption.equals("C")){
                     int temp = castle[0];
                     castle[0] = castle[1];
                     castle[1] = temp;
+
+                    int temp1 = castle0;
+                    castle0 = castle1;
+                    castle1 = temp1;
                 }
                 if (chosenOption.equals("R")){
                     int temp = bridge[0];
                     bridge[0] = bridge[1];
                     bridge[1] = temp;
+
+                    int temp1 = bridge0;
+                    bridge0 = bridge1;
+                    bridge1 = temp1;
                 }
             }
         }
@@ -296,32 +343,32 @@ public class EditorPanel extends JPanel{
                                 }
                                 if (chosenOption.equals("L")){
 
-                                    if ( i < stringGrid.length - (loop[1]-1) && j < stringGrid[0].length - (loop[0]-1)) {
-                                        for (int m=0;m<loop[1];m++){
-                                            for(int k=0;k<loop[0];k++){
+                                    if ( i < stringGrid.length - (loop1-1) && j < stringGrid[0].length - (loop0-1)) {
+                                        for (int m=0;m<loop1;m++){
+                                            for(int k=0;k<loop0;k++){
                                                 checkGridField(i+m, j+k);
                                                 stringGrid[i+m][j+k] = "L";
                                                 startEndStringGrid[i+m][j+k] = "L";
                                             }
                                         }
-                                        if (loop[0]==6) {
+                                        if (loop0==6) {
                                             startEndStringGrid[i][j] = "LS";
                                             startEndStringGrid[i][j + 1] = "LSS";
                                             startEndStringGrid[i + 1][j] = "LSS";
                                             startEndStringGrid[i + 1][j + 1] = "LSS";
-                                            startEndStringGrid[i + (loop[1] - 1)][j + (loop[0] - 1)] = "LE";
-                                            startEndStringGrid[i + (loop[1] - 1)][j + (loop[0] - 1) - 1] = "LEE";
-                                            startEndStringGrid[i + (loop[1] - 1) - 1][j + (loop[0] - 1)] = "LEE";
-                                            startEndStringGrid[i + (loop[1] - 1) - 1][j + (loop[0] - 1) - 1] = "LEE";
+                                            startEndStringGrid[i + (loop1 - 1)][j + (loop0 - 1)] = "LE";
+                                            startEndStringGrid[i + (loop1 - 1)][j + (loop0 - 1) - 1] = "LEE";
+                                            startEndStringGrid[i + (loop1 - 1) - 1][j + (loop0 - 1)] = "LEE";
+                                            startEndStringGrid[i + (loop1 - 1) - 1][j + (loop0 - 1) - 1] = "LEE";
                                         } else{
-                                            startEndStringGrid[i + (loop[1] - 1)][j] = "LS";
-                                            startEndStringGrid[i + (loop[1] - 2)][j] = "LSS";
-                                            startEndStringGrid[i + (loop[1] - 1)][j + 1] = "LSS";
-                                            startEndStringGrid[i + (loop[1] - 2)][j + 1] = "LSS";
-                                            startEndStringGrid[i][j + (loop[0] - 1)] = "LE";
-                                            startEndStringGrid[i][j + (loop[0] - 2)] = "LEE";
-                                            startEndStringGrid[i + 1][j + loop[0] - 1] = "LEE";
-                                            startEndStringGrid[i + 1][j + loop[0] - 2] = "LEE";
+                                            startEndStringGrid[i + (loop1 - 1)][j] = "LS";
+                                            startEndStringGrid[i + (loop1 - 2)][j] = "LSS";
+                                            startEndStringGrid[i + (loop1 - 1)][j + 1] = "LSS";
+                                            startEndStringGrid[i + (loop1 - 2)][j + 1] = "LSS";
+                                            startEndStringGrid[i][j + (loop0 - 1)] = "LE";
+                                            startEndStringGrid[i][j + (loop0 - 2)] = "LEE";
+                                            startEndStringGrid[i + 1][j + loop0 - 1] = "LEE";
+                                            startEndStringGrid[i + 1][j + loop0 - 2] = "LEE";
                                         }
                                         stringGrid[i][j] = "L";
                                     }  else {
@@ -330,9 +377,9 @@ public class EditorPanel extends JPanel{
                                 }
                                 if (chosenOption.equals("C")){
 
-                                    if ( i < stringGrid.length - (castle[1]-1) && j < stringGrid[0].length - (castle[0]-1)) {
-                                        for (int m=0;m<castle[1];m++){
-                                            for(int k=0;k<castle[0];k++){
+                                    if ( i < stringGrid.length - (castle1-1) && j < stringGrid[0].length - (castle0-1)) {
+                                        for (int m=0;m<castle1;m++){
+                                            for(int k=0;k<castle0;k++){
                                                 checkGridField(i+m, j+k);
                                                 stringGrid[i+m][j+k] = "C";
                                                 startEndStringGrid[i+m][j+k] = "C";
@@ -340,16 +387,16 @@ public class EditorPanel extends JPanel{
                                         }
                                         stringGrid[i][j] = "C";
                                         startEndStringGrid[i][j] = "CS";
-                                        startEndStringGrid[i+(castle[1]-1)][j+(castle[0]-1)] = "CE";
+                                        startEndStringGrid[i+(castle1-1)][j+(castle0-1)] = "CE";
                                     }  else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
                                 }
                                 if (chosenOption.equals("R")){
 
-                                    if ( i < stringGrid.length - (bridge[1]-1) && j < stringGrid[0].length - (bridge[0]-1)) {
-                                        for (int m=0;m<bridge[1];m++){
-                                            for(int k=0;k<bridge[0];k++){
+                                    if ( i < stringGrid.length - (bridge1-1) && j < stringGrid[0].length - (bridge0-1)) {
+                                        for (int m=0;m<bridge1;m++){
+                                            for(int k=0;k<bridge0;k++){
                                                 checkGridField(i+m, j+k);
                                                 stringGrid[i+m][j+k] = "R";
                                                 startEndStringGrid[i+m][j+k] = "R";
@@ -357,7 +404,7 @@ public class EditorPanel extends JPanel{
                                         }
                                         stringGrid[i][j] = "R";
                                         startEndStringGrid[i][j] = "RS";
-                                        startEndStringGrid[i+(bridge[1]-1)][j+(bridge[0]-1)] = "RE";
+                                        startEndStringGrid[i+(bridge1-1)][j+(bridge0-1)] = "RE";
                                     }  else {
                                         JOptionPane.showMessageDialog(null, "Position not allowed", "CrazyGolf Police", JOptionPane.PLAIN_MESSAGE);
                                     }
@@ -558,13 +605,13 @@ public class EditorPanel extends JPanel{
                         label.setBounds(0, 0, pixelSIZE * 3, pixelSIZE * 3);
                         label.setBackground(Color.black);
                     } else if (chosenOption.equals("L")) {
-                        label.setBounds(0, 0, pixelSIZE * loop[1], pixelSIZE * loop[0]);
+                        label.setBounds(0, 0, pixelSIZE * loop1, pixelSIZE * loop0);
                         label.setBackground(Color.yellow);
                     } else if (chosenOption.equals("C")) {
-                        label.setBounds(0, 0, pixelSIZE * castle[1], pixelSIZE * castle[0]);
+                        label.setBounds(0, 0, pixelSIZE * castle1, pixelSIZE * castle0);
                         label.setBackground(Color.pink);
                     } else if (chosenOption.equals("R")) {
-                        label.setBounds(0, 0, pixelSIZE * bridge[1], pixelSIZE * bridge[0]);
+                        label.setBounds(0, 0, pixelSIZE * bridge1, pixelSIZE * bridge0);
                         label.setBackground(new Color(0xC6774A));
                     } else if (chosenOption.equals("P")) {
                         label.setBounds(0, 0, pixelSIZE * 14, pixelSIZE * 14);
@@ -587,7 +634,6 @@ public class EditorPanel extends JPanel{
         pane.setPreferredSize(new Dimension(300, 310));
         pane.addMouseListener(new ChoiceListener());
         pane.addMouseMotionListener(new ObjectPreviewListener());
-        //  pane.addKeyListener(new RotateListener());
 
         for (int i = 0; i < layerStrings.length; i++) {
             Grid g = new Grid();
@@ -681,19 +727,95 @@ public class EditorPanel extends JPanel{
             int startY = 0;
             int endX = 0;
             int endY = 0;
-            if (loop[0]==6) {
-                for (int q = i; q >= Math.abs(loop[1] - i); q--) {
-                    for (int w = j; w >= Math.abs(loop[0] - j); w--) {
+            System.out.println(isISmallSide(option, i, j, 6));
+            if (!(isISmallSide(option, i, j, 6))) {
+                System.out.println("1 - if");
+                for (int q = i; q >= Math.abs(14 - i); q--) {
+                    for (int w = j; w >= Math.abs(6 - j); w--) {
                         if (startEndStringGrid[q][w].equals("LS")) {
+                            System.out.println("2 - if");
+                            startX = q;
+                            startY = w;
+                        }
+                    }
+                }
+                System.out.println("3 - if");
+                // go forth until LE
+                for (int q = i; q < startX + 14; q++) {
+                    for (int w = j; w < startY + 6; w++) {
+                        if (startEndStringGrid[q][w].equals("LE")) {
+                            System.out.println("4 - if");
+                            endX = q;
+                            endY = w;
+                        }
+                    }
+                }
+                System.out.println("5 - if");
+                //save both points
+                //delete everything inbetween them
+                for (int q = startX; q <= endX; q++) {
+                    for (int w = startY; w <= endY; w++) {
+                        System.out.println("6 - if");
+                        stringGrid[q][w] = "E";
+                        startEndStringGrid[q][w] = "E";
+                    }
+                }
+            } else {
+                System.out.println("1 - else");
+                for (int q = i; q < i + 6 && q < stringGrid.length; q++) {
+                    for (int w = j; w >= Math.abs(14 - j); w--) {
+                        if (startEndStringGrid[q][w].equals("LS")) {
+                            System.out.println("2 - else");
                             startX = q;
                             startY = w;
                         }
                     }
                 }
                 // go forth until LE
-                for (int q = i; q < startX + loop[1]; q++) {
-                    for (int w = j; w < startY + loop[0]; w++) {
+                System.out.println("3 - else");
+
+                for (int q = i; q >= Math.abs(6 - startX); q--) {
+                    for (int w = j; w < startY + 14; w++) {
                         if (startEndStringGrid[q][w].equals("LE")) {
+                            System.out.println("4 - else");
+                            endX = q;
+                            endY = w;
+                        }
+                    }
+                }
+                System.out.println("5 - else");
+
+                //save both points
+                //delete everything in between them
+                for (int q = startX; q >=endX; q--) {
+                    for (int w = startY; w <= endY; w++) {
+                        System.out.println("6 - else");
+                        stringGrid[q][w] = "E";
+                        startEndStringGrid[q][w] = "E";
+                    }
+                }
+            }
+        }
+
+        if (option.equals("C")) {
+            int startX = 0;
+            int startY = 0;
+            int endX = 0;
+            int endY = 0;
+            if (isISmallSide(option, i, j, 4)) {
+                System.out.println("true");
+                for (int q = i; q >= Math.abs(4 - i); q--) {
+                    for (int w = j; w >= Math.abs(13 - j); w--) {
+                        if (startEndStringGrid[q][w].equals("CS")) {
+                            startX = q;
+                            startY = w;
+                        }
+                    }
+                }
+                // go forth until end
+                for (int q = i; q < startX + 4; q++) {
+                    for (int w = j; w < startY + 13; w++) {
+                        if (startEndStringGrid[q][w].equals("CE")) {
                             endX = q;
                             endY = w;
                         }
@@ -708,26 +830,26 @@ public class EditorPanel extends JPanel{
                     }
                 }
             } else {
-                for (int q = i; q < i + loop[1] && q < stringGrid.length; q++) {
-                    for (int w = j; w >= Math.abs(loop[0] - j); w--) {
-                        if (startEndStringGrid[q][w].equals("LS")) {
+                for (int q = i; q >= Math.abs(13 - i); q--) {
+                    for (int w = j; w >= Math.abs(4 - j); w--) {
+                        if (startEndStringGrid[q][w].equals("CS")) {
                             startX = q;
                             startY = w;
                         }
                     }
                 }
-                // go forth until LE
-                for (int q = i; q >= Math.abs(loop[1] - startX); q--) {
-                    for (int w = j; w < startY + loop[0]; w++) {
-                        if (startEndStringGrid[q][w].equals("LE")) {
+                // go forth until end
+                for (int q = i; q < startX + 13; q++) {
+                    for (int w = j; w < startY + 4; w++) {
+                        if (startEndStringGrid[q][w].equals("CE")) {
                             endX = q;
                             endY = w;
                         }
                     }
                 }
                 //save both points
-                //delete everything in between them
-                for (int q = startX; q >=endX; q--) {
+                //delete everything inbetween them
+                for (int q = startX; q <= endX; q++) {
                     for (int w = startY; w <= endY; w++) {
                         stringGrid[q][w] = "E";
                         startEndStringGrid[q][w] = "E";
@@ -736,68 +858,68 @@ public class EditorPanel extends JPanel{
             }
         }
 
-        if (option.equals("C")) {
-            int startX = 0;
-            int startY = 0;
-            int endX = 0;
-            int endY = 0;
-            for (int q=i; q>=Math.abs(castle[1]-i); q--){
-                for (int w=j; w>=Math.abs(castle[0]-j); w--){
-                    if (startEndStringGrid[q][w].equals("CS")){
-                        startX = q;
-                        startY = w;
-                    }
-                }
-            }
-            // go forth until end
-            for (int q=i; q<startX+castle[1]; q++){
-                for (int w=j; w<startY+castle[0]; w++){
-                    if (startEndStringGrid[q][w].equals("CE")){
-                        endX = q;
-                        endY = w;
-                    }
-                }
-            }
-            //save both points
-            //delete everything inbetween them
-            for (int q=startX; q<=endX; q++){
-                for (int w=startY; w<=endY; w++){
-                    stringGrid[q][w] = "E";
-                    startEndStringGrid[q][w] = "E";
-                }
-            }
-        }
-
         if (option.equals("R")) {
             int startX = 0;
+            int startXX = 0;
+            int endXX = 0;
             int startY = 0;
             int endX = 0;
             int endY = 0;
+            int cntr = i;
 
-            for (int q=i; q>=Math.abs(bridge[1]-i); q--){
-                for (int w=j; w>=Math.abs(bridge[0]-j); w--){
-                    if (startEndStringGrid[q][w].equals("RS")){
-                        startX = q;
-                        startY = w;
+            System.out.println(isISmallSide(option, i, j, 4));
+
+            if (isISmallSide(option, i, j, 4)) {
+                for (int q = i; q >= Math.abs(4 - i); q--) {
+                    for (int w = j; w >= Math.abs(24 - j); w--) {
+                        if (startEndStringGrid[q][w].equals("RS")) {
+                            startX = q;
+                            startY = w;
+                        }
                     }
                 }
-            }
-
-            for (int q=i; q<(startX+bridge[1]); q++){
-                for (int w=j; w<(startY+bridge[0]); w++){
-                    if (startEndStringGrid[q][w].equals("RE")){
-                        endX = q;
-                        endY = w;
+                for (int q = i; q < (startX + 4); q++) {
+                    for (int w = j; w < (startY + 24); w++) {
+                        if (startEndStringGrid[q][w].equals("RE")) {
+                            endX = q;
+                            endY = w;
+                        }
                     }
                 }
-            }
 
-            //save both points
-            //delete everything inbetween them
-            for (int q=startX; q<=endX; q++){
-                for (int w=startY; w<=endY; w++){
-                    stringGrid[q][w] = "E";
-                    startEndStringGrid[q][w] = "E";
+                //save both points
+                //delete everything inbetween them
+                for (int q = startX; q <= endX; q++) {
+                    for (int w = startY; w <= endY; w++) {
+                        stringGrid[q][w] = "E";
+                        startEndStringGrid[q][w] = "E";
+                    }
+                }
+            } else {
+                for (int q = i; q >= Math.abs(24 - i); q--) {
+                    for (int w = j; w >= Math.abs(4 - j); w--) {
+                        if (startEndStringGrid[q][w].equals("RS")) {
+                            startX = q;
+                            startY = w;
+                        }
+                    }
+                }
+                for (int q = i; q < (startX + 24); q++) {
+                    for (int w = j; w < (startY + 4); w++) {
+                        if (startEndStringGrid[q][w].equals("RE")) {
+                            endX = q;
+                            endY = w;
+                        }
+                    }
+                }
+
+                //save both points
+                //delete everything inbetween them
+                for (int q = startX; q <= endX; q++) {
+                    for (int w = startY; w <= endY; w++) {
+                        stringGrid[q][w] = "E";
+                        startEndStringGrid[q][w] = "E";
+                    }
                 }
             }
         }
@@ -871,20 +993,41 @@ public class EditorPanel extends JPanel{
         startEndStringGrid[i][j] = "E";
     }
 
-    public boolean isPlaced(String s) {
-        for (int h = 0; h < grid.length; h++) {
-            for (int i = 0; i < grid[h].getRectanglegGrid().length; i++) {
-                for (int j = 0; j < grid[h].getRectanglegGrid()[0].length; j++) {
-                    if (grid[h].getStringGrid()[i][j].equals(s)) {
-                        return true;
-                    }
+    public boolean isISmallSide(String s, int i, int j, int smallestSideLength){
+        int startXX = 0;
+        int endXX = 0;
+
+        System.out.println("position of i: "+ i);
+        if (!(stringGrid[i+1][j].equals(s))) {
+            for (int k = i; k >= (i - smallestSideLength) && k >= 0; k--) {
+                if (stringGrid[k][j].equals(s) ) {
+                    startXX = k;
+                } else break;
+            }
+        } else {
+            for (int k = i; k >= (i - smallestSideLength-1) && k >= 0; k--) {
+                if (stringGrid[k][j].equals(s) ) {
+                    startXX = k;
                 }
+                else break;
             }
         }
-        return false;
+        System.out.println("start found at: "+startXX );
+
+        for (int l=startXX; l<=(startXX+smallestSideLength) && l<stringGrid.length; l++){
+            if (stringGrid[l][j].equals(s)){
+                endXX = l;
+            }
+        }
+        System.out.println("end found at: "+endXX );
+
+        System.out.println("difference: "+ (Math.abs(startXX-endXX)+1));
+        if ((Math.abs(startXX-endXX)+1) == smallestSideLength)
+            return true;
+        else return false;
     }
 
-    public void writeItDown(LinkedList<String> list, int i){
+    public void writeItDown(LinkedList<String> list, int i, boolean noiseHandling){
         File field= new File("Slot"+i+".txt");
         FileWriter writeFile = null;
 
@@ -1012,5 +1155,9 @@ public class EditorPanel extends JPanel{
         for(int i=0;i<pc.length;i++){
             playerList[i].setSelectedIndex(Integer.parseInt(pc[i]));
         }
+    }
+
+    public boolean isNoiseHandling() {
+        return noiseHandling;
     }
 }

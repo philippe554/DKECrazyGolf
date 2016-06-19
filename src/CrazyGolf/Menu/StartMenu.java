@@ -155,7 +155,7 @@ public class StartMenu {
 				if(e.getSource() == level1b){
 					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
 					export.run();
-					editor.writeItDown(export.getData(),1);
+					editor.writeItDown(export.getData(),1, editor.isNoiseHandling());
 					level1b.setText("LEVEL 1");
 					main.repaint();
 				}
@@ -163,21 +163,21 @@ public class StartMenu {
 				if(e.getSource() == level2b){
 					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
 					export.run();
-					editor.writeItDown(export.getData(),2);
+					editor.writeItDown(export.getData(),2, editor.isNoiseHandling());
 					level2b.setText("LEVEL 2");
 					main.repaint();;
 				}
 				if(e.getSource() == level3b){
 					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
 					export.run();
-					editor.writeItDown(export.getData(),3);
+					editor.writeItDown(export.getData(),3, editor.isNoiseHandling());
 					level3b.setText("LEVEL 3");
 					main.repaint();
 				}
 				if(e.getSource() == level4b){
 					Export export =new Export(editor.getGrid(),editor.pixelSIZE,editor.getPlayerChoice());
 					export.run();
-					editor.writeItDown(export.getData(),4);
+					editor.writeItDown(export.getData(),4, editor.isNoiseHandling());
 					level4b.setText("LEVEL 4");
 					main.repaint();
 				}
