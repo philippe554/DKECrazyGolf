@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.*;
+import javax.vecmath.Color3f;
 
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
 import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
@@ -348,7 +349,10 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
                     for(int k=0;k<brutefinder.nodes[i][j].length;k++){
                         if(brutefinder.nodes[i][j][k]!=null){
                             VAO set = new VAO(gl, Sphere.getSphere(new Point3D(i*20,j*20,k*20), 5,scale),
-                                    Sphere.getSphereColor((float) Math.sqrt(1.0f/brutefinder.nodes[i][j][k].minPath),0,0), vertexLoc, colorLoc);
+                                    //Sphere.getSphereColor((float) Math.sqrt(1.0f/brutefinder.nodes[i][j][k].minPath),0,0), vertexLoc, colorLoc);
+                                    Sphere.getSphereColor(getColor(0,10,brutefinder.nodes[i][j][k].minPath).getX(),
+                                            getColor(0,10,brutefinder.nodes[i][j][k].minPath).getY(),
+                                            getColor(0,10,brutefinder.nodes[i][j][k].minPath).getZ()), vertexLoc, colorLoc);
                             database.add(set);
                         }
                     }
@@ -701,5 +705,11 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
     }
     public void load(Brutefinder bf){
         brutefinder=bf;
+    }
+    public Color3f getColor(float min,float max,float value){
+        float ratio = 2 * (value-min) / (max - min);
+        float r=Math.max(0,ratio-1);
+        float b=Math.max(0,1-ratio);
+        return new Color3f(r,1-b-r,b);
     }
 }

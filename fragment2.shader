@@ -10,7 +10,7 @@ float map(float x,float a1,float a2,float b1,float b2){
 
 void main()
 {
-    vec4 light=normalize(vec4(0.3,1,0.3,0));
+    vec4 light=normalize(vec4(0,1,0,0));
     vec4 n = normalize(Normal);
     float angle = dot(n,light);
     angle = angle>0?angle:-angle;

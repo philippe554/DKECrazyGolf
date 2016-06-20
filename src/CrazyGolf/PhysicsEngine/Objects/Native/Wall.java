@@ -22,7 +22,7 @@ public class Wall extends WorldObject {
 
         colors.add(new Color3f(0.8f, 0.8f, 0.8f));//0
         colors.add(new Color3f(0.5f, 0.5f, 0.5f));//1
-        double borderHeight=40;
+        double borderHeight=60;
 
         addSquare(new Point3D(0,0,borderHeight),
                 new Point3D(0+x,0,borderHeight),

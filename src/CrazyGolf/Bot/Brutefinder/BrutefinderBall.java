@@ -14,6 +14,8 @@ public class BrutefinderBall extends Ball {
     public int pow;
     public int velocityCounter=0;
     public int totalCounter=0;
+    public boolean corrector;
+    public Point3D predictorLocation;
 
     public BrutefinderBall(double tsize, Point3D tplace, int ti,int tj,int tk,int tdir,int tpow) {
         super(tsize, tplace);
@@ -22,5 +24,6 @@ public class BrutefinderBall extends Ball {
         k=tk;
         dir=tdir;
         pow=tpow;
+        corrector=false;
     }
 }

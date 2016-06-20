@@ -47,7 +47,7 @@ public class WorldData implements World,Physics{
         newObjects = new LinkedList<>();
         updatedObjects = new LinkedList<>();
         deletedObjects = new LinkedList<>();
-        wind=new SimplexNoise(4654654);
+        wind=new SimplexNoise((int) (Math.random()*1000000));
         start = new Ball(20, new Point3D(0,0,0));
         hole = new Point3D(0,0,0);
         terainPhysics=useTerainPhysics;
@@ -211,8 +211,8 @@ public class WorldData implements World,Physics{
         }
 
         if(useNoise) {
-            double windPowerX = wind.noise(ball.place.getX() * 0.0001, ball.place.getY() * 0.0001, time * 0.0002) * 0.05;
-            double windPowerY = wind.noise(ball.place.getX() * 0.0001 + 100, ball.place.getY() * 0.0001 + 100, time * 0.0002) * 0.05;
+            double windPowerX = wind.noise(ball.place.getX() * 0.0001, ball.place.getY() * 0.0001, time * 0.0001) * 0.03;
+            double windPowerY = wind.noise(ball.place.getX() * 0.0001 + 100, ball.place.getY() * 0.0001 + 100, time * 0.0001) * 0.03;
             ball.windVector = new Point3D(windPowerX, windPowerY, 0);
             ball.acceleration = ball.acceleration.add(ball.windVector);
         }
@@ -580,13 +580,13 @@ public class WorldData implements World,Physics{
     }
     protected WorldObject addHill(String[][]data,int i,int j,double gs,Point3D offset,String link){
         if(i>0 && link.contains(data[i-1][j])){
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0,0),4*gs,4*gs,40,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0,0),4*gs,4*gs,60,8);
         }else if(j>0 && link.contains(data[i][j-1])){
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2)),4*gs,4*gs,40,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2)),4*gs,4*gs,60,8);
         }else if(i<(data.length-4) && link.contains(data[i+4][j])){
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) Math.PI),4*gs,4*gs,40,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) Math.PI),4*gs,4*gs,60,8);
         }else{
-            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2*3)),4*gs,4*gs,40,8);
+            return new Hill(this,offset.add(i*gs+2*gs,j*gs+2*gs,0), Matrix.getRotatoinMatrix(0,0, (float) (Math.PI/2*3)),4*gs,4*gs,60,8);
         }
     }
     private boolean expand(String[][]data,int iStart,int jStart,int iSize,int jSize,boolean[][]alreadyConverted,String ignoreData) {

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class Node {
     public Node[][] forward;
     public ArrayList<Node> backward;
-    public boolean initDone=false;
     public int minPath=-1;
 
     public Node(int amountDirections,int amountPowers)

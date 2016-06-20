@@ -13,11 +13,17 @@ import java.util.LinkedList;
  * Created by pmmde on 4/29/2016.
  */
 public class Brutefinder implements BotInterface{
-    public int amountDirections=16;
-    public int amountPowers=6;
+    public int amountDirections=12;
+    public int amountPowers=4;
 
-    public int amountDirectionsHighRes=40;
-    public int amountPowersHighRes=20;
+    public int amountDirectionsHighRes=amountDirections*3;
+    public int amountPowersHighRes=amountPowers*3;
+
+    private boolean riskyModus=true;
+    private int maxCorrectorDistance=100;
+    private int amountErrorChecks=7;
+
+    //#################
 
     private int GS=20;
 
@@ -36,6 +42,7 @@ public class Brutefinder implements BotInterface{
 
     private int amountNodes=0;
     private int amountConnections=0;
+    private int amountOfNotReplicableConnections=0;
 
     @Override public void init(World w) {
         //world=w;
@@ -87,17 +94,28 @@ public class Brutefinder implements BotInterface{
                 if (!outOfWorld) {
                     if(newi>=0&&newi<nodes.length && newj>=0&&newj<nodes[newi].length && newk>=0&&newk<nodes[newi][newj].length) {
                         if(nodes[newi][newj][newk]!=null && nodes[newi][newj][newk].minPath>-0.5) {
-                            Point3D center = new Point3D((newi-xOffset) * GS, (newj-yOffset) * GS, (newk-zOffset) * GS);
-                            double distance = center.distance(balls.get(playerNumber).place)/(GS*2);
-                            double newBestPlace=nodes[newi][newj][newk].minPath+distance;
-                            if (newBestPlace < bestPlace || bestPlace < -0.5) {
-                                bestPlace = newBestPlace;
-                                bestDir = l;
-                                bestPow = m;
-                                if (nodes[newi][newj][newk].minPath == 0) {
+                            //if(nodes[newi][newj][newk].minPath>0.5) {
+                                double newBestPlace = getCheckLaunch(l,m ,playerNumber,dirStep,powStep,amountErrorChecks);
+                                if(newBestPlace>-0.5) {
+                                    //double minPath = getMinPath(newi, newj, newk, 0);
+                                    //Point3D center = new Point3D((newi - xOffset) * GS, (newj - yOffset) * GS, (newk - zOffset) * GS);
+                                    //double distance = center.distance(balls.get(playerNumber).place) / (GS * 2);
+                                    //double newBestPlace = minPath + distance;
+                                    if (newBestPlace < bestPlace || bestPlace < -0.5) {
+                                        bestPlace = newBestPlace;
+                                        bestDir = l;
+                                        bestPow = m;
+                                    }
+                                }
+                            /*}else{
+                                double power=((double)m/(double)amountPowers);
+                                if (power < bestPlace || bestPlace < -0.5) {
+                                    bestPlace = power;
+                                    bestDir = l;
+                                    bestPow = m;
                                     //if (World.DEBUG) System.out.print(" - Inside hole");
                                 }
-                            }
+                            }*/
                             //if (World.DEBUG) System.out.println(" - Min Path to hole: "+newBestPlace);
                         }
                         else
@@ -134,7 +152,7 @@ public class Brutefinder implements BotInterface{
 
         calcNodes();
 
-        if(World.DEBUG)System.out.println("Brutefinder: Nodes: "+amountNodes+" | Connections: "+amountConnections);
+        if(World.DEBUG)System.out.println("Brutefinder: Nodes: "+amountNodes+" | Connections: "+amountConnections+" | Connections removed: "+amountOfNotReplicableConnections);
 
         if(World.DEBUG)System.out.println("Brutefinder: Start calculating pathfinding...");
 
@@ -197,13 +215,13 @@ public class Brutefinder implements BotInterface{
 
         ArrayList<Ball> balls = new ArrayList<>();
         double dirStep = 2 * Math.PI / (double) amountDirections;
-        double powStep = World.maxPower / (double) amountPowers;
+        double powStep = (World.maxPower / (double) amountPowers);
 
         int xg=(int)Math.round(physics.getStartPosition().getX()/GS)+xOffset;
         int yg=(int)Math.round(physics.getStartPosition().getY()/GS)+yOffset;
         int zg=(int)Math.round(physics.getStartPosition().getZ()/GS)+zOffset;
         if(nodes[xg][yg][zg]==null) {
-            nodes[xg][yg][zg] = new Node(amountDirections,amountPowers);
+            nodes[xg][yg][zg] = new Node(amountDirections, amountPowers);
             amountNodes++;
             for (int l = 0; l < amountDirections; l++) {
                 for (int m = 0; m < amountPowers; m++) {
@@ -229,27 +247,40 @@ public class Brutefinder implements BotInterface{
                 if (tBall.velocityCounter == 20) {
                     balls.remove(i);
                     i--;
-                    int xGrid= (int) (Math.round(tBall.place.getX()/GS)+xOffset);
-                    int yGrid= (int) (Math.round(tBall.place.getY()/GS)+yOffset);
-                    int zGrid= (int) (Math.round(tBall.place.getZ()/GS)+zOffset);
-                    nodes[tBall.i][tBall.j][tBall.k].forward[tBall.dir][tBall.pow]=nodes[xGrid][yGrid][zGrid];
-                    amountConnections++;
-                    if(nodes[xGrid][yGrid][zGrid]==null) {
-                        nodes[xGrid][yGrid][zGrid]=new Node(amountDirections,amountPowers);
-                        amountNodes++;
-                        nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
-                        if (xGrid != endI || zGrid != endJ || zGrid != endK) {
-                            for (int l = 0; l < amountDirections; l++) {
-                                for (int m = 0; m < amountPowers; m++) {
-                                    balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid) * GS), xGrid, yGrid, zGrid, l, m));
-                                    balls.get(balls.size() - 1).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
+                    if(tBall.corrector || riskyModus) {
+                        if(riskyModus || tBall.predictorLocation.distance(tBall.place)<maxCorrectorDistance) {
+                            int xGrid = (int) (Math.round(tBall.place.getX() / GS) + xOffset);
+                            int yGrid = (int) (Math.round(tBall.place.getY() / GS) + yOffset);
+                            int zGrid = (int) (Math.round(tBall.place.getZ() / GS) + zOffset);
+                            nodes[tBall.i][tBall.j][tBall.k].forward[tBall.dir][tBall.pow] = nodes[xGrid][yGrid][zGrid];
+                            amountConnections++;
+                            if (nodes[xGrid][yGrid][zGrid] == null) {
+                                nodes[xGrid][yGrid][zGrid] = new Node(amountDirections, amountPowers);
+                                amountNodes++;
+                                nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
+                                if (xGrid != endI || zGrid != endJ || zGrid != endK) {
+                                    for (int l = 0; l < amountDirections; l++) {
+                                        for (int m = 0; m < amountPowers; m++) {
+                                            balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid) * GS), xGrid, yGrid, zGrid, l, m));
+                                            balls.get(balls.size() - 1).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
+                                        }
+                                    }
                                 }
+                            } else {
+                                nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
                             }
+                        }else{
+                            amountOfNotReplicableConnections++;
                         }
-                    }
-                    else
-                    {
-                        nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
+                    }else{
+                        BrutefinderBall correctedBall = new BrutefinderBall(World.ballSize, new Point3D((tBall.i - xOffset) * GS, (tBall.j - yOffset) * GS, (tBall.k) * GS)
+                                .add((Math.random()-0.5)*5,(Math.random()-0.5)*5,(Math.random()-0.5)*5),
+                                tBall.i, tBall.j, tBall.k, tBall.dir, tBall.pow);
+                        correctedBall.corrector=true;
+                        correctedBall.velocity = new Point3D(Math.cos(tBall.dir * dirStep), Math.sin(tBall.dir * dirStep), 0).multiply((tBall.pow + 1) * powStep)
+                                .add((Math.random()-0.5)*5,(Math.random()-0.5)*5,(Math.random()-0.5)*5);
+                        correctedBall.predictorLocation=tBall.place;
+                        balls.add(correctedBall);
                     }
                 }else if (tBall.place.getZ() < -100) {
                     balls.remove(i);
@@ -271,6 +302,89 @@ public class Brutefinder implements BotInterface{
                 findMinPath(n.backward.get(i), counter+1);
             }
         }
+    }
+    private double getMinPath(int i,int j,int k,int size){
+        if(size==0){
+            return nodes[i][j][k].minPath;
+        }else {
+            int counter = 0;
+            double total = 0;
+            if (i - 1 > 0 && nodes[i - 1][j][k] != null && nodes[i - 1][j][k].minPath > -0.5) {
+                counter++;
+                total += getMinPath(i - 1, j, k, size - 1);
+            }
+            if (i + 1 < nodes.length && nodes[i + 1][j][k] != null && nodes[i + 1][j][k].minPath > -0.5) {
+                counter++;
+                total += getMinPath(i + 1, j, k, size - 1);
+            }
+            if (j - 1 > 0 && nodes[i][j - 1][k] != null && nodes[i][j - 1][k].minPath > -0.5) {
+                counter++;
+                total += getMinPath(i, j - 1, k, size - 1);
+            }
+            if (j + 1 < nodes[0].length && nodes[i][j + 1][k] != null && nodes[i][j + 1][k].minPath > -0.5) {
+                counter++;
+                total += getMinPath(i, j + 1, k, size - 1);
+            }
+            if (k - 1 > 0 && nodes[i][j][k - 1] != null && nodes[i][j][k - 1].minPath > -0.5) {
+                counter++;
+                total += getMinPath(i, j, k - 1, size - 1);
+            }
+            if (k + 1 < nodes[0][0].length && nodes[i][j][k + 1] != null && nodes[i][j][k + 1].minPath > -0.5) {
+                counter++;
+                total += getMinPath(i, j, k + 1, size - 1);
+            }
+            if (counter > 0) {
+                return 0.5 * (total / counter) + 0.5 * nodes[i][j][k].minPath;
+            }
+            else{
+                return nodes[i][j][k].minPath;
+            }
+        }
+    }
+    private double getCheckLaunch(int l,int m ,int playerNumber,double dirStep,double powStep, int amount){
+        double total=0;
+        for(int j=0;j<amount;j++) {
+            ArrayList<Ball> balls = new ArrayList<>();
+            for (int i = 0; i < physics.getAmountBalls(); i++) {
+                balls.add(new Ball(World.ballSize, physics.getBall(i).place));
+            }
+            balls.get(playerNumber).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep)
+                    .add(physics.getBall(playerNumber).velocity)
+                    .add((Math.random()-0.5)*5,(Math.random()-0.5)*5,(Math.random()-0.5)*5);;
+            int velocityCounter = 0;
+            int totalCounter = 0;
+            boolean outOfWorld = false;
+            while (velocityCounter < 20) {
+                totalCounter++;
+                physics.stepSimulated(balls, true, true);
+                velocityCounter++;
+                for (int i = 0; i < balls.size(); i++) {
+                    if (balls.get(i).velocity.magnitude() > 1.5 && balls.get(i).place.getZ() > -100) {
+                        velocityCounter = 0;
+                    }
+                }
+                if (balls.get(playerNumber).place.getZ() < -100 || totalCounter > 1000) {
+                    outOfWorld = true;
+                    velocityCounter = 20;
+                }
+            }
+            if(outOfWorld){
+                return -1;
+            }
+            int newi=(int)Math.round(balls.get(playerNumber).place.getX()/GS)+xOffset;
+            int newj=(int)Math.round(balls.get(playerNumber).place.getY()/GS)+yOffset;
+            int newk=(int)Math.round(balls.get(playerNumber).place.getZ()/GS)+zOffset;
+            if(newi>=0&&newi<nodes.length && newj>=0&&newj<nodes[newi].length && newk>=0&&newk<nodes[newi][newj].length) {
+                if (nodes[newi][newj][newk] != null && nodes[newi][newj][newk].minPath > -0.5) {
+                    total+=nodes[newi][newj][newk].minPath;
+                }else{
+                    return -1;
+                }
+            }else{
+                return -1;
+            }
+        }
+        return total/amount;
     }
 
     public String getProgress(){
