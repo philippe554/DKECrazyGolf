@@ -423,29 +423,62 @@ public class WorldData implements World,Physics{
                                 }
                             }
                         } else if (data[i][j].equals("L")) {
-                            wo.subObjects.add(new Loop(this, offset.add(i * gs + 140, j * gs + 60, 140), Matrix.getRotatoinMatrix(0, 0, 0), 140, 60, 24, 25));
-                            for (int k = 0; k < 14; k++) {
-                                for (int l = 0; l < 6; l++) {
-                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
-                                        alreadyConverted[i + k][j + l] = true;
+                            if(data.length>i+7 && !data[i+7][j].equals("L")) {
+                                wo.subObjects.add(new Loop(this, offset.add(i * gs + 60, j * gs + 140, 140), Matrix.getRotatoinMatrix(0, 0, (float) (Math.PI/2)), 140, 60, 24, 25));
+                                for (int k = 0; k < 6; k++) {
+                                    for (int l = 0; l < 14; l++) {
+                                        if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                            alreadyConverted[i + k][j + l] = true;
+                                        }
+                                    }
+                                }
+                            } else {
+                                wo.subObjects.add(new Loop(this, offset.add(i * gs + 140, j * gs + 60, 140), Matrix.getRotatoinMatrix(0, 0, 0), 140, 60, 24, 25));
+                                for (int k = 0; k < 14; k++) {
+                                    for (int l = 0; l < 6; l++) {
+                                        if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                            alreadyConverted[i + k][j + l] = true;
+                                        }
                                     }
                                 }
                             }
                         } else if (data[i][j].equals("C")) {
-                            wo.subObjects.add(new Castle(this, offset.add(i * gs + 40, j * gs + 40, 0), Matrix.getRotatoinMatrix(0, 0, 0), 20, 40, 180));
-                            for (int k = 0; k < 13; k++) {
-                                for (int l = 0; l < 4; l++) {
-                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
-                                        alreadyConverted[i + k][j + l] = true;
+                            if(data.length>i+4 && !data[i+4][j].equals("C")) {
+                                wo.subObjects.add(new Castle(this, offset.add(i * gs + 40, j * gs + 40, 0), Matrix.getRotatoinMatrix(0, 0, (float) (Math.PI/2)), 20, 40, 180));
+                                for (int k = 0; k < 4; k++) {
+                                    for (int l = 0; l < 13; l++) {
+                                        if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                            alreadyConverted[i + k][j + l] = true;
+                                        }
+                                    }
+                                }
+                            } else {
+                                wo.subObjects.add(new Castle(this, offset.add(i * gs + 40, j * gs + 40, 0), Matrix.getRotatoinMatrix(0, 0, 0), 20, 40, 180));
+                                for (int k = 0; k < 13; k++) {
+                                    for (int l = 0; l < 4; l++) {
+                                        if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                            alreadyConverted[i + k][j + l] = true;
+                                        }
                                     }
                                 }
                             }
                         } else if (data[i][j].equals("R")) {
-                            wo.subObjects.add(new Bridge(this, offset.add(i * gs + 40, j * gs + 140, 0), Matrix.getRotatoinMatrix(0, 0, 0), 200, 50, 20, 80, 20));
-                            for (int k = 0; k < 4; k++) {
-                                for (int l = 0; l < 24; l++) {
-                                    if ((i + k) < data.length && (j + l) < data[i + k].length) {
-                                        alreadyConverted[i + k][j + l] = true;
+                            if(data.length>i+4 && !data[i+4][j].equals("R")) {
+                                wo.subObjects.add(new Bridge(this, offset.add(i * gs + 40, j * gs + 140, 0), Matrix.getRotatoinMatrix(0, 0, 0), 200, 50, 20, 80, 20));
+                                for (int k = 0; k < 4; k++) {
+                                    for (int l = 0; l < 24; l++) {
+                                        if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                            alreadyConverted[i + k][j + l] = true;
+                                        }
+                                    }
+                                }
+                            } else {
+                                wo.subObjects.add(new Bridge(this, offset.add(i * gs + 140, j * gs + 40, 0), Matrix.getRotatoinMatrix(0, 0, -(float) (Math.PI/2)), 200, 50, 20, 80, 20));
+                                for (int k = 0; k < 24; k++) {
+                                    for (int l = 0; l < 4; l++) {
+                                        if ((i + k) < data.length && (j + l) < data[i + k].length) {
+                                            alreadyConverted[i + k][j + l] = true;
+                                        }
                                     }
                                 }
                             }
