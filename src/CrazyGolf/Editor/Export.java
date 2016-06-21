@@ -51,7 +51,7 @@ public class Export implements Runnable {
             brutefinder.init(world);
             brutefinder.makeDatabase();
             brutefinderData = brutefinder.ouputDatabase();
-            System.out.print(System.currentTimeMillis()-time);
+            System.out.println("Time in seconds to create database: "+(System.currentTimeMillis()-time));
         }
 
         returnData = new LinkedList<>();

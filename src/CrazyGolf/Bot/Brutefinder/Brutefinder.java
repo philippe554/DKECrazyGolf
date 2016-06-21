@@ -19,9 +19,12 @@ public class Brutefinder implements BotInterface{
     public int amountDirectionsHighRes=amountDirections*3;
     public int amountPowersHighRes=amountPowers*3;
 
-    private boolean riskyModus=true;
-    private int maxCorrectorDistance=100;
-    private int amountErrorChecks=7;
+    private boolean riskyModus = true;
+    private boolean maxModus = false;
+    private int maxCorrectorDistance = 60;
+    private double correctorChange = 10;
+    private int amountErrorChecks = 4;
+    private double pushLimitDatabase=1;
 
     //#################
 
@@ -61,7 +64,7 @@ public class Brutefinder implements BotInterface{
         if(World.DEBUG)System.out.println("Brutefinder: Start finding best push");
 
         double dirStep = 2 * Math.PI / (double) amountDirectionsHighRes;
-        double powStep = World.maxPower / (double) amountPowersHighRes;
+        double powStep = (World.maxPower / (double) amountPowersHighRes);
         for (int l = 0; l < amountDirectionsHighRes; l++) {
             for (int m = 0; m < amountPowersHighRes; m++) {
                 ArrayList<Ball> balls = new ArrayList<>();
@@ -94,9 +97,9 @@ public class Brutefinder implements BotInterface{
                 if (!outOfWorld) {
                     if(newi>=0&&newi<nodes.length && newj>=0&&newj<nodes[newi].length && newk>=0&&newk<nodes[newi][newj].length) {
                         if(nodes[newi][newj][newk]!=null && nodes[newi][newj][newk].minPath>-0.5) {
-                            //if(nodes[newi][newj][newk].minPath>0.5) {
-                                double newBestPlace = getCheckLaunch(l,m ,playerNumber,dirStep,powStep,amountErrorChecks);
-                                if(newBestPlace>-0.5) {
+                            if(nodes[newi][newj][newk].minPath>0.5) {
+                                double newBestPlace = getMinPath(newi,newj,newk,2);//;
+                                if(newBestPlace>-0.5 && getCheckLaunch(l,m ,playerNumber,dirStep,powStep,amountErrorChecks)>-0.5) {
                                     //double minPath = getMinPath(newi, newj, newk, 0);
                                     //Point3D center = new Point3D((newi - xOffset) * GS, (newj - yOffset) * GS, (newk - zOffset) * GS);
                                     //double distance = center.distance(balls.get(playerNumber).place) / (GS * 2);
@@ -107,7 +110,7 @@ public class Brutefinder implements BotInterface{
                                         bestPow = m;
                                     }
                                 }
-                            /*}else{
+                            }else{
                                 double power=((double)m/(double)amountPowers);
                                 if (power < bestPlace || bestPlace < -0.5) {
                                     bestPlace = power;
@@ -115,7 +118,7 @@ public class Brutefinder implements BotInterface{
                                     bestPow = m;
                                     //if (World.DEBUG) System.out.print(" - Inside hole");
                                 }
-                            }*/
+                            }
                             //if (World.DEBUG) System.out.println(" - Min Path to hole: "+newBestPlace);
                         }
                         else
@@ -215,7 +218,7 @@ public class Brutefinder implements BotInterface{
 
         ArrayList<Ball> balls = new ArrayList<>();
         double dirStep = 2 * Math.PI / (double) amountDirections;
-        double powStep = (World.maxPower / (double) amountPowers);
+        double powStep = (World.maxPower / (double) amountPowers)*pushLimitDatabase;
 
         int xg=(int)Math.round(physics.getStartPosition().getX()/GS)+xOffset;
         int yg=(int)Math.round(physics.getStartPosition().getY()/GS)+yOffset;
@@ -252,33 +255,35 @@ public class Brutefinder implements BotInterface{
                             int xGrid = (int) (Math.round(tBall.place.getX() / GS) + xOffset);
                             int yGrid = (int) (Math.round(tBall.place.getY() / GS) + yOffset);
                             int zGrid = (int) (Math.round(tBall.place.getZ() / GS) + zOffset);
-                            nodes[tBall.i][tBall.j][tBall.k].forward[tBall.dir][tBall.pow] = nodes[xGrid][yGrid][zGrid];
-                            amountConnections++;
-                            if (nodes[xGrid][yGrid][zGrid] == null) {
-                                nodes[xGrid][yGrid][zGrid] = new Node(amountDirections, amountPowers);
-                                amountNodes++;
-                                nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
-                                if (xGrid != endI || zGrid != endJ || zGrid != endK) {
-                                    for (int l = 0; l < amountDirections; l++) {
-                                        for (int m = 0; m < amountPowers; m++) {
-                                            balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid) * GS), xGrid, yGrid, zGrid, l, m));
-                                            balls.get(balls.size() - 1).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
+                            if(xGrid>0 && xGrid<nodes.length && yGrid>0 && yGrid<nodes[0].length && zGrid>0 && zGrid<nodes[0][0].length) {
+                                nodes[tBall.i][tBall.j][tBall.k].forward[tBall.dir][tBall.pow] = nodes[xGrid][yGrid][zGrid];
+                                amountConnections++;
+                                if (nodes[xGrid][yGrid][zGrid] == null) {
+                                    nodes[xGrid][yGrid][zGrid] = new Node(amountDirections, amountPowers);
+                                    amountNodes++;
+                                    nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
+                                    if (xGrid != endI || zGrid != endJ || zGrid != endK) {
+                                        for (int l = 0; l < amountDirections; l++) {
+                                            for (int m = 0; m < amountPowers; m++) {
+                                                balls.add(new BrutefinderBall(World.ballSize, new Point3D((xGrid - xOffset) * GS, (yGrid - yOffset) * GS, (zGrid) * GS), xGrid, yGrid, zGrid, l, m));
+                                                balls.get(balls.size() - 1).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep);
+                                            }
                                         }
                                     }
+                                } else {
+                                    nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
                                 }
-                            } else {
-                                nodes[xGrid][yGrid][zGrid].backward.add(nodes[tBall.i][tBall.j][tBall.k]);
                             }
                         }else{
                             amountOfNotReplicableConnections++;
                         }
                     }else{
                         BrutefinderBall correctedBall = new BrutefinderBall(World.ballSize, new Point3D((tBall.i - xOffset) * GS, (tBall.j - yOffset) * GS, (tBall.k) * GS)
-                                .add((Math.random()-0.5)*5,(Math.random()-0.5)*5,(Math.random()-0.5)*5),
+                                .add((Math.random()-0.5)*correctorChange,(Math.random()-0.5)*correctorChange,(Math.random()-0.5)*correctorChange),
                                 tBall.i, tBall.j, tBall.k, tBall.dir, tBall.pow);
                         correctedBall.corrector=true;
                         correctedBall.velocity = new Point3D(Math.cos(tBall.dir * dirStep), Math.sin(tBall.dir * dirStep), 0).multiply((tBall.pow + 1) * powStep)
-                                .add((Math.random()-0.5)*5,(Math.random()-0.5)*5,(Math.random()-0.5)*5);
+                                .add((Math.random()-0.5)*correctorChange,(Math.random()-0.5)*correctorChange,(Math.random()-0.5)*correctorChange);
                         correctedBall.predictorLocation=tBall.place;
                         balls.add(correctedBall);
                     }
@@ -350,7 +355,7 @@ public class Brutefinder implements BotInterface{
             }
             balls.get(playerNumber).velocity = new Point3D(Math.cos(l * dirStep), Math.sin(l * dirStep), 0).multiply((m + 1) * powStep)
                     .add(physics.getBall(playerNumber).velocity)
-                    .add((Math.random()-0.5)*5,(Math.random()-0.5)*5,(Math.random()-0.5)*5);;
+                    .add((Math.random()-0.5)*correctorChange,(Math.random()-0.5)*correctorChange,(Math.random()-0.5)*correctorChange);;
             int velocityCounter = 0;
             int totalCounter = 0;
             boolean outOfWorld = false;
@@ -376,7 +381,13 @@ public class Brutefinder implements BotInterface{
             int newk=(int)Math.round(balls.get(playerNumber).place.getZ()/GS)+zOffset;
             if(newi>=0&&newi<nodes.length && newj>=0&&newj<nodes[newi].length && newk>=0&&newk<nodes[newi][newj].length) {
                 if (nodes[newi][newj][newk] != null && nodes[newi][newj][newk].minPath > -0.5) {
-                    total+=nodes[newi][newj][newk].minPath;
+                    if(maxModus){
+                        if(total<nodes[newi][newj][newk].minPath){
+                            total=nodes[newi][newj][newk].minPath;
+                        }
+                    }else {
+                        total += nodes[newi][newj][newk].minPath;
+                    }
                 }else{
                     return -1;
                 }
@@ -384,7 +395,11 @@ public class Brutefinder implements BotInterface{
                 return -1;
             }
         }
-        return total/amount;
+        if(maxModus){
+            return total;
+        }else {
+            return total / amount;
+        }
     }
 
     public String getProgress(){

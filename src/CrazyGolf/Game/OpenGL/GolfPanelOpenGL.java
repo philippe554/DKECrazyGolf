@@ -311,7 +311,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             height = 1;
 
         ratio = (1.0f * width) / height;
-        this.projMatrix = buildProjectionMatrix(53.13f, ratio, 0.2f, 60.0f, this.projMatrix);
+        this.projMatrix = buildProjectionMatrix(53.13f, ratio, 0.5f, 40.0f, this.projMatrix);
     }
     @Override public void display(GLAutoDrawable drawable) {
 

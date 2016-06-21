@@ -115,8 +115,8 @@ public class WorldData implements World,Physics{
         terainPhysics=!terainPhysics;
     }
     @Override public void pushBall(int i, Point3D dir) {
-        balls.get(i).velocity= balls.get(i).velocity
-                .add(dir.add(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5));
+        balls.get(i).velocity= balls.get(i).velocity.add(dir)
+                .add((Math.random()-0.5)*2,(Math.random()-0.5)*2,0);
     }
     @Override public boolean checkBallInHole(int i) {
         if (hole.distance(balls.get(i).place) < (balls.get(i).size)) {
@@ -202,7 +202,7 @@ public class WorldData implements World,Physics{
             stepPostCalculations(balls.get(i));
         }
     }
-    private void stepPostCalculations(Ball ball){
+    private void stepPostCalculations(Ball ball) {
         if(ball.place.subtract(ball.oldPlace).magnitude()<Ball.minVelocity){
             ball.zeroCounter++;
             ball.place=ball.oldPlace;
@@ -211,8 +211,8 @@ public class WorldData implements World,Physics{
         }
 
         if(useNoise) {
-            double windPowerX = wind.noise(ball.place.getX() * 0.0001, ball.place.getY() * 0.0001, time * 0.0001) * 0.03;
-            double windPowerY = wind.noise(ball.place.getX() * 0.0001 + 100, ball.place.getY() * 0.0001 + 100, time * 0.0001) * 0.03;
+            double windPowerX = wind.noise(ball.place.getX() * 0.0001, ball.place.getY() * 0.0001, time * 0.0001) * 0.01;
+            double windPowerY = wind.noise(ball.place.getX() * 0.0001 + 100, ball.place.getY() * 0.0001 + 100, time * 0.0001) * 0.01;
             ball.windVector = new Point3D(windPowerX, windPowerY, 0);
             ball.acceleration = ball.acceleration.add(ball.windVector);
         }
@@ -252,6 +252,14 @@ public class WorldData implements World,Physics{
 
             balls.get(i).place=balls.get(i).place.add(balls.get(i).velocity);
             balls.get(j).place=balls.get(j).place.add(balls.get(j).velocity);
+
+            distanceVector = balls.get(i).place.subtract(balls.get(j).place);
+            while(distanceVector.magnitude()<(balls.get(i).size+balls.get(j).size)){
+                balls.get(i).place=balls.get(i).place.add(distanceVector.normalize());
+                balls.get(j).place=balls.get(j).place.add(distanceVector.normalize().multiply(-1));
+
+                distanceVector = balls.get(i).place.subtract(balls.get(j).place);
+            }
         }
 
         return result;
@@ -657,16 +665,15 @@ public class WorldData implements World,Physics{
                     if(completed+subframeInv > 1){
                         subframeInv = Math.abs(completed-subframeInv)+0.0001;
                     }
-                    /*
-                    ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
+
+                    /*ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
                     ball.velocity = ball.velocity.add(ball.acceleration);
                     ball.place = ball.place.add(ball.velocity.multiply(subframeInv));
                     ball.acceleration = new Point3D(0, 0, 0);
 
                     for(int j=0;j<objects.size();j++){
-                        objects.get(j).applyCollision(ball,subframeInv);
-                    }
-                    if(terainPhysics)terrain.applyCollision(ball,subframeInv);*/
+                        objects.get(j).applyCollisionAprox(ball,subframeInv);
+                    }*/
 
                     ball.acceleration = ball.acceleration.add(0, 0, -gravity*subframeInv); //gravity
                     ball.normalTotal=new Point3D(0,0,0);
