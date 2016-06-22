@@ -19,7 +19,7 @@ public class Brutefinder implements BotInterface{
     public int amountDirectionsHighRes=amountDirections*3;
     public int amountPowersHighRes=amountPowers*3;
 
-    private boolean riskyModus = true;
+    private boolean riskyModus = false;
     private boolean maxModus = false;
     private int maxCorrectorDistance = 60;
     private double correctorChange = 10;

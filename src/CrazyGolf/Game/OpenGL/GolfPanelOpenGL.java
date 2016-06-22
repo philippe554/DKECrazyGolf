@@ -271,6 +271,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         gl.glUseProgram(this.programID2);
         gl.glUniformMatrix4fv( this.projMatrixLoc2, 1, false, this.projMatrix, 0);
         gl.glUniformMatrix4fv( this.viewMatrixLoc2, 1, false, this.viewMatrix, 0);
+
         for(int i=0;i<world.getAmountBalls();i++){
             VAONormal set1 = new VAONormal(gl, Sphere.getSphere(world.getBall(i).place, (float) world.getBall(i).size,scale), Sphere.getSphereColor(1,0,0),Sphere.getNormals()
                     , vertexLoc2, colorLoc2,normalLoc2);
@@ -278,13 +279,13 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             gl.glDrawArrays(GL.GL_TRIANGLES, 0, set1.vertices.length/4);
             set1.cleanUp(gl);
 
-            VAO set2 = new VAO(gl,new float[]{(float)world.getBall(i).place.getX(),(float) world.getBall(i).place.getZ(),(float) world.getBall(i).place.getY(),scale,
+            /*VAO set2 = new VAO(gl,new float[]{(float)world.getBall(i).place.getX(),(float) world.getBall(i).place.getZ(),(float) world.getBall(i).place.getY(),scale,
                     (float) (world.getBall(i).windVector.getX()*5000+world.getBall(i).place.getX()),
                     (float) (world.getBall(i).windVector.getZ()*5000+world.getBall(i).place.getZ()),
                     (float) (world.getBall(i).windVector.getY()*5000+world.getBall(i).place.getY()),scale},new float[]{0,0,0,0,0,0,0,0},vertexLoc, colorLoc);
             gl.glBindVertexArray(set2.VAO[0]);
             gl.glDrawArrays(GL.GL_LINES, 0, 2);
-            set2.cleanUp(gl);
+            set2.cleanUp(gl);*/
         }
 
         trianglesWithPointNormals.values().forEach(e->{
@@ -478,17 +479,17 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
                 this.verticesAxis, this.colorAxis, this.vertexLoc, this.colorLoc);*/
     }
     void addObject(GL3 gl, WorldObject object){
-        if(!object.mergeParent&& object.containsNonObjectData()) {
-            //if(object.useShaders) {
+        if(!object.mergeParent && object.containsNonObjectData()) {
+            if(object.useShaders) {
                 float[] points = getObjectPoints(object);
                 float[] colors = getObjectColors(object);
                 float[] normals = getObjectNormals(object);
                 trianglesWithPointNormals.put(object.getID(), new VAONormal(gl, points, colors, normals, vertexLoc2, colorLoc2, normalLoc2));
-            /*}else{
+            }else{
                 float[] points = getObjectPoints(object);
                 float[] colors = getObjectColors(object);
-                triangles.put(object.getID(), new VAO(gl, points, colors, vertexLoc2, colorLoc2));
-            }*/
+                triangles.put(object.getID(), new VAO(gl, points, colors, vertexLoc, colorLoc));
+            }
         }
         for (int i = 0; i < object.getAmountSubObjects(); i++) {
             addObject(gl, object.getSubObject(i));

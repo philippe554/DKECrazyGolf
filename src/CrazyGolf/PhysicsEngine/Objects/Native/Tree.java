@@ -18,6 +18,7 @@ public class Tree extends WorldObject {
         super(w);
 
         mergeParent=true;
+        useShaders=false;
         final double height = Math.random()*100+100;
         final double leaveDistance = 20;
         final int amountOfLeaves = (int) (height/leaveDistance);

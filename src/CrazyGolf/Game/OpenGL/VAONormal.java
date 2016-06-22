@@ -35,6 +35,7 @@ public class VAONormal {
     public void cleanUp(GL3 gl){
         gl.glDeleteBuffers(1, vertexBufferId,0);
         gl.glDeleteBuffers(1, colorBufferId,0);
+        gl.glDeleteBuffers(1, normalBufferId,0);
         gl.glDeleteVertexArrays(1, VAO,0);
     }
 
