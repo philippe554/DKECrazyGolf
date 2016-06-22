@@ -1,7 +1,6 @@
 package CrazyGolf.Bot.RandomBot;
 
 import CrazyGolf.Bot.BotInterface;
-import CrazyGolf.PhysicsEngine.Physics12.World;
 import CrazyGolf.PhysicsEngine.Physics3.Physics;
 import javafx.geometry.Point3D;
 
@@ -15,17 +14,12 @@ import java.lang.Math;
  */
 public class RandomBot implements BotInterface {
 
-    World world;
+    Physics world;
     double scalar =80;
 
     @Override
-    public void init(World w) {
-        world = w;
-    }
-
-    @Override
-    public void init(Physics physics) {
-
+    public void init(Physics p) {
+        world=p;
     }
 
     @Override

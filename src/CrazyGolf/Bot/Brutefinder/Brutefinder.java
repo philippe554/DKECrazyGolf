@@ -47,10 +47,6 @@ public class Brutefinder implements BotInterface{
     private int amountConnections=0;
     private int amountOfNotReplicableConnections=0;
 
-    @Override public void init(World w) {
-        //world=w;
-    }
-
     @Override
     public void init(Physics p) {
         physics=p;

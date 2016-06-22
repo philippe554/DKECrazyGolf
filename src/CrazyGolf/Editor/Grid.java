@@ -15,9 +15,9 @@ public class Grid extends JComponent {
     private String[][] startEndStringGrid;
 
     public Grid(){
-        stringGrid = new String[81][50];
-        rectangleGrid = new Rectangle[81][50];
-        startEndStringGrid = new String[81][50];
+        stringGrid = new String[82][50];
+        rectangleGrid = new Rectangle[82][50];
+        startEndStringGrid = new String[82][50];
 
         for(int i=0; i<rectangleGrid.length; i++) {
             for (int j=0; j<rectangleGrid[0].length; j++) {

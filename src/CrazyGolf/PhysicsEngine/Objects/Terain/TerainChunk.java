@@ -32,6 +32,7 @@ public class TerainChunk extends WorldObject {
     public TerainChunk(SimplexNoise tsm, Key key, WorldData w){
         super(w);
         sm=tsm;
+        useShaders=false;
 
         pointsOriginal=new ArrayList<>((chunkParts+1)*(chunkParts+1));
         sides=new ArrayList<>(chunkParts*chunkParts*2);
@@ -145,99 +146,187 @@ public class TerainChunk extends WorldObject {
             staticColors.add(new Color3f(0.95f, 0.97f, 0.98f));*/
 
             //water
-            staticColors.add(new Color3f(123/255f,190/255f,219/255f));
-            staticColors.add(new Color3f(155/255f,201/255f,224/255f));
-            staticColors.add(new Color3f(160/255f,238/255f,255/255f));
-            staticColors.add(new Color3f(128/255f,195/255f,224/255));
-            staticColors.add(new Color3f(152/255f,246/255f,254/255f));
-            staticColors.add(new Color3f(140/255f,221/255f,251/255f));
-            staticColors.add(new Color3f(142/255f,231/255f,255/255f));
+            staticColors.add(new Color3f(0/255f,159/255f,214/255f));
+            staticColors.add(new Color3f(1/255f,170/255f,226/255f));
+            staticColors.add(new Color3f(1/255f,238/255f,97/255f));
+            staticColors.add(new Color3f(1/255f,188/255f,235/255));
+            staticColors.add(new Color3f(23/255f,172/255f,212/255f));
+
+            staticColors.add(new Color3f(30/255f,181/255f,210/255f));
+            staticColors.add(new Color3f(37/255f,189/255f,213/255f));
+            staticColors.add(new Color3f(64/255f, 203/255f, 223/255f));
+            staticColors.add(new Color3f(65/255f, 206/255f, 224/255f));
+            staticColors.add(new Color3f(72/255f, 216/255f, 227/255f));
+            staticColors.add(new Color3f(93/255f, 217/255f, 229/255f));
+            staticColors.add(new Color3f(132/255f, 222/255f, 230/255f));
 
             //sand
-            staticColors.add(new Color3f(188/255f,130/255f,67/255f));
-            staticColors.add(new Color3f(200/255f,140/255f,75/255f));
-            staticColors.add(new Color3f(195/255f,134/255f,57/255f));
-            staticColors.add(new Color3f(225/255f,174/255f,80/255f));
-            staticColors.add(new Color3f(201/255f,150/255f,75/255f));
-            staticColors.add(new Color3f(228/255f,173/255f,79/255f));
-            staticColors.add(new Color3f(240/255f,181/255f,83/255f));
+            staticColors.add(new Color3f(140/255f,110/255f,74/255f));
+            staticColors.add(new Color3f(153/255f,118/255f,86/255f));
+            staticColors.add(new Color3f(160/255f,124/255f,90/255f));
+            staticColors.add(new Color3f(196/255f,151/255f,96/255f));
+            staticColors.add(new Color3f(204/255f,162/255f,112/255f));
+            staticColors.add(new Color3f(207/255f,171/255f,111/255f));
 
-            //grass
-            staticColors.add(new Color3f(159/255f,163/255f,104/255f));
-            staticColors.add(new Color3f(186/255f,185/255f,105/255f));
-            staticColors.add(new Color3f(208/255f,206/255f,103/255f));
-            staticColors.add(new Color3f(207/255f,205/255f,104/255f));
-            staticColors.add(new Color3f(223/255f,220/255f,105/255f));
-            staticColors.add(new Color3f(230/255f,230/255f,100/255f));
-            staticColors.add(new Color3f(244/255f,235/255f,106/255f));
+
+            staticColors.add(new Color3f(223/255f,190/255f,121/255f));
+            staticColors.add(new Color3f(229/255f,202/255f,135/255f));
+            staticColors.add(new Color3f(232/255f,201/255f,146/255f));
+            staticColors.add(new Color3f(238/255f,214/255f,144/255f));
+            staticColors.add(new Color3f(246/255f,226/255f,165/255f));
+            staticColors.add(new Color3f(239/255f,214/255f,157/255f));
+
+            //grass green
+            staticColors.add(new Color3f(95/255f,147/255f,45/255f));
+            staticColors.add(new Color3f(104/255f,158/255f,47/255f));
+            staticColors.add(new Color3f(113/255f,160/255f,48/255f));
+            staticColors.add(new Color3f(126/255f,170/255f,49/255f));
+            staticColors.add(new Color3f(136/255f,175/255f,45/255f));
+            staticColors.add(new Color3f(143/255f,183/255f,69/255f));
+
+            staticColors.add(new Color3f(116/255f,174/255f,62/255f));
+            staticColors.add(new Color3f(126/255f,183/255f,66/255f));
+            staticColors.add(new Color3f(135/255f,186/255f,65/255f));
+            staticColors.add(new Color3f(149/255f,196/255f,66/255f));
+            staticColors.add(new Color3f(159/255f,201/255f,63/255f));
+            staticColors.add(new Color3f(160/255f,209/255f,69/255f));
 
             //rocks
-            staticColors.add(new Color3f(106/255f,128/255f,142/255f));
-            staticColors.add(new Color3f(115/255f,135/255f,148/255f));
-            staticColors.add(new Color3f(138/255f,153/255f,164/255f));
-            staticColors.add(new Color3f(195/255f,200/255f,209/255f));
-            staticColors.add(new Color3f(209/255f,213/255f,221/255f));
-            staticColors.add(new Color3f(236/255f,237/255f,244/255f));
-            staticColors.add(new Color3f(255/255f,255/255f,255/255f));
+            staticColors.add(new Color3f(114/255f,122/255f,143/255f));
+            staticColors.add(new Color3f(125/255f,133/255f,152/255f));
+            staticColors.add(new Color3f(125/255f,134/255f,165/255f));
+            staticColors.add(new Color3f(130/255f,138/255f,161/255f));
+            staticColors.add(new Color3f(137/255f,143/255f,157/255f));
+            staticColors.add(new Color3f(158/255f,165/255f,175/255f));
+
+            staticColors.add(new Color3f(186/255f,189/255f,194/255f));
+            staticColors.add(new Color3f(207/255f,211/255f,210/255f));
+            staticColors.add(new Color3f(215/255f,215/255f,215/255f));
+            staticColors.add(new Color3f(221/255f,221/255f,221/255f));
+            staticColors.add(new Color3f(227/255f,227/255f,227/255f));
+            staticColors.add(new Color3f(240/255f,240/255f,240/255f));
 
             //snow
-            staticColors.add(new Color3f(106/255f,174/255f,211/255f));
-            staticColors.add(new Color3f(144/255f,200/255f,235/255f));
-            staticColors.add(new Color3f(159/255f,204/255f,235/255f));
-            staticColors.add(new Color3f(180/255f,210/255f,236/255f));
-            staticColors.add(new Color3f(217/255f,239/255f,252/255f));
+            staticColors.add(new Color3f(115/255f,177/255f,234/255f));
+            staticColors.add(new Color3f(126/255f,192/255f,237/255f));
+            staticColors.add(new Color3f(149/255f,201/255f,238/255f));
+            staticColors.add(new Color3f(169/255f,210/255f,242/255f));
+            staticColors.add(new Color3f(189/255f,225/255f,247/255f));
+            staticColors.add(new Color3f(219/255f,237/255f,251/255f));
+
+            staticColors.add(new Color3f(230/255f,244/255f,255/255f));
+            staticColors.add(new Color3f(238/255f,247/255f,254/255f));
+            staticColors.add(new Color3f(243/255f,251/255f,254/255f));
+            staticColors.add(new Color3f(255/255f,255/255f,255/255f));
             staticColors.add(new Color3f(243/255f,251/255f,254/255f));
             staticColors.add(new Color3f(255/255f,255/255f,255/255f));
 
             //water
-            staticColors.add(new Color3f(75 / 255f, 157 / 255f, 157 / 255f));
-            staticColors.add(new Color3f(40 / 255f, 144 / 255f, 142 / 255f));
-            staticColors.add(new Color3f(52 / 255f, 145 / 255f, 146 / 255f));
-            staticColors.add(new Color3f(82 / 255f, 134 / 255f, 127 / 255f));
-            staticColors.add(new Color3f(52 / 255f, 144 / 255f, 149 / 255f));
-            staticColors.add(new Color3f(100 / 255f, 166 / 255f, 161 / 255f));
-            staticColors.add(new Color3f(86 / 255f, 142 / 255f, 137 / 255f));
-            //grass
-            staticColors.add(new Color3f(223 / 255f, 220 / 255f, 105 / 255f));
-            staticColors.add(new Color3f(208 / 255f, 206 / 255f, 103 / 255f));
-            staticColors.add(new Color3f(159 / 255f, 163 / 255f, 104 / 255f));
-            staticColors.add(new Color3f(186 / 255f, 185 / 255f, 105 / 255f));
-            staticColors.add(new Color3f(244 / 255f, 235 / 255f, 106 / 255f));
-            staticColors.add(new Color3f(223 / 255f, 220 / 255f, 105 / 255f));
-            staticColors.add(new Color3f(207 / 255f, 205 / 255f, 104 / 255f));
+            staticColors.add(new Color3f(123/255f,190/255f,219/255f));
+            staticColors.add(new Color3f(139/255f,195/255f,221/255f));
+            staticColors.add(new Color3f(155/255f,201/255f,224/255f));
+            staticColors.add(new Color3f(160/255f,238/255f,255/255f));
+            staticColors.add(new Color3f(158/255f,220/255f,221/255f));
+            staticColors.add(new Color3f(155/255f,225/255f,237/255f));
+
+
+            staticColors.add(new Color3f(153/255f,235/255f,245/255f));
+            staticColors.add(new Color3f(152/255f,246/255f,254/255f));
+            staticColors.add(new Color3f(156/255f,234/255f,253/255f));
+            staticColors.add(new Color3f(150/255f,225/255f,252/255f));
+            staticColors.add(new Color3f(140/255f,221/255f,251/255f));
+            staticColors.add(new Color3f(142/255f,231/255f,255/255f));
+
+            //grass desert
+
+            staticColors.add(new Color3f(140/255f,110/255f,74/255f));
+            staticColors.add(new Color3f(153/255f,118/255f,86/255f));
+            staticColors.add(new Color3f(160/255f,124/255f,90/255f));
+            staticColors.add(new Color3f(196/255f,151/255f,96/255f));
+            staticColors.add(new Color3f(204/255f,162/255f,112/255f));
+            staticColors.add(new Color3f(207/255f,171/255f,111/255f));
+
+
+            staticColors.add(new Color3f(223/255f,190/255f,121/255f));
+            staticColors.add(new Color3f(229/255f,202/255f,135/255f));
+            staticColors.add(new Color3f(232/255f,201/255f,146/255f));
+            staticColors.add(new Color3f(238/255f,214/255f,144/255f));
+            staticColors.add(new Color3f(246/255f,226/255f,165/255f));
+            staticColors.add(new Color3f(239/255f,214/255f,157/255f));
         }
         colors=staticColors;
     }
     private int getColor(double avgHeight,double angle,int i,int j){
+
         int color;
+        //water
         if(avgHeight<40.001){
             if(getBiome(i,j)>0.25) {
                 color = 0;
             }else{
-                color = 35;
+                color = 60;
             }
+            //sand
         }else if(avgHeight<50){
-            color= 7;
+            color= 12;
+            //grass or desert
         }else if(avgHeight<500){
             if(getBiome(i,j)>0.25) {
-                color = 14;
+                color = 24;
             }else{
-                color = 42;
+                color = 72;
             }
+            //rock
         }else if(avgHeight<700){
-            color= 21;
+            color= 36;
         }else{
+            //ice or rocks
             if(getBiome(i,j)>0.25) {
-                color= 28;
+                color= 48;
             }else{
-                color= 21;
+                color= 36;
             }
         }
-        if(angle>0.15)
-        {
-            return color+(int)(Math.random()*2.0);
+
+        if(avgHeight >=50){
+            if(angle>1.1) {
+                return color;
+            }
+            if(angle>0.95){
+                return color+1;
+            }
+            if(angle>0.85){
+                return color+2;
+            }
+            if(angle>0.8){
+                return color+3;
+            }
+            if(angle>0.75){
+                return color+4;
+            }
+            if(angle>0.7){
+                return color+5;
+            }
+            if(angle>0.65){
+                return color+6;
+            }
+            if(angle>0.6){
+                return color+7;
+            }
+            if(angle>0.55){
+                return color+8;
+            }
+            if(angle>0.45){
+                return color+9;
+            }
+            if(angle>0.4){
+                return color+10;
+            }
+            else
+                return color+11;
+        }else{
+            return (int) (Math.random()*3+color+8);
         }
-        return color+(int)(Math.random()*5.0)+2;
     }
     public void applyCollision(Ball ball, double subframeInv){
         if(ball.place.getX()+ball.size>boxing[0].getX()&&ball.place.getY()+ball.size>boxing[0].getY()&&ball.place.getZ()+ball.size>boxing[0].getZ()&&

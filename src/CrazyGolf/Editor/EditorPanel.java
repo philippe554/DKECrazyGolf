@@ -48,8 +48,8 @@ public class EditorPanel extends JPanel{
     private int bridge1;
 
     private final String[] layerStrings = {"Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"};
-    private final String[] playerStrings = {"Human", "Brutefinder bot", "One-Shooter bot", "Random bot", "Nobody"};
-    private String[] playerChoice = {"0", "3", "3", "3", "3"};
+    private final String[] playerStrings = {"Human", "Brutefinder bot", "Random bot", "Nobody"};
+    private String[] playerChoice = {"0", "3", "3", "3"};
     private JLayeredPane layeredPane;
     public JComboBox layerList;
     public JComboBox[] playerList;
@@ -85,7 +85,7 @@ public class EditorPanel extends JPanel{
         loadSave.setLayout(new GridLayout(2,1));
 
         JPanel settings = new JPanel();
-        settings.setLayout(new GridLayout(7,1));
+        settings.setLayout(new GridLayout(6,1));
 
         buttons = someButtons;
 

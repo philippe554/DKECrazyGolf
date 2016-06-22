@@ -63,6 +63,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         if(e.getKeyCode() == KeyEvent.VK_S)sPressed=true;
         if(e.getKeyCode() == KeyEvent.VK_D)dPressed=true;
         if(e.getKeyCode() == KeyEvent.VK_W)wPressed=true;
+        if(e.getKeyCode() == KeyEvent.VK_E)showDatabase=!showDatabase;
     }
     @Override public void keyReleased(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_A)aPressed=false;
@@ -112,17 +113,18 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
     ArrayList<VAO> database=null;
     Brutefinder brutefinder=null;
 
-    public int xAngle=0;
+    public int xAngle=45;
     public int yAngle=0;
     public int xAngleStart=0;
     public int yAngleStart=0;
-    public double zoom=2;
+    public double zoom=5;
     public float xOffset=0;
     public float yOffset=0;
     public boolean aPressed=false;
     public boolean sPressed=false;
     public boolean dPressed=false;
     public boolean wPressed=false;
+    public boolean showDatabase=false;
 
     void crossProduct(float a[], float b[], float res[]) {
 
@@ -257,10 +259,12 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             set.cleanUp(gl);
         }
 
-        if(database!=null){
-            for(int i=0;i<database.size();i++){
-                gl.glBindVertexArray(database.get(i).VAO[0]);
-                gl.glDrawArrays(GL.GL_TRIANGLES, 0, database.get(i).vertices.length/4);
+        if(showDatabase) {
+            if (database != null) {
+                for (int i = 0; i < database.size(); i++) {
+                    gl.glBindVertexArray(database.get(i).VAO[0]);
+                    gl.glDrawArrays(GL.GL_TRIANGLES, 0, database.get(i).vertices.length / 4);
+                }
             }
         }
 
@@ -311,7 +315,7 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             height = 1;
 
         ratio = (1.0f * width) / height;
-        this.projMatrix = buildProjectionMatrix(53.13f, ratio, 0.5f, 40.0f, this.projMatrix);
+        this.projMatrix = buildProjectionMatrix(53.13f, ratio, 0.5f, 60.0f, this.projMatrix);
     }
     @Override public void display(GLAutoDrawable drawable) {
 
@@ -474,11 +478,17 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
                 this.verticesAxis, this.colorAxis, this.vertexLoc, this.colorLoc);*/
     }
     void addObject(GL3 gl, WorldObject object){
-        if(!object.mergeParent && object.containsNonObjectData()) {
-            float[] points = getObjectPoints(object);
-            float[] colors = getObjectColors(object);
-            float[] normals = getObjectNormals(object);
-            trianglesWithPointNormals.put(object.getID(), new VAONormal(gl, points, colors,normals, vertexLoc2, colorLoc2,normalLoc2));
+        if(!object.mergeParent&& object.containsNonObjectData()) {
+            //if(object.useShaders) {
+                float[] points = getObjectPoints(object);
+                float[] colors = getObjectColors(object);
+                float[] normals = getObjectNormals(object);
+                trianglesWithPointNormals.put(object.getID(), new VAONormal(gl, points, colors, normals, vertexLoc2, colorLoc2, normalLoc2));
+            /*}else{
+                float[] points = getObjectPoints(object);
+                float[] colors = getObjectColors(object);
+                triangles.put(object.getID(), new VAO(gl, points, colors, vertexLoc2, colorLoc2));
+            }*/
         }
         for (int i = 0; i < object.getAmountSubObjects(); i++) {
             addObject(gl, object.getSubObject(i));
@@ -692,6 +702,8 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
     }
     public void load(WorldData w){
         world =w;
+        xOffset = (float) (w.getStartPosition().getX()/scale);
+        yOffset = (float) (w.getStartPosition().getY()/scale);
         GLProfile glp = GLProfile.get(GLProfile.GL3);
         GLCapabilities glCapabilities = new GLCapabilities(glp);
         glCanvas = new GLCanvas(glCapabilities);

@@ -18,7 +18,15 @@ public class VAO {
         VAO = generateVAOId(gl);
         vertices = points;
         colors = tColors;
-        newFloatVertexAndColorBuffers(gl, VAO[0], vertices, colors, verticeLoc, colorLoc);
+
+        gl.glBindVertexArray( VAO[0]);
+        vertexBufferId = this.generateBufferId(gl);
+        colorBufferId = this.generateBufferId(gl);
+
+        this.bindBuffer(gl, vertexBufferId[0], vertices, verticeLoc);
+        this.bindBuffer(gl, colorBufferId[0], colors, colorLoc);
+
+        //newFloatVertexAndColorBuffers(gl, VAO[0], vertices, colors, verticeLoc, colorLoc);
     }
     public void cleanUp(GL3 gl){
         gl.glDeleteBuffers(1, vertexBufferId,0);

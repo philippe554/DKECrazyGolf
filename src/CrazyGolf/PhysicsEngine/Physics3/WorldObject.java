@@ -37,6 +37,7 @@ public class WorldObject {
 
     public boolean mergeParent=false;
     public boolean hasPointNormals=false;
+    public boolean useShaders=true;
 
     public WorldObject(WorldData w){
         ID=nextID;

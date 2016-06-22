@@ -72,10 +72,27 @@ public class Popup extends JWindow{
         nextLevel.setUI(new StyledButtonUI());
         nextLevel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        JButton mainMenu = new JButton("MAIN MENU");
+        mainMenu.setBackground(new Color(0,0,0,200));
+        mainMenu.setForeground(Color.WHITE);
+        mainMenu.setFont(new Font("Calibri",Font.PLAIN, 30));
+        mainMenu.setUI(new StyledButtonUI());
+        mainMenu.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JButton exit = new JButton("EXIT");
+        exit.setBackground(new Color(0,0,0,200));
+        exit.setForeground(Color.WHITE);
+        exit.setFont(new Font("Calibri",Font.PLAIN, 30));
+        exit.setUI(new StyledButtonUI());
+        exit.setHorizontalAlignment(SwingConstants.CENTER);
+
+
 //
         tmp.add(message);
         tmp.add(Box.createRigidArea(new Dimension(0,this.HEIGHT)));
         tmp.add(nextLevel);
+        tmp.add(mainMenu);
+        tmp.add(exit);
         background.add(Box.createRigidArea(new Dimension(0,900)));
         background.add(tmp);
 
@@ -98,11 +115,21 @@ public class Popup extends JWindow{
                     }
                     setVisible(false);
                 }
+                if(e.getSource()== mainMenu){
+                    menu.gamePanel.setVisible(false);
+                    menu.createMainMenu();
+                    setVisible(false);
+                }
+
+                if(e.getSource()== exit)
+                    System.exit(0);
             }
         }
 
         ButtonListener listener = new ButtonListener();
         nextLevel.addActionListener(listener);
+        mainMenu.addActionListener(listener);
+        exit.addActionListener(listener);
     }
 //
 //	public static void main(String[] args){

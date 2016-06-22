@@ -46,9 +46,6 @@ public class Player {
             game.brutefinder.calcNextShot(ballId);
         }else if(launchSort==2)
         {
-            if(World.DEBUG)System.out.println("One shot bot still in development");
-        }else if(launchSort==3 && game.brutefinder!=null)
-        {
             BotInterface bot = new RandomBot();
             bot.init(game.world);
             bot.calcNextShot(ballId);
