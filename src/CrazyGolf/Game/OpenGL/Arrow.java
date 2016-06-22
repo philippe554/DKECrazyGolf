@@ -15,7 +15,7 @@ public class Arrow {
     private static void makeArrow(){
         pointsOriginal = new ArrayList<>();
         double parts=12;
-        double towerSize=2;
+        double towerSize=1;
         double towerHeight=5;
         double angleGrowSize = Math.PI / (parts / 2);
         for (double angle = 0; angle < Math.PI * 1.99; angle += angleGrowSize) {
@@ -24,9 +24,9 @@ public class Arrow {
             Point3D p3 = new Point3D(Math.cos(angle + angleGrowSize) * towerSize, 0 + Math.sin(angle + angleGrowSize) * towerSize, 0 + towerHeight);
             Point3D p4 = new Point3D(Math.cos(angle + angleGrowSize) * towerSize, 0 + Math.sin(angle + angleGrowSize) * towerSize, 0);
             addSquare(p1, p2, p3, p4, 0,0.1);
-            Point3D top = new Point3D(0, 0, 0 + towerHeight * 1.5);
-            Point3D tp1 = new Point3D(Math.cos(angle) * towerSize * 2, 0 + Math.sin(angle) * towerSize * 2, 0 + towerHeight);
-            Point3D tp2 = new Point3D(Math.cos(angle + angleGrowSize) * towerSize * 2, 0 + Math.sin(angle + angleGrowSize) * towerSize * 2, 0 + towerHeight);
+            Point3D top = new Point3D(0, 0, 0 + towerHeight * 1.2);
+            Point3D tp1 = new Point3D(Math.cos(angle) * towerSize * 12, 0 + Math.sin(angle) * towerSize * 12, 0 + towerHeight);
+            Point3D tp2 = new Point3D(Math.cos(angle + angleGrowSize) * towerSize * 12, 0 + Math.sin(angle + angleGrowSize) * towerSize * 12, 0 + towerHeight);
             addTriangle(tp1, tp2, top, 1,0.1);
         }
     }

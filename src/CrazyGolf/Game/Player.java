@@ -16,7 +16,7 @@ public class Player {
 
     public int angle = 0;
     public int angleUp = 0;
-    public int power = 5;
+    public int power = 20;
 
     public Point3D pushVector;
 

@@ -26,4 +26,6 @@ public interface World {
     void load(ArrayList<String> data);
     void load(String[][]data,double gs,Point3D offset);
     ArrayList<String> save();
+
+    boolean DEBUG=true;
 }
