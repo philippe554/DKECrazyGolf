@@ -57,14 +57,14 @@ public class Player {
 
     public void updatePushParameters() {
         if(launchSort==0) {
-            if (leftPressed) angle += 2;
-            if (rightPressed) angle -= 2;
+            if (leftPressed) angle -= 2;
+            if (rightPressed) angle += 2;
             if (upPressed && angleUp < 90) angleUp++;
             if (downPressed && angleUp > 0) angleUp--;
             if (powerUpPressed && power < World.maxPower) power++;
             if (powerDownPressed && power > 1) power--;
             pushVector = new Point3D(Math.cos(angle * Math.PI / 180.0), Math.sin(angle * Math.PI / 180.0), Math.tan(angleUp * Math.PI / 180.0)).normalize().multiply(power);
-            game.createArrow(game.world.getBall(ballId).place, game.world.getBall(ballId).place.add(pushVector.multiply(10)));
+            game.createArrow(game.world.getBall(ballId).place, angle,angleUp,power);
         }
     }
 }

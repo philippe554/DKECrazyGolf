@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.vecmath.Color3f;
 
 import CrazyGolf.Bot.Brutefinder.Brutefinder;
+import CrazyGolf.PhysicsEngine.Matrix;
 import CrazyGolf.PhysicsEngine.Physics3.WorldObject;
 import CrazyGolf.PhysicsEngine.Physics3.World;
 import CrazyGolf.PhysicsEngine.Physics3.WorldData;
@@ -107,7 +108,9 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
     Map<Integer,VAO> triangles;
     Map<Integer,VAONormal> trianglesWithPointNormals;
     Point3D arrowStart=null;
-    Point3D arrowDir=null;
+    double angleX;
+    double angleY;
+    double power;
     float scale=200;
     public GLCanvas glCanvas;
     ArrayList<VAO> database=null;
@@ -252,11 +255,11 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
 
 
         if(arrowStart!=null){
-            VAO set = new VAO(gl,new float[]{(float) arrowStart.getX(),(float) arrowStart.getZ(),(float) arrowStart.getY(),scale,
-                    (float) arrowDir.getX(),(float) arrowDir.getZ(),(float) arrowDir.getY(),scale},new float[]{0,0,0,0,0,0,0,0},vertexLoc, colorLoc);
-            gl.glBindVertexArray(set.VAO[0]);
-            gl.glDrawArrays(GL.GL_LINES, 0, 2);
-            set.cleanUp(gl);
+            VAO set1 = new VAO(gl, Arrow.getArrow(arrowStart, (float)angleX, (float) angleY, (float) power,scale), Arrow.getColor(0,0,1),
+                    vertexLoc, colorLoc);
+            gl.glBindVertexArray(set1.VAO[0]);
+            gl.glDrawArrays(GL.GL_TRIANGLES, 0, set1.vertices.length/4);
+            set1.cleanUp(gl);
         }
 
         if(showDatabase) {
@@ -693,13 +696,14 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
         updateKeys();
         glCanvas.repaint();
     }
-    public void createArrow(Point3D start,Point3D dir){
+    public void createArrow(Point3D start,double tangleX,double tangleY,double tpower){
         arrowStart=start;
-        arrowDir=dir;
+        angleX=tangleX;
+        angleY=tangleY;
+        power=tpower;
     }
     public void removeArrow(){
         arrowStart=null;
-        arrowDir=null;
     }
     public void load(WorldData w){
         world =w;
