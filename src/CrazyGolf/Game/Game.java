@@ -115,6 +115,7 @@ public class Game extends GolfPanelOpenGL implements Runnable{
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)Player.downPressed=true;
                 if(e.getKeyCode() == KeyEvent.VK_CONTROL)Player.powerDownPressed=true;
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT)Player.powerUpPressed=true;
+                if(e.getKeyCode() == KeyEvent.VK_F)world.swapTerainPhysics();
                 game.keyPressed(e);
             }
 
