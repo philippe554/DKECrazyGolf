@@ -2,6 +2,7 @@ package CrazyGolf.Menu;
 
 import javax.swing.UIManager;
 
+import java.awt.Dimension;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
@@ -10,7 +11,7 @@ import javax.swing.SwingUtilities;
 public class SplashScreenMain {
 
     SplashScreen screen;
-    int progress=500;
+    int progress=3000;
 
     public SplashScreenMain() {
         // initialize the splash screen
@@ -19,12 +20,12 @@ public class SplashScreenMain {
         // is time consuming
         for (int i = 0; i <= progress; i++)
         {
-            for (long j=0; j<50000; ++j)
+            for (long j=0; j<40000; ++j)
             {
                 String load = "" + (j + i);
             }
             // run either of these two -- not both
-            screen.setProgress("",i);  // progress bar with a message
+//            screen.setProgress("",i);  // progress bar with a message
 //      screen.setProgress(i);           // progress bar with no message
         }
 //    To cheat and make the player wait a bit so he can see the buetifuel loading screen
@@ -65,12 +66,16 @@ public class SplashScreenMain {
     }
 
     private void splashScreenInit() {
-//	  Image image = new ImageIcon("Loading2.jpg").getImage();
-//	  image.getScaledInstance(300, 300, image.SCALE_DEFAULT);
-        ImageIcon myImage = new ImageIcon("Loading.jpg");
+//	  Image image = new ImageIcon("logo.gif").getImage();
+//	  image.getScaledInstance(600, 600, image.SCALE_DEFAULT);
+        ImageIcon myImage = new ImageIcon("logo.gif");
+//    	ImageIcon myImage = new ImageIcon("Loading.jpg");
+//	  ImageIcon myImage = new ImageIcon();
+//	  myImage.setImage(image);
         screen = new SplashScreen(myImage);
+        screen.setPreferredSize(new Dimension(600,600));
         screen.setLocationRelativeTo(null);
-        screen.setProgressMax(progress);
+        // screen.setProgressMax(progress);
         screen.setScreenVisible(true);
     }
 

@@ -271,6 +271,16 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             }
         }
 
+        for(int i=0;i<world.getAmountBalls();i++){
+            VAO set2 = new VAO(gl,new float[]{(float)world.getBall(i).place.getX(),(float) world.getBall(i).place.getZ(),(float) world.getBall(i).place.getY(),scale,
+                    (float) (world.getBall(i).windVector.getX()*50000+world.getBall(i).place.getX()),
+                    (float) (world.getBall(i).windVector.getZ()*50000+world.getBall(i).place.getZ()),
+                    (float) (world.getBall(i).windVector.getY()*50000+world.getBall(i).place.getY()),scale},new float[]{0,0,0,0,0,0,0,0},vertexLoc, colorLoc);
+            gl.glBindVertexArray(set2.VAO[0]);
+            gl.glDrawArrays(GL.GL_LINES, 0, 2);
+            set2.cleanUp(gl);
+        }
+
         gl.glUseProgram(this.programID2);
         gl.glUniformMatrix4fv( this.projMatrixLoc2, 1, false, this.projMatrix, 0);
         gl.glUniformMatrix4fv( this.viewMatrixLoc2, 1, false, this.viewMatrix, 0);
@@ -281,14 +291,6 @@ public class GolfPanelOpenGL extends JPanel implements GLEventListener,MouseMoti
             gl.glBindVertexArray(set1.VAO[0]);
             gl.glDrawArrays(GL.GL_TRIANGLES, 0, set1.vertices.length/4);
             set1.cleanUp(gl);
-
-            /*VAO set2 = new VAO(gl,new float[]{(float)world.getBall(i).place.getX(),(float) world.getBall(i).place.getZ(),(float) world.getBall(i).place.getY(),scale,
-                    (float) (world.getBall(i).windVector.getX()*5000+world.getBall(i).place.getX()),
-                    (float) (world.getBall(i).windVector.getZ()*5000+world.getBall(i).place.getZ()),
-                    (float) (world.getBall(i).windVector.getY()*5000+world.getBall(i).place.getY()),scale},new float[]{0,0,0,0,0,0,0,0},vertexLoc, colorLoc);
-            gl.glBindVertexArray(set2.VAO[0]);
-            gl.glDrawArrays(GL.GL_LINES, 0, 2);
-            set2.cleanUp(gl);*/
         }
 
         trianglesWithPointNormals.values().forEach(e->{
